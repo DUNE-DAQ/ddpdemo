@@ -45,7 +45,7 @@ void
 SimpleDiskWriter::do_configure(const std::vector<std::string>& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
-  nIntsPerList_ = get_config().value<size_t>("nIntsPerList", static_cast<size_t>(REASONABLE_DEFAULT_INTSPERLIST));
+  nIntsPerFakeEvent_ = get_config().value<size_t>("nIntsPerFakeEvent", static_cast<size_t>(REASONABLE_DEFAULT_INTSPERFAKEEVENT));
   waitBetweenSendsMsec_ = get_config().value<size_t>("waitBetweenSendsMsec", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
 }
@@ -72,7 +72,7 @@ void
 SimpleDiskWriter::do_unconfigure(const std::vector<std::string>& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_unconfigure() method";
-  nIntsPerList_ = REASONABLE_DEFAULT_INTSPERLIST;
+  nIntsPerFakeEvent_ = REASONABLE_DEFAULT_INTSPERFAKEEVENT;
   waitBetweenSendsMsec_ = REASONABLE_DEFAULT_MSECBETWEENSENDS;
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_unconfigure() method";
 }
@@ -107,18 +107,18 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
   int fakeDataValue = 1;
 
   while (running_flag.load()) {
-    TLOG(TLVL_WORK_STEPS) << get_name() << ": Creating list of length " << nIntsPerList_;
-    std::vector<int> theList(nIntsPerList_);
+    TLOG(TLVL_WORK_STEPS) << get_name() << ": Creating fakeEvent of length " << nIntsPerFakeEvent_;
+    std::vector<int> theFakeEvent(nIntsPerFakeEvent_);
 
     TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of fill loop";
-    for (size_t idx = 0; idx < nIntsPerList_; ++idx)
+    for (size_t idx = 0; idx < nIntsPerFakeEvent_; ++idx)
     {
-      theList[idx] = fakeDataValue++;
+      theFakeEvent[idx] = fakeDataValue++;
     }
     ++generatedCount;
     std::ostringstream oss_prog;
-    oss_prog << "Generated list #" << generatedCount << " with contents " << theList
-             << " and size " << theList.size() << ". ";
+    oss_prog << "Generated fake event #" << generatedCount << " with contents " << theFakeEvent
+             << " and size " << theFakeEvent.size() << ". ";
     ers::debug(ProgressUpdate(ERS_HERE, get_name(), oss_prog.str()));
 
     // Here is where we will eventually write the data out to disk
@@ -131,7 +131,7 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
 
   std::ostringstream oss_summ;
   oss_summ << ": Exiting the do_work() method, generated " << generatedCount
-           << " lists and successfully wrote " << writtenCount << " of them to disk. ";
+           << " fake events and successfully wrote " << writtenCount << " of them to disk. ";
   ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_work() method";
 }

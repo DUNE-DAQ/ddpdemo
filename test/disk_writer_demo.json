@@ -4,7 +4,7 @@
   "modules": {
     "disk_writer": {
       "user_module_type": "SimpleDiskWriter",
-      "nIntsPerList": 5,
+      "nIntsPerFakeEvent": 5,
       "waitBetweenSendsMsec": 1000
     }
   },

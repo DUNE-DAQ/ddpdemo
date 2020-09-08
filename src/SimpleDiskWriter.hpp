@@ -60,11 +60,11 @@ private:
   void do_work(std::atomic<bool>&);
 
   // Configuration defaults
-  const size_t REASONABLE_DEFAULT_INTSPERLIST = 4;
+  const size_t REASONABLE_DEFAULT_INTSPERFAKEEVENT = 4;
   const size_t REASONABLE_DEFAULT_MSECBETWEENSENDS = 1000;
 
   // Configuration
-  size_t nIntsPerList_ = REASONABLE_DEFAULT_INTSPERLIST;
+  size_t nIntsPerFakeEvent_ = REASONABLE_DEFAULT_INTSPERFAKEEVENT;
   size_t waitBetweenSendsMsec_ = REASONABLE_DEFAULT_MSECBETWEENSENDS;
 };
 } // namespace ddpdemo
