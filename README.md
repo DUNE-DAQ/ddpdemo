@@ -1,7 +1,7 @@
-# ddpdemo
-Dispatcher Demo  
+# Dispatcher Demo (ddpdemo)
 
-Hints for building and running (KAB, 08-Sep-2020):
+### Hints for building and running (KAB, 08-Sep-2020):
+
 * create a software work area
   * see https://github.com/DUNE-DAQ/appfwk/wiki/Compiling-and-running
 * clone this repo
