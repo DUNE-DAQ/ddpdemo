@@ -1,0 +1,15 @@
+{
+  "queues": {
+  },
+  "modules": {
+    "disk_writer": {
+      "user_module_type": "SimpleDiskWriter",
+      "nIntsPerList": 5,
+      "waitBetweenSendsMsec": 1000
+    }
+  },
+  "commands": {
+    "start": [ "disk_writer" ],
+    "stop": [ "disk_writer" ]
+  }
+}
