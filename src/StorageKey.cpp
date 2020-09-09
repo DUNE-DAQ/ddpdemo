@@ -24,10 +24,6 @@ namespace ddpdemo {
 
 
 
-
-
-
-
 } // namespace dddpdemo
 } // namespace dunedaq
 
