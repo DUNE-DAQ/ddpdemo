@@ -1,4 +1,4 @@
-# Dispatcher Demo (ddpdemo)
+# Data Dispatcher and Packager Demo (ddpdemo)
 
 ### Hints for building and running (KAB, 08-Sep-2020):
 
