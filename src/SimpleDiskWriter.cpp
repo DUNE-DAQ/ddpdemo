@@ -7,6 +7,7 @@
  */
 
 #include "SimpleDiskWriter.hpp"
+#include "StorageKey.hpp"
 
 #include <ers/ers.h>
 #include <TRACE/trace.h>
