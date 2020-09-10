@@ -14,8 +14,6 @@
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/ThreadHelper.hpp"
-#include "ddpdemo/StorageKey.hpp"
-
 
 #include <ers/Issue.h>
 
