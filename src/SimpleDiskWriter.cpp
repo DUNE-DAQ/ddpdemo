@@ -7,6 +7,7 @@
  */
 
 #include "SimpleDiskWriter.hpp"
+#include "ddpdemo/KeyedDataBlock.hpp"
 
 #include <ers/ers.h>
 #include <TRACE/trace.h>
@@ -122,6 +123,12 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
     ers::debug(ProgressUpdate(ERS_HERE, get_name(), oss_prog.str()));
 
     // Here is where we will eventually write the data out to disk
+    StorageKey dataKey(generatedCount, "FELIX", 101);
+    KeyedDataBlock dataBlock(dataKey);
+    dataBlock.data_size = theFakeEvent.size() * sizeof(int);
+    dataBlock.unowned_data_start = reinterpret_cast<uint8_t*>(&theFakeEvent[0]);
+    TLOG(TLVL_WORK_STEPS) << get_name() << ": size of fake event number " << dataBlock.data_key.getEventID()
+                          << " is " << dataBlock.data_size << " bytes.";
     // ++writtenCount;
 
     TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of sleep between sends";
