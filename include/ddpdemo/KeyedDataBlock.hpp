@@ -9,7 +9,7 @@
 #ifndef DDPDEMO_INCLUDE_DDPDEMO_KEYEDDATABLOCK_HPP_
 #define DDPDEMO_INCLUDE_DDPDEMO_KEYEDDATABLOCK_HPP_
 
-//#include "ddpdemo/StorageKey.hpp"
+#include "ddpdemo/StorageKey.hpp"
 #include <cstdint>
 #include <memory>
 
@@ -24,11 +24,12 @@ struct KeyedDataBlock
 public:
 
   // These data members will be made private, at some point in time.
-  //StorageKey key;
-  uint32_t event_number;  // will be replaced with "key"
+  StorageKey data_key;
   size_t data_size;
   const uint8_t* unowned_data_start;
   std::unique_ptr<uint8_t> owned_data_start;
+
+  KeyedDataBlock(StorageKey theKey): data_key(theKey) {}
 
   const uint8_t* getDataStart() const
   {
