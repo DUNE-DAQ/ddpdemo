@@ -12,10 +12,10 @@
 // 09-Sep-2020, KAB: the initial version of this class was based on the
 // Queue interface from the appfwk repo.
 
-#ifndef DPPDEMO_INCLUDE_DPPDEMO_DATASTORE_HPP_
-#define DPPDEMO_INCLUDE_DPPDEMO_DATASTORE_HPP_
+#ifndef DDPDEMO_INCLUDE_DDPDEMO_DATASTORE_HPP_
+#define DDPDEMO_INCLUDE_DDPDEMO_DATASTORE_HPP_
 
-#include "dppdemo/KeyedDataBlock.hpp"
+#include "ddpdemo/KeyedDataBlock.hpp"
 #include "appfwk/NamedObject.hpp"
 
 #include <ers/Issue.h>
@@ -27,12 +27,12 @@
 #include <vector>
 
 namespace dunedaq {
-namespace dppdemo {
+namespace ddpdemo {
 
 /**
  * @brief comment
  */
-class DataStore : public NamedObject
+class DataStore : public appfwk::NamedObject
 {
 public:
 
@@ -41,7 +41,7 @@ public:
    * @param name Name of the DataStore instance
    */
   explicit DataStore(const std::string& name)
-    : NamedObject(name)
+    : appfwk::NamedObject(name)
   {}
 
   /**
@@ -62,7 +62,7 @@ private:
   DataStore& operator=(DataStore&&) = default;
 };
 
-} // namespace dppdemo
+} // namespace ddpdemo
 } // namespace dunedaq
 
-#endif // DPPDEMO_INCLUDE_DPPDEMO_DATASTORE_HPP_
+#endif // DDPDEMO_INCLUDE_DDPDEMO_DATASTORE_HPP_

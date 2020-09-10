@@ -8,6 +8,7 @@
 
 #include "SimpleDiskWriter.hpp"
 #include "ddpdemo/KeyedDataBlock.hpp"
+#include "ddpdemo/TrashCanDataStore.hpp"
 
 #include <ers/ers.h>
 #include <TRACE/trace.h>
@@ -39,6 +40,7 @@ SimpleDiskWriter::SimpleDiskWriter(const std::string& name)
 void SimpleDiskWriter::init()
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
+  dataWriter_.reset(new TrashCanDataStore("TempName"));
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
 }
 
@@ -129,7 +131,8 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
     dataBlock.unowned_data_start = reinterpret_cast<uint8_t*>(&theFakeEvent[0]);
     TLOG(TLVL_WORK_STEPS) << get_name() << ": size of fake event number " << dataBlock.data_key.getEventID()
                           << " is " << dataBlock.data_size << " bytes.";
-    // ++writtenCount;
+    dataWriter_->write(dataBlock);
+    ++writtenCount;
 
     TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of sleep between sends";
     std::this_thread::sleep_for(std::chrono::milliseconds(waitBetweenSendsMsec_));
