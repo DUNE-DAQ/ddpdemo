@@ -12,6 +12,8 @@
 #ifndef DDPDEMO_SRC_SIMPLEDISKWRITER_HPP_
 #define DDPDEMO_SRC_SIMPLEDISKWRITER_HPP_
 
+#include "ddpdemo/DataStore.hpp"
+
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/ThreadHelper.hpp"
 
@@ -66,6 +68,9 @@ private:
   // Configuration
   size_t nIntsPerFakeEvent_ = REASONABLE_DEFAULT_INTSPERFAKEEVENT;
   size_t waitBetweenSendsMsec_ = REASONABLE_DEFAULT_MSECBETWEENSENDS;
+
+  // Workers
+  std::unique_ptr<DataStore> dataWriter_;
 };
 } // namespace ddpdemo
 
