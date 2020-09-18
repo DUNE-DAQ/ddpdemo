@@ -9,18 +9,21 @@ daq_setup_environment()
 # 08-Sep-2020, KAB: the inclusion of the appfwk package brings in several other packages,
 # include ERS, TRACE, and Boost
 find_package(appfwk REQUIRED) 
-find_package(ers REQUIRED)
 
 ##############################################################################
 daq_point_build_to( src )
 
+add_library(ddpdemo SHARED src/StorageKey.cpp)
+target_link_libraries(ddpdemo ers::ers)
+#target_link_libraries(ddpdemo appfwk::appfwk)
+
 add_library(ddpdemo_SimpleDiskWriter_duneDAQModule src/SimpleDiskWriter.cpp)
-target_link_libraries(ddpdemo_SimpleDiskWriter_duneDAQModule appfwk::appfwk)
+target_link_libraries(ddpdemo_SimpleDiskWriter_duneDAQModule appfwk::appfwk ddpdemo)
 
 ##############################################################################
 daq_point_build_to( test )
 
 file(COPY test/disk_writer_demo.json DESTINATION test)
 
-daq_install(TARGETS ddpdemo_SimpleDiskWriter_duneDAQModule )
+daq_install(TARGETS ddpdemo ddpdemo_SimpleDiskWriter_duneDAQModule )
 
