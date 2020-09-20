@@ -42,17 +42,11 @@ public:
   ~StorageKey() {}
   
 
-  uint32_t getEventID() const {
-    return m_key.m_event_id;
-  }
+  uint32_t getEventID() const;
 
-  std::string getDetectorID() const {
-    return m_key.m_detector_id;
-  }
+  std::string getDetectorID() const;
 
-  uint32_t getGeoLocation() const {
-    return m_key.m_geoLocation;
-  }
+  uint32_t getGeoLocation() const;
 
 private:
   Key m_key;
