@@ -8,7 +8,6 @@
 
 #include "SimpleDiskWriter.hpp"
 #include "ddpdemo/KeyedDataBlock.hpp"
-//#include "ddpdemo/TrashCanDataStore.hpp"
 #include "ddpdemo/HDF5DataStore.hpp"
 
 #include <ers/ers.h>
@@ -116,6 +115,7 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_work() method";
   size_t generatedCount = 0;
   size_t writtenCount = 0;
+  int fakeDataValue = 1;
 
   // ensure that we have a valid dataWriter instance
   if (dataWriter_.get() == nullptr)
@@ -123,30 +123,26 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
     throw InvalidDataWriterError(ERS_HERE, get_name());
   }
 
-  // AAA: Fake event of 10 KiB 
-  int io_size_bytes = 10240;
-  char value = 'X';
-  char* data = new char[io_size_bytes];
-
   while (running_flag.load()) {
     TLOG(TLVL_WORK_STEPS) << get_name() << ": Creating fakeEvent of length " << nIntsPerFakeEvent_;
+    std::vector<int> theFakeEvent(nIntsPerFakeEvent_);
 
     TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of fill loop";
     for (size_t idx = 0; idx < nIntsPerFakeEvent_; ++idx)
     {
-      std::fill(data, data + io_size_bytes, value);
+      theFakeEvent[idx] = fakeDataValue++;
     }
     ++generatedCount;
     std::ostringstream oss_prog;
-    oss_prog << "Generated fake event #" << generatedCount << ". ";
+    oss_prog << "Generated fake event #" << generatedCount << " with contents " << theFakeEvent
+             << " and size " << theFakeEvent.size() << ". ";
     ers::debug(ProgressUpdate(ERS_HERE, get_name(), oss_prog.str()));
 
     // Here is where we will eventually write the data out to disk
     StorageKey dataKey(generatedCount, "FELIX", 101);
     KeyedDataBlock dataBlock(dataKey);
-    dataBlock.data_size = io_size_bytes * generatedCount;
-    //dataBlock.unowned_data_start = reinterpret_cast<uint8_t*>(&theFakeEvent[0]);
-    dataBlock.unowned_data_start = data;
+    dataBlock.data_size = theFakeEvent.size() * sizeof(int);
+    dataBlock.unowned_data_start = reinterpret_cast<char*>(&theFakeEvent[0]);
     TLOG(TLVL_WORK_STEPS) << get_name() << ": size of fake event number " << dataBlock.data_key.getEventID()
                           << " is " << dataBlock.data_size << " bytes.";
     dataWriter_->write(dataBlock);
