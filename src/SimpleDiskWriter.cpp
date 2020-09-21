@@ -117,6 +117,12 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
   size_t generatedCount = 0;
   size_t writtenCount = 0;
 
+  // ensure that we have a valid dataWriter instance
+  if (dataWriter_.get() == nullptr)
+  {
+    throw InvalidDataWriterError(ERS_HERE, get_name());
+  }
+
   // AAA: Fake event of 10 KiB 
   int io_size_bytes = 10240;
   char value = 'X';
@@ -143,7 +149,7 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
     dataBlock.unowned_data_start = data;
     TLOG(TLVL_WORK_STEPS) << get_name() << ": size of fake event number " << dataBlock.data_key.getEventID()
                           << " is " << dataBlock.data_size << " bytes.";
-    //dataWriter_->write(dataBlock);
+    dataWriter_->write(dataBlock);
     ++writtenCount;
 
     TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of sleep between sends";

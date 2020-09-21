@@ -88,6 +88,14 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        ((std::string)name),
                        ((std::string)message))
 
+ERS_DECLARE_ISSUE_BASE(ddpdemo,
+                       InvalidDataWriterError,
+                       appfwk::GeneralDAQModuleIssue,
+                       "A valid dataWriter instance is not available so it will not be possible to write data. A likely cause for this is a skipped or missed Configure transition.",
+                       ((std::string)name),
+                       ERS_EMPTY)
+
+
 } // namespace dunedaq
 
 #endif // DDPDEMO_SRC_SIMPLEDISKWRITER_HPP_
