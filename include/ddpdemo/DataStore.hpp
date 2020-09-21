@@ -44,6 +44,15 @@ public:
     : appfwk::NamedObject(name)
   {}
 
+
+  /**
+   * @brief Setup the DataStore for reading/writign.
+   * @param directory path and filename.
+   */
+  virtual void setup(const std::string path, const std::string fileName) = 0;
+
+
+
   /**
    * @brief Writes the specified data payload into the DataStore.
    * @param dataBlock Data block to write.
