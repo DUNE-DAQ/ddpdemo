@@ -12,7 +12,7 @@
   * `./build_daq_software.sh --pkgname ddpdemo`
 * run the demo
   * `. ./setup_runtime_environment`
-  * `daq_application -c QueryResponseCommandFacility -j build/ddpdemo/test/disk_writer_demo.json`
+  * `daq_application -c QueryResponseCommandFacility -j ddpdemo/test/disk_writer_demo.json`
     * use commands line `configure`, `start`, `stop`, and `quit`
 
 To enable and view TRACE messages:
