@@ -65,9 +65,16 @@ private:
   const size_t REASONABLE_DEFAULT_INTSPERFAKEEVENT = 4;
   const size_t REASONABLE_DEFAULT_MSECBETWEENSENDS = 1000;
 
+  const std::string DEFAULT_PATH = ".";
+  const std::string DEFAULT_FILENAME = "demo.hdf5";
+
   // Configuration
   size_t nIntsPerFakeEvent_ = REASONABLE_DEFAULT_INTSPERFAKEEVENT;
   size_t waitBetweenSendsMsec_ = REASONABLE_DEFAULT_MSECBETWEENSENDS;
+
+
+  std::string directory_path_ = DEFAULT_PATH;
+  std::string filename_pattern_ = DEFAULT_FILENAME;
 
   // Workers
   std::unique_ptr<DataStore> dataWriter_;
@@ -80,6 +87,14 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        message,
                        ((std::string)name),
                        ((std::string)message))
+
+ERS_DECLARE_ISSUE_BASE(ddpdemo,
+                       InvalidDataWriterError,
+                       appfwk::GeneralDAQModuleIssue,
+                       "A valid dataWriter instance is not available so it will not be possible to write data. A likely cause for this is a skipped or missed Configure transition.",
+                       ((std::string)name),
+                       ERS_EMPTY)
+
 
 } // namespace dunedaq
 

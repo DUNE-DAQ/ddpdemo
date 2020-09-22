@@ -26,12 +26,12 @@ public:
   // These data members will be made private, at some point in time.
   StorageKey data_key;
   size_t data_size;
-  const uint8_t* unowned_data_start;
-  std::unique_ptr<uint8_t> owned_data_start;
+  const char* unowned_data_start;
+  std::unique_ptr<char> owned_data_start;
 
   KeyedDataBlock(StorageKey theKey): data_key(theKey) {}
 
-  const uint8_t* getDataStart() const
+  const char* getDataStart() const
   {
     if (owned_data_start.get() != nullptr)
     {

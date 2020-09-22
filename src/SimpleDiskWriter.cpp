@@ -8,7 +8,7 @@
 
 #include "SimpleDiskWriter.hpp"
 #include "ddpdemo/KeyedDataBlock.hpp"
-#include "ddpdemo/TrashCanDataStore.hpp"
+#include "ddpdemo/HDF5DataStore.hpp"
 
 #include <ers/ers.h>
 #include <TRACE/trace.h>
@@ -40,7 +40,6 @@ SimpleDiskWriter::SimpleDiskWriter(const std::string& name)
 void SimpleDiskWriter::init()
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
-  dataWriter_.reset(new TrashCanDataStore("TempName"));
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
 }
 
@@ -50,6 +49,15 @@ SimpleDiskWriter::do_configure(const std::vector<std::string>& /*args*/)
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
   nIntsPerFakeEvent_ = get_config().value<size_t>("nIntsPerFakeEvent", static_cast<size_t>(REASONABLE_DEFAULT_INTSPERFAKEEVENT));
   waitBetweenSendsMsec_ = get_config().value<size_t>("waitBetweenSendsMsec", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
+
+  directory_path_ = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
+  filename_pattern_ = get_config()["data_store_parameters"]["filename_pattern"].get<std::string>();
+
+  // Initializing the HDF5 DataStore constructor
+  // Creating empty HDF5 file
+  dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_ , filename_pattern_));
+
+
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
 }
 
@@ -109,6 +117,12 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
   size_t writtenCount = 0;
   int fakeDataValue = 1;
 
+  // ensure that we have a valid dataWriter instance
+  if (dataWriter_.get() == nullptr)
+  {
+    throw InvalidDataWriterError(ERS_HERE, get_name());
+  }
+
   while (running_flag.load()) {
     TLOG(TLVL_WORK_STEPS) << get_name() << ": Creating fakeEvent of length " << nIntsPerFakeEvent_;
     std::vector<int> theFakeEvent(nIntsPerFakeEvent_);
@@ -128,7 +142,7 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
     StorageKey dataKey(generatedCount, "FELIX", 101);
     KeyedDataBlock dataBlock(dataKey);
     dataBlock.data_size = theFakeEvent.size() * sizeof(int);
-    dataBlock.unowned_data_start = reinterpret_cast<uint8_t*>(&theFakeEvent[0]);
+    dataBlock.unowned_data_start = reinterpret_cast<char*>(&theFakeEvent[0]);
     TLOG(TLVL_WORK_STEPS) << get_name() << ": size of fake event number " << dataBlock.data_key.getEventID()
                           << " is " << dataBlock.data_size << " bytes.";
     dataWriter_->write(dataBlock);

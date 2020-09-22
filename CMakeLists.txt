@@ -9,7 +9,7 @@ daq_setup_environment()
 # 08-Sep-2020, KAB: the inclusion of the appfwk package brings in several other packages,
 # include ERS, TRACE, and Boost
 find_package(appfwk REQUIRED)
-###find_package(HighFive REQUIRED)
+find_package(HighFive REQUIRED)
 
 ##############################################################################
 daq_point_build_to( src )
@@ -20,7 +20,7 @@ target_link_libraries(ddpdemo ers::ers)
 ###target_link_libraries(ddpdemo ers::ers HighFive)
 
 add_library(ddpdemo_SimpleDiskWriter_duneDAQModule src/SimpleDiskWriter.cpp)
-target_link_libraries(ddpdemo_SimpleDiskWriter_duneDAQModule appfwk::appfwk ddpdemo)
+target_link_libraries(ddpdemo_SimpleDiskWriter_duneDAQModule appfwk::appfwk ddpdemo HighFive)
 
 ##############################################################################
 daq_point_build_to( test )
