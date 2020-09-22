@@ -58,7 +58,7 @@ public:
     HighFive::DataSetAccessProps dataAProps_;
 
     auto theDataSet = filePtr->createDataSet<char>(dataset_name, theDataSpace, dataCProps_, dataAProps_);
-    theDataSet.write(dataBlock.getDataStart());
+    theDataSet.write_raw(dataBlock.getDataStart());
 
     // AAA: how often should we flush? After every write? 
     //filePtr->flush();
