@@ -22,5 +22,12 @@ daq_point_build_to( test )
 
 file(COPY test/disk_writer_demo.json DESTINATION test)
 
+##############################################################################
+daq_point_build_to( unittest )
+daq_add_unit_test(StorageKey_test          ers::ers)
+ 
+##############################################################################
+
+
 daq_install(TARGETS ddpdemo_SimpleDiskWriter_duneDAQModule )
 
