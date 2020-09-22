@@ -13,7 +13,7 @@
 * run the demo
   * `. ./setup_runtime_environment`
   * `daq_application -c QueryResponseCommandFacility -j ddpdemo/test/disk_writer_demo.json`
-    * use commands line `configure`, `start`, `stop`, and `quit`
+    * use commands `configure`, `start`, `stop`, and `quit`
 
 To enable and view TRACE messages:
 * `export TRACE_FILE=<MyTopDir>/log/<username>_dunedaq.trace`
