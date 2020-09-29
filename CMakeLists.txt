@@ -30,6 +30,7 @@ file(COPY test/disk_writer_demo.json DESTINATION test)
 ##############################################################################
 daq_point_build_to( unittest )
 daq_add_unit_test(StorageKey_test          ddpdemo ers::ers)
+daq_add_unit_test(KeyedDataBlock_test      ddpdemo ers::ers)
  
 ##############################################################################
 

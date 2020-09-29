@@ -19,8 +19,8 @@
 namespace {
 
   constexpr uint32_t eventID=111 ; 
-  const  std::string detectorID("LARTPC") ; 
-  constexpr uint32_t geoLocation =333 ;
+  const  std::string detectorID("FELIX") ; 
+  constexpr uint32_t geoLocation =101 ;
   dunedaq::ddpdemo::StorageKey stk(eventID, detectorID, geoLocation) ; ///< StorageKey instance for the test
 
 } // namespace ""
