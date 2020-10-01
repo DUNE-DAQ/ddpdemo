@@ -1,7 +1,7 @@
 /**
- * @file SimpleDiskWriter.hpp
+ * @file BinaryWriter.hpp
  *
- * SimpleDiskWriter is a simple DAQModule implementation that
+ * BinaryWriter is a simple DAQModule implementation that
  * periodically writes data to an HDF5 file on disk.
  *
  * This is part of the DUNE DAQ Software Suite, copyright 2020.
@@ -9,8 +9,8 @@
  * received with this code.
  */
 
-#ifndef DDPDEMO_SRC_SIMPLEDISKWRITER_HPP_
-#define DDPDEMO_SRC_SIMPLEDISKWRITER_HPP_
+#ifndef DDPDEMO_SRC_BinaryWriter_HPP_
+#define DDPDEMO_SRC_BinaryWriter_HPP_
 
 #include "ddpdemo/DataStore.hpp"
 
@@ -27,26 +27,26 @@ namespace dunedaq {
 namespace ddpdemo {
 
 /**
- * @brief SimpleDiskWriter creates fake events writes
+ * @brief BinaryWriter creates fake events writes
  * them to an HDF5 file..
  */
-class SimpleDiskWriter : public dunedaq::appfwk::DAQModule
+class BinaryWriter : public dunedaq::appfwk::DAQModule
 {
 public:
   /**
-   * @brief SimpleDiskWriter Constructor
-   * @param name Instance name for this SimpleDiskWriter instance
+   * @brief BinaryWriter Constructor
+   * @param name Instance name for this BinaryWriter instance
    */
-  explicit SimpleDiskWriter(const std::string& name);
+  explicit BinaryWriter(const std::string& name);
 
-  SimpleDiskWriter(const SimpleDiskWriter&) =
-    delete; ///< SimpleDiskWriter is not copy-constructible
-  SimpleDiskWriter& operator=(const SimpleDiskWriter&) =
-    delete; ///< SimpleDiskWriter is not copy-assignable
-  SimpleDiskWriter(SimpleDiskWriter&&) =
-    delete; ///< SimpleDiskWriter is not move-constructible
-  SimpleDiskWriter& operator=(SimpleDiskWriter&&) =
-    delete; ///< SimpleDiskWriter is not move-assignable
+  BinaryWriter(const BinaryWriter&) =
+    delete; ///< BinaryWriter is not copy-constructible
+  BinaryWriter& operator=(const BinaryWriter&) =
+    delete; ///< BinaryWriter is not copy-assignable
+  BinaryWriter(BinaryWriter&&) =
+    delete; ///< BinaryWriter is not move-constructible
+  BinaryWriter& operator=(BinaryWriter&&) =
+    delete; ///< BinaryWriter is not move-assignable
 
   void init() override;
 
@@ -98,4 +98,4 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
 
 } // namespace dunedaq
 
-#endif // DDPDEMO_SRC_SIMPLEDISKWRITER_HPP_
+#endif // DDPDEMO_SRC_BinaryWriter_HPP_

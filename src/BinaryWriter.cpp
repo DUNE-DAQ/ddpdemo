@@ -1,12 +1,12 @@
 /**
- * @file SimpleDiskWriter.cpp SimpleDiskWriter class implementation
+ * @file BinaryWriter.cpp BinaryWriter class implementation
  *
  * This is part of the DUNE DAQ Software Suite, copyright 2020.
  * Licensing/copyright details are in the COPYING file that you should have
  * received with this code.
  */
 
-#include "SimpleDiskWriter.hpp"
+#include "BinaryWriter.hpp"
 #include "ddpdemo/KeyedDataBlock.hpp"
 #include "ddpdemo/HDF5DataStore.hpp"
 
@@ -20,31 +20,31 @@
 /**
  * @brief Name used by TRACE TLOG calls from this source file
  */
-#define TRACE_NAME "SimpleDiskWriter" // NOLINT
+#define TRACE_NAME "BinaryWriter" // NOLINT
 #define TLVL_ENTER_EXIT_METHODS 10
 #define TLVL_WORK_STEPS 15
 
 namespace dunedaq {
 namespace ddpdemo {
 
-SimpleDiskWriter::SimpleDiskWriter(const std::string& name)
+BinaryWriter::BinaryWriter(const std::string& name)
   : dunedaq::appfwk::DAQModule(name)
-  , thread_(std::bind(&SimpleDiskWriter::do_work, this, std::placeholders::_1))
+  , thread_(std::bind(&BinaryWriter::do_work, this, std::placeholders::_1))
 {
-  register_command("configure", &SimpleDiskWriter::do_configure);
-  register_command("start",  &SimpleDiskWriter::do_start);
-  register_command("stop",  &SimpleDiskWriter::do_stop);
-  register_command("unconfigure",  &SimpleDiskWriter::do_unconfigure);
+  register_command("configure", &BinaryWriter::do_configure);
+  register_command("start",  &BinaryWriter::do_start);
+  register_command("stop",  &BinaryWriter::do_stop);
+  register_command("unconfigure",  &BinaryWriter::do_unconfigure);
 }
 
-void SimpleDiskWriter::init()
+void BinaryWriter::init()
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
 }
 
 void
-SimpleDiskWriter::do_configure(const std::vector<std::string>& /*args*/)
+BinaryWriter::do_configure(const std::vector<std::string>& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
   nIntsPerFakeEvent_ = get_config().value<size_t>("nIntsPerFakeEvent", static_cast<size_t>(REASONABLE_DEFAULT_INTSPERFAKEEVENT));
@@ -62,7 +62,7 @@ SimpleDiskWriter::do_configure(const std::vector<std::string>& /*args*/)
 }
 
 void
-SimpleDiskWriter::do_start(const std::vector<std::string>& /*args*/)
+BinaryWriter::do_start(const std::vector<std::string>& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_start() method";
   thread_.start_working_thread();
@@ -71,7 +71,7 @@ SimpleDiskWriter::do_start(const std::vector<std::string>& /*args*/)
 }
 
 void
-SimpleDiskWriter::do_stop(const std::vector<std::string>& /*args*/)
+BinaryWriter::do_stop(const std::vector<std::string>& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_stop() method";
   thread_.stop_working_thread();
@@ -80,7 +80,7 @@ SimpleDiskWriter::do_stop(const std::vector<std::string>& /*args*/)
 }
 
 void
-SimpleDiskWriter::do_unconfigure(const std::vector<std::string>& /*args*/)
+BinaryWriter::do_unconfigure(const std::vector<std::string>& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_unconfigure() method";
   nIntsPerFakeEvent_ = REASONABLE_DEFAULT_INTSPERFAKEEVENT;
@@ -110,7 +110,7 @@ operator<<(std::ostream& t, std::vector<int> ints)
 }
 
 void
-SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
+BinaryWriter::do_work(std::atomic<bool>& running_flag)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_work() method";
   size_t generatedCount = 0;
@@ -142,7 +142,7 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
     StorageKey dataKey(generatedCount, "FELIX", 101);
     KeyedDataBlock dataBlock(dataKey);
     dataBlock.data_size = theFakeEvent.size() * sizeof(int);
-    dataBlock.unowned_data_start = reinterpret_cast<char*>(&theFakeEvent[0]);
+    dataBlock.unowned_data_start = reinterpret_cast<void*>(&theFakeEvent[0]);
     TLOG(TLVL_WORK_STEPS) << get_name() << ": size of fake event number " << dataBlock.data_key.getEventID()
                           << " is " << dataBlock.data_size << " bytes.";
     dataWriter_->write(dataBlock);
@@ -163,4 +163,4 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
 } // namespace ddpdemo 
 } // namespace dunedaq
 
-DEFINE_DUNE_DAQ_MODULE(dunedaq::ddpdemo::SimpleDiskWriter)
+DEFINE_DUNE_DAQ_MODULE(dunedaq::ddpdemo::BinaryWriter)
