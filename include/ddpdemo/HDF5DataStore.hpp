@@ -65,7 +65,11 @@ public:
     
   }
 
-
+  virtual std::vector<StorageKey> getAllExistingKeys() const
+  {
+    std::vector<StorageKey> emptyList;
+    return emptyList;
+  }
 
 
 private: 

@@ -40,6 +40,12 @@ public:
              " 0x" << ((int)dataPtr[3]) << std::dec);
   }
 
+  virtual std::vector<StorageKey> getAllExistingKeys() const
+  {
+    std::vector<StorageKey> emptyList;
+    return emptyList;
+  }
+
 private:
   // Delete the copy and move operations
   TrashCanDataStore(const TrashCanDataStore&) = delete;
