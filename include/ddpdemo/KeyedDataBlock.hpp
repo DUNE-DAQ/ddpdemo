@@ -27,7 +27,7 @@ public:
   StorageKey data_key;
   size_t data_size;
   const char* unowned_data_start;
-  std::shared_ptr<char> owned_data_start;
+  std::unique_ptr<char> owned_data_start;
 
   KeyedDataBlock(StorageKey theKey): data_key(theKey) {}
 

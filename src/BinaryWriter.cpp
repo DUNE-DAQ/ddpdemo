@@ -121,9 +121,6 @@ BinaryWriter::do_work(std::atomic<bool>& running_flag)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_work() method";
 
-  size_t generatedCount = 0;
-  size_t writtenCount = 0;
-
   // create a memory buffer
   char* membuffer = (char*)malloc(io_size_);
   memset(membuffer, 'X', io_size_);
@@ -158,8 +155,8 @@ BinaryWriter::do_work(std::atomic<bool>& running_flag)
 
   } 
   std::ostringstream oss_summ;
-  oss_summ << ": Exiting the do_work() method, generated " << generatedCount
-           << " fake events and successfully wrote " << writtenCount << " of them to disk. ";
+  oss_summ << ": Exiting the do_work() method, generated " << nFakeEvent_
+           << " fake events and successfully wrote " << nGeoLoc_  << " fragments to each event. ";
   ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_work() method";
 }
