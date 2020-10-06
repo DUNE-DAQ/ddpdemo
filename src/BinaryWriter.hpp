@@ -62,15 +62,19 @@ private:
   void do_work(std::atomic<bool>&);
 
   // Configuration defaults
-  const size_t REASONABLE_DEFAULT_INTSPERFAKEEVENT = 4;
+  const size_t REASONABLE_DEFAULT_FAKEEVENT = 4;
+  const size_t REASONABLE_DEFAULT_GEOLOC = 5;
   const size_t REASONABLE_DEFAULT_MSECBETWEENSENDS = 1000;
+  const size_t REASONABLE_IO_SIZE_BYTES = 1024;
 
   const std::string DEFAULT_PATH = ".";
   const std::string DEFAULT_FILENAME = "demo.hdf5";
 
   // Configuration
-  size_t nIntsPerFakeEvent_ = REASONABLE_DEFAULT_INTSPERFAKEEVENT;
+  size_t nFakeEvent_ = REASONABLE_DEFAULT_FAKEEVENT;
+  size_t nGeoLoc_ = REASONABLE_DEFAULT_GEOLOC;
   size_t waitBetweenSendsMsec_ = REASONABLE_DEFAULT_MSECBETWEENSENDS;
+  size_t io_size_ = REASONABLE_IO_SIZE_BYTES;
 
 
   std::string directory_path_ = DEFAULT_PATH;
@@ -78,6 +82,7 @@ private:
 
   // Workers
   std::unique_ptr<DataStore> dataWriter_;
+  std::vector<std::unique_ptr<DataStore>> dataWriterVec_;
 };
 } // namespace ddpdemo
 
@@ -94,6 +99,16 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        "A valid dataWriter instance is not available so it will not be possible to write data. A likely cause for this is a skipped or missed Configure transition.",
                        ((std::string)name),
                        ERS_EMPTY)
+
+
+ERS_DECLARE_ISSUE_BASE(ddpdemo,
+                       InvalidHDF5Group,
+                       appfwk::GeneralDAQModuleIssue,
+                       "Invalid HDF5 group.",
+                       ((std::string)name),
+                       ERS_EMPTY)
+
+
 
 
 } // namespace dunedaq

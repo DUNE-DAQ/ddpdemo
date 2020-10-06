@@ -47,15 +47,22 @@ void
 BinaryWriter::do_configure(const std::vector<std::string>& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
-  nIntsPerFakeEvent_ = get_config().value<size_t>("nIntsPerFakeEvent", static_cast<size_t>(REASONABLE_DEFAULT_INTSPERFAKEEVENT));
+  nFakeEvent_ = get_config().value<size_t>("nFakeEvent", static_cast<size_t>(REASONABLE_DEFAULT_FAKEEVENT));
+  nGeoLoc_ = get_config().value<size_t>("nGeoLoc", static_cast<size_t>(REASONABLE_DEFAULT_GEOLOC));
   waitBetweenSendsMsec_ = get_config().value<size_t>("waitBetweenSendsMsec", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
+  io_size_ = get_config().value<size_t>("io_size", static_cast<size_t>(REASONABLE_IO_SIZE_BYTES));
 
   directory_path_ = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
   filename_pattern_ = get_config()["data_store_parameters"]["filename_pattern"].get<std::string>();
 
+  for (size_t idx = 0; idx < nFakeEvent_; ++idx) {
+    dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_ , filename_pattern_ + std::to_string(idx)));
+    dataWriterVec_.push_back(std::move(dataWriter_));
+  }
+ 
   // Initializing the HDF5 DataStore constructor
   // Creating empty HDF5 file
-  dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_ , filename_pattern_));
+  // dataWriterVec_.push_back(new HDF5DataStore("tempWriter", directory_path_ , filename_pattern_));
 
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
@@ -83,7 +90,7 @@ void
 BinaryWriter::do_unconfigure(const std::vector<std::string>& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_unconfigure() method";
-  nIntsPerFakeEvent_ = REASONABLE_DEFAULT_INTSPERFAKEEVENT;
+  nFakeEvent_ = REASONABLE_DEFAULT_FAKEEVENT;
   waitBetweenSendsMsec_ = REASONABLE_DEFAULT_MSECBETWEENSENDS;
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_unconfigure() method";
 }
@@ -113,46 +120,43 @@ void
 BinaryWriter::do_work(std::atomic<bool>& running_flag)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_work() method";
+
   size_t generatedCount = 0;
   size_t writtenCount = 0;
-  int fakeDataValue = 1;
 
-  // ensure that we have a valid dataWriter instance
-  if (dataWriter_.get() == nullptr)
-  {
-    throw InvalidDataWriterError(ERS_HERE, get_name());
-  }
+  // create a memory buffer
+  char* membuffer = (char*)malloc(io_size_);
+  memset(membuffer, 'X', io_size_);
+
 
   while (running_flag.load()) {
-    TLOG(TLVL_WORK_STEPS) << get_name() << ": Creating fakeEvent of length " << nIntsPerFakeEvent_;
-    std::vector<int> theFakeEvent(nIntsPerFakeEvent_);
+    TLOG(TLVL_WORK_STEPS) << get_name() << ": Generating data ";
 
-    TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of fill loop";
-    for (size_t idx = 0; idx < nIntsPerFakeEvent_; ++idx)
-    {
-      theFakeEvent[idx] = fakeDataValue++;
-    }
-    ++generatedCount;
-    std::ostringstream oss_prog;
-    oss_prog << "Generated fake event #" << generatedCount << " with contents " << theFakeEvent
-             << " and size " << theFakeEvent.size() << ". ";
-    ers::debug(ProgressUpdate(ERS_HERE, get_name(), oss_prog.str()));
 
-    // Here is where we will eventually write the data out to disk
-    StorageKey dataKey(generatedCount, "FELIX", 101);
-    KeyedDataBlock dataBlock(dataKey);
-    dataBlock.data_size = theFakeEvent.size() * sizeof(int);
-    dataBlock.unowned_data_start = reinterpret_cast<void*>(&theFakeEvent[0]);
-    TLOG(TLVL_WORK_STEPS) << get_name() << ": size of fake event number " << dataBlock.data_key.getEventID()
-                          << " is " << dataBlock.data_size << " bytes.";
-    dataWriter_->write(dataBlock);
-    ++writtenCount;
+    for (size_t idx = 0; idx < nFakeEvent_; ++idx) {
+      for (size_t geoID = 0; geoID < nGeoLoc_; ++geoID) {
+        // AAA: Component ID is fixed, to be changed later
+        StorageKey dataKey(idx, "FELIX", geoID); 
+        KeyedDataBlock dataBlock(dataKey);
+        dataBlock.data_size = io_size_;
 
-    TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of sleep between sends";
-    std::this_thread::sleep_for(std::chrono::milliseconds(waitBetweenSendsMsec_));
-    TLOG(TLVL_WORK_STEPS) << get_name() << ": End of do_work loop";
-  }
+        // Copy the constant memory buffer into the dataBlock
+        dataBlock.unowned_data_start = membuffer;
+        dataWriterVec_[idx]->write(dataBlock);
+      }
+    }    
+ 
 
+
+    // AAA: for now we generate a fixed number of events and then stop
+    // in the future delete the following line and add the HDF5 file 
+    // generation in this section
+    running_flag = false;
+
+      
+
+
+  } 
   std::ostringstream oss_summ;
   oss_summ << ": Exiting the do_work() method, generated " << generatedCount
            << " fake events and successfully wrote " << writtenCount << " of them to disk. ";

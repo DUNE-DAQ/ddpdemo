@@ -20,6 +20,7 @@
 
 #include <ers/Issue.h>
 
+
 #include <chrono>
 #include <cstddef>
 #include <memory>
@@ -49,7 +50,7 @@ public:
    * @brief Setup the DataStore for reading/writign.
    * @param directory path and filename.
    */
-  virtual void setup(const std::string path, const std::string fileName) = 0;
+  virtual void setup(const size_t eventId) = 0;
 
 
 
