@@ -29,6 +29,7 @@ target_link_libraries(ddpdemo_BinaryWriter_duneDAQModule appfwk::appfwk ddpdemo 
 daq_point_build_to( test )
 
 file(COPY test/disk_writer_demo.json DESTINATION test)
+file(COPY test/binary_writer_demo.json DESTINATION test)
 
 ##############################################################################
 daq_point_build_to( unittest )
@@ -36,6 +37,6 @@ daq_add_unit_test(StorageKey_test          ddpdemo ers::ers)
  
 ##############################################################################
 
-daq_install(TARGETS ddpdemo ddpdemo_BinaryWriter_duneDAQModule)
+daq_install(TARGETS ddpdemo ddpdemo_SimpleDiskWriter_duneDAQModule ddpdemo_BinaryWriter_duneDAQModule)
 
 
