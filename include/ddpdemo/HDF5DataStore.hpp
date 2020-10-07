@@ -36,7 +36,7 @@ public:
   ERS_INFO("Directory path: " << path );
 
   // Creating an empty HDF5 file
-  filePtr = new HighFive::File(path + fileName + ".hdf5", HighFive::File::OpenOrCreate | HighFive::File::Truncate);
+  filePtr = new HighFive::File(path + "/" + fileName + ".hdf5", HighFive::File::OpenOrCreate | HighFive::File::Truncate);
   ERS_INFO("Created HDF5 file.");
  
 

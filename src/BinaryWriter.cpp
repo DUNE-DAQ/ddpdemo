@@ -53,20 +53,15 @@ BinaryWriter::do_configure(const std::vector<std::string>& /*args*/)
   io_size_ = get_config().value<size_t>("io_size", static_cast<size_t>(REASONABLE_IO_SIZE_BYTES));
 
   directory_path_ = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
- 
-  // Adding trailing slash at the end of the path
-  // in case the user did not insert it
-  directory_path_ = directory_path_ + "/";
   filename_pattern_ = get_config()["data_store_parameters"]["filename_pattern"].get<std::string>();
 
   for (size_t idx = 0; idx < nFakeEvent_; ++idx) {
+    // Initializing the HDF5 DataStore constructor
+    // Creating empty HDF5 file
     dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_ , filename_pattern_ + std::to_string(idx)));
     dataWriterVec_.push_back(std::move(dataWriter_));
   }
  
-  // Initializing the HDF5 DataStore constructor
-  // Creating empty HDF5 file
-  // dataWriterVec_.push_back(new HDF5DataStore("tempWriter", directory_path_ , filename_pattern_));
 
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
