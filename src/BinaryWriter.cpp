@@ -53,6 +53,10 @@ BinaryWriter::do_configure(const std::vector<std::string>& /*args*/)
   io_size_ = get_config().value<size_t>("io_size", static_cast<size_t>(REASONABLE_IO_SIZE_BYTES));
 
   directory_path_ = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
+ 
+  // Adding trailing slash at the end of the path
+  // in case the user did not insert it
+  directory_path_ = directory_path_ + "/";
   filename_pattern_ = get_config()["data_store_parameters"]["filename_pattern"].get<std::string>();
 
   for (size_t idx = 0; idx < nFakeEvent_; ++idx) {

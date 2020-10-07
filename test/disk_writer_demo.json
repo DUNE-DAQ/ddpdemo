@@ -9,8 +9,8 @@
 
       "data_store_parameters": {
       "data_store_module": "HDF5DataStore",
-      "directory_path": "./",
-      "filename_pattern": "demo.hdf5"
+      "directory_path": ".",
+      "filename_pattern": "demo"
       }
     }
   },
