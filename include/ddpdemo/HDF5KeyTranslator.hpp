@@ -101,10 +101,9 @@ public:
    */
   static StorageKey getKeyFromString(const std::string& path, int translationVersion = CURRENT_VERSION)
   {
-    // to-do: use string tokenizer to split 'path' into elements, and then pass the work off to getKeyFromList()
-
-    StorageKey emptyKey(StorageKey::INVALID_EVENTID, StorageKey::INVALID_DETECTORID, StorageKey::INVALID_GEOLOCATION);
-    return emptyKey;
+    std::vector<std::string> elementList;
+    boost::split(elementList, path, boost::is_any_of(PATH_SEPARATOR));
+    return getKeyFromList(elementList, translationVersion);
   }
 
   /**
