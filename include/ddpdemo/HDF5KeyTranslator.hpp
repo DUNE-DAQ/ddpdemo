@@ -15,6 +15,7 @@
 #include "ddpdemo/StorageKey.hpp"
 #include <ers/ers.h>
 #include <boost/algorithm/string.hpp>
+#include <iomanip>
 #include <sstream>
 #include <string>
 
@@ -49,7 +50,7 @@ public:
 
     for (size_t idx = 1; idx < elementList.size(); ++idx)
     {
-      path = PATH_SEPARATOR + elementList[idx];
+      path = path + PATH_SEPARATOR + elementList[idx];
     }
 
     return path;
@@ -65,26 +66,14 @@ public:
     std::vector<std::string> elementList;
 
     // first, we take care of the event ID
-    std::string evIdString = std::to_string(key.getEventID());
-    for (int idx = 0; idx < EVENT_ID_DIGITS; ++idx)
-    {
-      evIdString = "0" + evIdString;
-    }
-    std::ostringstream evtOss;
-    evtOss << boost::algorithm::find_tail(evIdString, EVENT_ID_DIGITS);
-    evIdString = evtOss.str();
-    elementList.push_back(evIdString);
+    std::ostringstream evIdString;
+    evIdString << std::setw(EVENT_ID_DIGITS) << std::setfill('0') << key.getEventID();
+    elementList.push_back(evIdString.str());
 
-    // next, we translate the geographic location (should put this code in a function)
-    std::string geoLocString = std::to_string(key.getGeoLocation());
-    for (int idx = 0; idx < GEO_LOCATION_DIGITS; ++idx)
-    {
-      geoLocString = "0" + geoLocString;
-    }
-    std::ostringstream geoOss;
-    geoOss << boost::algorithm::find_tail(geoLocString, GEO_LOCATION_DIGITS);
-    geoLocString = geoOss.str();
-    elementList.push_back(geoLocString);
+    // next, we translate the geographic location
+    std::ostringstream geoLocString;
+    geoLocString << std::setw(GEO_LOCATION_DIGITS) << std::setfill('0') << key.getGeoLocation();
+    elementList.push_back(geoLocString.str());
 
     return elementList;
   }
