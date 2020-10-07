@@ -14,6 +14,7 @@
  */
 
 #include "ddpdemo/DataStore.hpp"
+#include "ddpdemo/HDF5FileUtils.hpp"
 
 #include <ers/Issue.h>
 #include <TRACE/trace.h>
@@ -92,6 +93,9 @@ public:
     {
       std::unique_ptr<HighFive::File> localFilePtr(new HighFive::File(filename, HighFive::File::ReadOnly));
       TLOG(TLVL_DEBUG) << get_name() << ": Opened HDF5 file " << filename;
+
+      std::vector<std::string> pathList = HDF5FileUtils::getAllDataSetPaths(*localFilePtr);
+      ERS_INFO("Path list has element count: " << pathList.size());
 
       std::vector<std::string> topLevelObjects = localFilePtr->listObjectNames();
       for (auto& topLevelObject : topLevelObjects)
