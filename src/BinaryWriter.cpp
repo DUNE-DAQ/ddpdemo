@@ -126,34 +126,33 @@ BinaryWriter::do_work(std::atomic<bool>& running_flag)
   memset(membuffer, 'X', io_size_);
 
 
-  while (running_flag.load()) {
-    TLOG(TLVL_WORK_STEPS) << get_name() << ": Generating data ";
+  TLOG(TLVL_WORK_STEPS) << get_name() << ": Generating data ";
 
 
-    for (size_t idx = 0; idx < nFakeEvent_; ++idx) {
-      for (size_t geoID = 0; geoID < nGeoLoc_; ++geoID) {
-        // AAA: Component ID is fixed, to be changed later
-        StorageKey dataKey(idx, "FELIX", geoID); 
-        KeyedDataBlock dataBlock(dataKey);
-        dataBlock.data_size = io_size_;
+  for (size_t idx = 0; idx < nFakeEvent_; ++idx) {
+    for (size_t geoID = 0; geoID < nGeoLoc_; ++geoID) {
+      // AAA: Component ID is fixed, to be changed later
+      StorageKey dataKey(idx, "FELIX", geoID); 
+      KeyedDataBlock dataBlock(dataKey);
+      dataBlock.data_size = io_size_;
 
-        // Copy the constant memory buffer into the dataBlock
-        dataBlock.unowned_data_start = membuffer;
-        dataWriterVec_[idx]->write(dataBlock);
-      }
-    }    
+      // Copy the constant memory buffer into the dataBlock
+      dataBlock.unowned_data_start = membuffer;
+      dataWriterVec_[idx]->write(dataBlock);
+    }
+  }    
  
-
+  while (running_flag.load()) {
+    sleep(1);
 
     // AAA: for now we generate a fixed number of events and then stop
     // in the future delete the following line and add the HDF5 file 
     // generation in this section
-    running_flag = false;
+    //running_flag = false;
 
+  }
       
 
-
-  } 
   std::ostringstream oss_summ;
   oss_summ << ": Exiting the do_work() method, generated " << nFakeEvent_
            << " fake events and successfully wrote " << nGeoLoc_  << " fragments to each event. ";
