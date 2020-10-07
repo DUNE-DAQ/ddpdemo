@@ -64,9 +64,9 @@ public:
       HighFive::Group theGroup = filePtr->createGroup(datagroup_name);
     } else {
       HighFive::Group theGroup = filePtr->getGroup(datagroup_name);
-      if (!theGroup.isValid()) {
-        throw InvalidDataWriterError(ERS_HERE, get_name());
-      } else {
+      //if (!theGroup.isValid()) {
+      //  throw InvalidDataWriterError(ERS_HERE, get_name());
+      //} else {
         const std::string dataset_name = std::to_string(dataBlock.data_key.getGeoLocation());
         HighFive::DataSpace theDataSpace = HighFive::DataSpace({ dataBlock.data_size, 1 });
         HighFive::DataSetCreateProps dataCProps_;
@@ -75,7 +75,7 @@ public:
         auto theDataSet = theGroup.createDataSet<char>(dataset_name, theDataSpace, dataCProps_, dataAProps_);
         theDataSet.write_raw(dataBlock.getDataStart());
 
-      }
+        //}
     }
 
     // AAA: how often should we flush? After every write? 
@@ -97,6 +97,8 @@ public:
       for (auto& topLevelObject : topLevelObjects)
       {
         int eventNumber = boost::lexical_cast<int>(topLevelObject);
+
+        // to-do: create a getAllPaths method (to get all of the paths in an HDF5 file)
 
         // to-do: determine real geoLocation and pass it into the Key
         StorageKey thisKey(eventNumber, "none", 0);
@@ -130,7 +132,7 @@ private:
 
     // since this method is expected to find *all* files that match the expected pattern,
     // we can simply replace any "%e" and "%g" substrings with wildcards.
-    std::string workString = filePattern_;
+    std::string workString = filePattern_ + ".hdf5";
     workString = std::regex_replace(workString, std::regex("\\%e"), ".*");
     workString = std::regex_replace(workString, std::regex("\\%g"), ".*");
     std::regex regexSearchPattern(workString);
