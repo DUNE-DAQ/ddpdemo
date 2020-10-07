@@ -39,9 +39,9 @@ class StorageKey {
 
 public:
 
-  const uint32_t INVALID_EVENTID = std::numeric_limits<uint32_t>::max();
-  const std::string INVALID_DETECTORID = "Invalid";
-  const uint32_t INVALID_GEOLOCATION = std::numeric_limits<uint32_t>::max();
+  static const uint32_t INVALID_EVENTID = std::numeric_limits<uint32_t>::max();
+  inline static const std::string INVALID_DETECTORID = "Invalid";
+  static const uint32_t INVALID_GEOLOCATION = std::numeric_limits<uint32_t>::max();
 
 
   StorageKey(uint32_t eventID, std::string detectorID, uint32_t geoLocation): 

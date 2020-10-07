@@ -25,14 +25,14 @@ class HDF5KeyTranslator {
 
 private:
 
-  const int CURRENT_VERSION = 1;
+  static const int CURRENT_VERSION = 1;
 
 public:
 
-  const std::string PATH_SEPARATOR = "/";
+  inline static const std::string PATH_SEPARATOR = "/";
 
-  const int EVENT_ID_DIGITS = 4;
-  const int GEO_LOCATION_DIGITS = 3;
+  static const int EVENT_ID_DIGITS = 4;
+  static const int GEO_LOCATION_DIGITS = 3;
 
   /**
    * @brief Translates the specified StorageKey into an HDF5 'path',
@@ -119,12 +119,12 @@ public:
 
       if (pathElements.size() >= 1)
       {
-        stringstream evId(pathElements[0]);
+        std::stringstream evId(pathElements[0]);
         evId >> eventId;
       }
       if (pathElements.size() >= 2)
       {
-        stringstream geoLoc(pathElements[1]);
+        std::stringstream geoLoc(pathElements[1]);
         geoLoc >> geoLocation;
       }
 

@@ -14,6 +14,7 @@
  */
 
 #include "ddpdemo/DataStore.hpp"
+#include "ddpdemo/HDF5KeyTranslator.hpp"
 
 #include <ers/Issue.h>
 #include <TRACE/trace.h>
