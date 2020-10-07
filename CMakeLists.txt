@@ -22,6 +22,9 @@ target_link_libraries(ddpdemo ers::ers)
 add_library(ddpdemo_SimpleDiskWriter_duneDAQModule src/SimpleDiskWriter.cpp)
 target_link_libraries(ddpdemo_SimpleDiskWriter_duneDAQModule appfwk::appfwk ddpdemo HighFive)
 
+add_library(ddpdemo_BinaryWriter_duneDAQModule src/BinaryWriter.cpp)
+target_link_libraries(ddpdemo_BinaryWriter_duneDAQModule appfwk::appfwk ddpdemo HighFive)
+
 add_library(ddpdemo_GetAllKeysTest_duneDAQModule src/GetAllKeysTest.cpp)
 target_link_libraries(ddpdemo_GetAllKeysTest_duneDAQModule appfwk::appfwk ddpdemo HighFive stdc++fs)
 
@@ -29,6 +32,8 @@ target_link_libraries(ddpdemo_GetAllKeysTest_duneDAQModule appfwk::appfwk ddpdem
 daq_point_build_to( test )
 
 file(COPY test/disk_writer_demo.json DESTINATION test)
+file(COPY test/binary_writer_demo.json DESTINATION test)
+file(COPY test/get_all_keys_test.json DESTINATION test)
 
 ##############################################################################
 daq_point_build_to( unittest )
@@ -36,4 +41,8 @@ daq_add_unit_test(StorageKey_test          ddpdemo ers::ers)
  
 ##############################################################################
 
-daq_install(TARGETS ddpdemo ddpdemo_SimpleDiskWriter_duneDAQModule ddpdemo_GetAllKeysTest_duneDAQModule )
+daq_install(TARGETS ddpdemo
+                    ddpdemo_SimpleDiskWriter_duneDAQModule
+                    ddpdemo_BinaryWriter_duneDAQModule
+                    ddpdemo_GetAllKeysTest_duneDAQModule
+)
