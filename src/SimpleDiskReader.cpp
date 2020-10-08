@@ -115,8 +115,6 @@ void
 SimpleDiskReader::do_work(std::atomic<bool>& running_flag)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_work() method";
-  size_t generatedCount = 0;
-  size_t writtenCount = 0;
 
   // ensure that we have a valid dataReader instance
   if (dataReader_.get() == nullptr)
@@ -124,24 +122,24 @@ SimpleDiskReader::do_work(std::atomic<bool>& running_flag)
     throw InvalidDataReaderError(ERS_HERE, get_name());
   }
 
+
+  TLOG(TLVL_WORK_STEPS) << get_name() << ": reading fakeEvent  " ;
+
+  StorageKey dataKey(key_eventID_, key_detectorID_, key_geoLocationID_ );
+
+  TLOG(TLVL_WORK_STEPS) << get_name() << ": trying to read fragment " <<key_eventID_<<":"<< key_detectorID_<<":"<< key_geoLocationID_  <<", from file "<<filename_pattern_ ;
+
+  KeyedDataBlock dataBlock  = dataReader_->read(dataKey);
+
   while (running_flag.load()) {
-    TLOG(TLVL_WORK_STEPS) << get_name() << ": reading fakeEvent  " ;
-
-    StorageKey dataKey(key_eventID_, key_detectorID_, key_geoLocationID_ );
-
-    TLOG(TLVL_WORK_STEPS) << get_name() << ": trying to read fragment " <<key_eventID_<<":"<< key_detectorID_<<":"<< key_geoLocationID_  <<", from file "<<filename_pattern_ ;
-
-    auto dataBlock  = dataReader_->read(dataKey);
-    ++writtenCount;
-
-    TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of sleep between sends";
+      // for now just read the file/datafragment and then stop
     std::this_thread::sleep_for(std::chrono::milliseconds(waitBetweenSendsMsec_));
-    TLOG(TLVL_WORK_STEPS) << get_name() << ": End of do_work loop";
   }
-
+  
+  TLOG(TLVL_WORK_STEPS) << get_name() << ": End of do_work loop";
   std::ostringstream oss_summ;
-  oss_summ << ": Exiting the do_work() method, read " << generatedCount
-           << " fake events and successfully read " << writtenCount << " of them to disk. ";
+  oss_summ << ": Exiting the do_work() method, read fragment of size " << dataBlock.data_size
+           << "  and successfully read it " ;
   ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_work() method";
 }

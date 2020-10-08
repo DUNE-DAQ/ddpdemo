@@ -22,7 +22,7 @@
 //#include "H5Cpp.h"
 #include "highfive/H5File.hpp"
 #include "highfive/H5DataSet.hpp"
-#include "highfive/H5Easy.hpp"
+#include "highfive/H5DataType.hpp"
 
 
 namespace dunedaq {
@@ -62,6 +62,7 @@ public:
     const std::string datasetName = std::to_string(key.getGeoLocation());
     const std::string keyFragment = groupName+':'+detectorID+':'+datasetName;
     KeyedDataBlock dataBlock(key) ; 
+
     if(!filePtr->exist(groupName)) {
        throw InvalidDataReaderError(ERS_HERE, get_name());
     } else {
@@ -72,9 +73,12 @@ public:
           try {  // to determine if the dataset exists in the group
              HighFive::DataSet theDataSet = theGroup.getDataSet( datasetName );
              ERS_INFO("reading fragment " <<keyFragment<<  ", with storage size "<<theDataSet.getStorageSize());
+
              dataBlock.data_size = theDataSet.getStorageSize();
-             //             dataBlock.owned_data_start = theDataSet.getStorageSize();
-             
+             HighFive::DataSpace thedataSpace = theDataSet.getSpace();
+             char* membuffer = (char*)malloc(dataBlock.data_size);
+             theDataSet.read( membuffer);
+             dataBlock.unowned_data_start = membuffer;
           }
           catch( HighFive::DataSetException const& ) {
              ERS_INFO("HDF5DataSet "<< datasetName << " not found.");
@@ -94,7 +98,7 @@ private:
   HDF5DataReader& operator=(HDF5DataReader&&) = delete;
 
   HighFive::File* filePtr; 
-
+  std::unique_ptr<char> data_start;
 };
 
 
