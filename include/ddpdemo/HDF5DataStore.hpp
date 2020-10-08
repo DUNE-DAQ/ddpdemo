@@ -26,23 +26,24 @@ namespace dunedaq {
 namespace ddpdemo {
 
 
+
 class HDF5DataStore : public DataStore {
 
 public:
   explicit HDF5DataStore(const std::string name, const std::string& path, const std::string& fileName) : DataStore(name) {
 
-  ERS_INFO("Directory path: " << path );
   ERS_INFO("Filename: " << fileName);
+  ERS_INFO("Directory path: " << path );
 
   // Creating an empty HDF5 file
-  filePtr = new HighFive::File(path + fileName, HighFive::File::OpenOrCreate | HighFive::File::Truncate);
+  filePtr = new HighFive::File(path + "/" + fileName + ".hdf5", HighFive::File::OpenOrCreate | HighFive::File::Truncate);
   ERS_INFO("Created HDF5 file.");
  
 
   }
 
-  virtual void setup(const std::string path, const std::string fileName) {
-     ERS_INFO("Setting up ... " << path + fileName);
+  virtual void setup(const size_t eventId) {
+     ERS_INFO("Setup ... " << eventId);
   }
   
   virtual KeyedDataBlock read(const StorageKey& data_key) {
@@ -55,19 +56,30 @@ public:
 
   virtual void write(const KeyedDataBlock& dataBlock) {
     ERS_INFO("Writing data from event ID " << dataBlock.data_key.getEventID() <<
-             ", which has size of " << dataBlock.data_size );
+             " and geolocation ID " << dataBlock.data_key.getGeoLocation());
   
-   // HighFive::DataSpace theDataSpace = HighFive::DataSpace::From(dataBlock.getDataStart());
-    const std::string dataset_name = std::to_string(dataBlock.data_key.getEventID());
-    HighFive::DataSpace theDataSpace = HighFive::DataSpace({ dataBlock.data_size, 1 });
-    HighFive::DataSetCreateProps dataCProps_;
-    HighFive::DataSetAccessProps dataAProps_;
 
-    auto theDataSet = filePtr->createDataSet<char>(dataset_name, theDataSpace, dataCProps_, dataAProps_);
-    theDataSet.write_raw(dataBlock.getDataStart());
+    const std::string datagroup_name = std::to_string(dataBlock.data_key.getEventID());
+   
+    // Check if a HDF5 group exists and if not create one
+    if (!filePtr->exist(datagroup_name)) {
+      filePtr->createGroup(datagroup_name);
+    }
+    HighFive::Group theGroup = filePtr->getGroup(datagroup_name);
+    if (!theGroup.isValid()) {
+      throw InvalidDataWriterError(ERS_HERE, get_name());
+    } else {
+      const std::string dataset_name = std::to_string(dataBlock.data_key.getGeoLocation());
+      HighFive::DataSpace theDataSpace = HighFive::DataSpace({ dataBlock.data_size, 1 });
+      HighFive::DataSetCreateProps dataCProps_;
+      HighFive::DataSetAccessProps dataAProps_;
+
+      auto theDataSet = theGroup.createDataSet<char>(dataset_name, theDataSpace, dataCProps_, dataAProps_);
+      theDataSet.write_raw(dataBlock.getDataStart());
+    }
 
     // AAA: how often should we flush? After every write? 
-    //filePtr->flush();
+    filePtr->flush();
     
   }
 
