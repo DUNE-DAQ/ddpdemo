@@ -62,21 +62,19 @@ public:
    
     // Check if a HDF5 group exists and if not create one
     if (!filePtr->exist(datagroup_name)) {
-      HighFive::Group theGroup = filePtr->createGroup(datagroup_name);
+      filePtr->createGroup(datagroup_name);
+    }
+    HighFive::Group theGroup = filePtr->getGroup(datagroup_name);
+    if (!theGroup.isValid()) {
+      throw InvalidDataWriterError(ERS_HERE, get_name());
     } else {
-      HighFive::Group theGroup = filePtr->getGroup(datagroup_name);
-      //if (!theGroup.isValid()) {
-      //  throw InvalidDataWriterError(ERS_HERE, get_name());
-      //} else {
-        const std::string dataset_name = std::to_string(dataBlock.data_key.getGeoLocation());
-        HighFive::DataSpace theDataSpace = HighFive::DataSpace({ dataBlock.data_size, 1 });
-        HighFive::DataSetCreateProps dataCProps_;
-        HighFive::DataSetAccessProps dataAProps_;
+      const std::string dataset_name = std::to_string(dataBlock.data_key.getGeoLocation());
+      HighFive::DataSpace theDataSpace = HighFive::DataSpace({ dataBlock.data_size, 1 });
+      HighFive::DataSetCreateProps dataCProps_;
+      HighFive::DataSetAccessProps dataAProps_;
 
-        auto theDataSet = theGroup.createDataSet<char>(dataset_name, theDataSpace, dataCProps_, dataAProps_);
-        theDataSet.write_raw(dataBlock.getDataStart());
-
-        //}
+      auto theDataSet = theGroup.createDataSet<char>(dataset_name, theDataSpace, dataCProps_, dataAProps_);
+      theDataSet.write_raw(dataBlock.getDataStart());
     }
 
     // AAA: how often should we flush? After every write? 
