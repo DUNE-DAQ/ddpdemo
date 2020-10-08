@@ -61,7 +61,7 @@ public:
 
   // Ideas for future work...
   //virtual void write(const std::vector<KeyedDataBlock>& dataBlockList) = 0;
-  //virtual KeyedDataBlock read(const StorageKey& key) = 0;
+  virtual KeyedDataBlock read(const StorageKey& key) = 0;
   //virtual std::vector<KeyedDataBlock> read(const std::vector<StorageKey>& key) = 0;
 
 private:
