@@ -29,11 +29,8 @@ target_link_libraries(ddpdemo_BinaryWriter_duneDAQModule appfwk::appfwk ddpdemo 
 daq_point_build_to( test )
 
 file(COPY test/disk_writer_demo.json DESTINATION test)
-<<<<<<< HEAD
 file(COPY test/disk_reader_demo.json DESTINATION test)
-=======
 file(COPY test/binary_writer_demo.json DESTINATION test)
->>>>>>> develop
 
 ##############################################################################
 daq_point_build_to( unittest )
