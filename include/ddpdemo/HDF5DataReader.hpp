@@ -42,10 +42,9 @@ public:
 
 
   }
-  virtual void setup(const std::string path, const std::string fileName) {
-    ERS_INFO("Setting up ... " << path + fileName);
+  virtual void setup(const size_t eventId) {
+    ERS_INFO("Setup ... " << eventId);
   }
-
 
 
   virtual void write(const KeyedDataBlock& dataBlock) { // this is here just as a place holder and in order to use DataStore as a class 
