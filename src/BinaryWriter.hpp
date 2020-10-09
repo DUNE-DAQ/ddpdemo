@@ -68,7 +68,8 @@ private:
   const size_t REASONABLE_IO_SIZE_BYTES = 1024;
 
   const std::string DEFAULT_PATH = ".";
-  const std::string DEFAULT_FILENAME = "demo.hdf5";
+  const std::string DEFAULT_FILENAME = "demo";
+  const std::string DEFAULT_MODE = "one-event-per-file";
 
   // Configuration
   size_t nFakeEvent_ = REASONABLE_DEFAULT_FAKEEVENT;
@@ -76,13 +77,16 @@ private:
   size_t waitBetweenSendsMsec_ = REASONABLE_DEFAULT_MSECBETWEENSENDS;
   size_t io_size_ = REASONABLE_IO_SIZE_BYTES;
 
-
   std::string directory_path_ = DEFAULT_PATH;
   std::string filename_pattern_ = DEFAULT_FILENAME;
+  std::string operation_mode_ = DEFAULT_MODE;
 
   // Workers
   std::unique_ptr<DataStore> dataWriter_;
-  std::vector<std::unique_ptr<DataStore>> dataWriterVec_;
+  //std::vector<std::unique_ptr<DataStore>> dataWriterVec_;
+
+  // 2-dimensional vector for storing both the event ID and the geo ID
+  std::vector<std::vector<std::unique_ptr<DataStore>>> dataWriterVec_;
 };
 } // namespace ddpdemo
 

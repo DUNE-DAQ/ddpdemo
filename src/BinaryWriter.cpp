@@ -53,16 +53,34 @@ BinaryWriter::do_configure(const std::vector<std::string>& /*args*/)
   io_size_ = get_config().value<size_t>("io_size", static_cast<size_t>(REASONABLE_IO_SIZE_BYTES));
 
   directory_path_ = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
-  filename_pattern_ = get_config()["data_store_parameters"]["filename_pattern"].get<std::string>();
+  filename_pattern_ = get_config()["data_store_parameters"]["filename"].get<std::string>();
+  operation_mode_ = get_config()["data_store_parameters"]["mode"].get<std::string>();
 
-  for (size_t idx = 0; idx < nFakeEvent_; ++idx) {
-    // Initializing the HDF5 DataStore constructor
-    // Creating empty HDF5 file
-    dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_ , filename_pattern_ + std::to_string(idx)));
-    dataWriterVec_.push_back(std::move(dataWriter_));
+
+  dataWriterVec_.resize(nFakeEvent_);
+
+  // Initializing the HDF5 DataStore constructor
+  if (operation_mode_ == "one-event-per-file" ) {
+    for (size_t idx = 0; idx < nFakeEvent_; ++idx) {
+
+      // Creating empty HDF5 file
+      dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_ , 
+                                          filename_pattern_ , operation_mode_,
+                                          std::to_string(idx), "" ));  
+      dataWriterVec_[idx].push_back(std::move(dataWriter_));
+    }
+  } else if (operation_mode_ == "one-fragment-per-file" ) {
+    for (size_t idx=0; idx < nFakeEvent_; ++idx) {
+      for (size_t geoID = 0; geoID < nGeoLoc_; ++geoID) {
+        // Creating empty HDF5 file
+        dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_ , 
+                                            filename_pattern_ , operation_mode_,
+                                            std::to_string(idx), std::to_string(geoID) ));
+        dataWriterVec_[idx].push_back(std::move(dataWriter_));
+      }
+    }
   }
- 
-
+           
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
 }
@@ -128,6 +146,7 @@ BinaryWriter::do_work(std::atomic<bool>& running_flag)
   TLOG(TLVL_WORK_STEPS) << get_name() << ": Generating data ";
 
 
+
   for (size_t idx = 0; idx < nFakeEvent_; ++idx) {
     for (size_t geoID = 0; geoID < nGeoLoc_; ++geoID) {
       // AAA: Component ID is fixed, to be changed later
@@ -137,9 +156,18 @@ BinaryWriter::do_work(std::atomic<bool>& running_flag)
 
       // Copy the constant memory buffer into the dataBlock
       dataBlock.unowned_data_start = membuffer;
-      dataWriterVec_[idx]->write(dataBlock);
+      
+      if (operation_mode_ == "one-event-per-file" ) {
+        dataWriterVec_[idx][0]->write(dataBlock);
+      } else if (operation_mode_ == "one-fragment-per-file") {
+        dataWriterVec_[idx][geoID]->write(dataBlock);
+      }
     }
   }    
+
+
+
+
  
   while (running_flag.load()) {
     sleep(1);
