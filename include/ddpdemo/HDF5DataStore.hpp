@@ -110,15 +110,10 @@ public:
       std::vector<std::string> pathList = HDF5FileUtils::getAllDataSetPaths(*localFilePtr);
       ERS_INFO("Path list has element count: " << pathList.size());
 
-      std::vector<std::string> topLevelObjects = localFilePtr->listObjectNames();
-      for (auto& topLevelObject : topLevelObjects)
+      for (auto& path : pathList)
       {
-        int eventNumber = boost::lexical_cast<int>(topLevelObject);
-
-        // to-do: create a getAllPaths method (to get all of the paths in an HDF5 file)
-
-        // to-do: determine real geoLocation and pass it into the Key
-        StorageKey thisKey(eventNumber, "none", 0);
+        StorageKey thisKey(0, "", 0);
+        thisKey = HDF5KeyTranslator::getKeyFromString(path);
         keyList.push_back(thisKey);
       }
 

@@ -65,7 +65,7 @@ namespace HDF5FileUtils {
     for (auto& topLevelName : topLevelNames)
     {
       HighFive::ObjectType topLevelType = hdfFile.getObjectType(topLevelName);
-      ERS_INFO("Top level name and type: " << topLevelName << " " << ((int)topLevelType));
+      //ERS_INFO("Top level name and type: " << topLevelName << " " << ((int)topLevelType));
       if (topLevelType == HighFive::ObjectType::Dataset)
       {
         pathList.push_back(topLevelName);
