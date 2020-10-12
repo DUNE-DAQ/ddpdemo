@@ -14,6 +14,7 @@
 
 #include "ddpdemo/DataStore.hpp"
 #include "ddpdemo/HDF5KeyTranslator.hpp"
+#include "appfwk/DAQModule.hpp"
 
 #include <ers/Issue.h>
 #include <TRACE/trace.h>
@@ -23,6 +24,14 @@
 
 
 namespace dunedaq {
+
+ERS_DECLARE_ISSUE_BASE(ddpdemo,
+                       InvalidHDF5Group,
+                       appfwk::GeneralDAQModuleIssue,
+                       "Invalid HDF5 group.",
+                       ((std::string)name),
+                       ERS_EMPTY)
+
 namespace ddpdemo {
 
 
@@ -75,7 +84,7 @@ public:
     }
     HighFive::Group theGroup = filePtr->getGroup(datagroup_name);
     if (!theGroup.isValid()) {
-      throw InvalidDataWriterError(ERS_HERE, get_name());
+      throw InvalidHDF5Group(ERS_HERE, get_name());
     } else {
       const std::string dataset_name = std::to_string(dataBlock.data_key.getGeoLocation());
       HighFive::DataSpace theDataSpace = HighFive::DataSpace({ dataBlock.data_size, 1 });
@@ -110,19 +119,6 @@ private:
 
 
 } // namespace ddpdemo
-
-
-
-ERS_DECLARE_ISSUE_BASE(ddpdemo,
-                       InvalidHDF5Group,
-                       appfwk::GeneralDAQModuleIssue,
-                       "Invalid HDF5 group.",
-                       ((std::string)name),
-                       ERS_EMPTY)
-
-
-
-
 } // namespace dunedaq
 
 #endif // DDPDEMO_INCLUDE_DDPDEMO_HDF5DATASTORE_HPP_
