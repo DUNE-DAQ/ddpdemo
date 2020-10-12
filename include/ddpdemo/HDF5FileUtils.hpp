@@ -15,6 +15,8 @@
 #include "highfive/H5File.hpp"
 #include <ers/ers.h>
 
+#include <filesystem>
+#include <regex>
 #include <string>
 #include <vector>
 
@@ -30,7 +32,8 @@ namespace HDF5FileUtils {
 
   /**
    * @brief This is a recursive function that adds the 'paths' to all of the DataSets
-   * contained within this group to the specified path list.
+   * contained within the specified Group to the specified path list.  This function
+   * is used by the getAlDataSetPaths() function.
    */
   void addDataSetsToPath(HighFive::Group parentGroup, const std::string& parentPath, std::vector<std::string>& pathList)
   {
@@ -75,6 +78,28 @@ namespace HDF5FileUtils {
     }
 
     return pathList;
+  }
+
+  /**
+   * @brief Fetches the list of files in the specified directory that have
+   * filenames that match the specified search pattern.  The search pattern uses regex
+   * syntax (e.g. ".*" to match zero or more instances of any character).
+   * @return the list of filenames
+   */
+  std::vector<std::string> getFilesMatchingPattern(const std::string& directoryPath, const std::string& filenamePattern)
+  {
+    std::regex regexSearchPattern(filenamePattern);
+    std::vector<std::string> fileList;
+    for (const auto& entry : std::filesystem::directory_iterator(directoryPath))
+    {
+      //TLOG(TLVL_DEBUG) << "Directory element: " << entry.path().string();
+      if (std::regex_match(entry.path().filename().string(), regexSearchPattern))
+      {
+        //TLOG(TLVL_DEBUG) << "Matching directory element: " << entry.path().string();
+        fileList.push_back(entry.path());
+      }
+    }
+    return fileList;
   }
 
 } // namespace HDF5FileUtils
