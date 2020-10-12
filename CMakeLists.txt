@@ -25,18 +25,21 @@ target_link_libraries(ddpdemo_SimpleDiskWriter_duneDAQModule appfwk::appfwk ddpd
 add_library(ddpdemo_BinaryWriter_duneDAQModule src/BinaryWriter.cpp)
 target_link_libraries(ddpdemo_BinaryWriter_duneDAQModule appfwk::appfwk ddpdemo HighFive)
 
+add_library(ddpdemo_SimpleDiskReader_duneDAQModule src/SimpleDiskReader.cpp)
+target_link_libraries(ddpdemo_SimpleDiskReader_duneDAQModule appfwk::appfwk ddpdemo HighFive)
+
 ##############################################################################
 daq_point_build_to( test )
 
 file(COPY test/disk_writer_demo.json DESTINATION test)
+file(COPY test/disk_reader_demo.json DESTINATION test)
 file(COPY test/binary_writer_demo.json DESTINATION test)
 
 ##############################################################################
 daq_point_build_to( unittest )
+daq_add_unit_test(HDF5KeyTranslator_test   appfwk::appfwk ddpdemo ers::ers)
 daq_add_unit_test(StorageKey_test          ddpdemo ers::ers)
  
 ##############################################################################
 
-daq_install(TARGETS ddpdemo ddpdemo_SimpleDiskWriter_duneDAQModule ddpdemo_BinaryWriter_duneDAQModule)
-
-
+daq_install(TARGETS ddpdemo ddpdemo_SimpleDiskWriter_duneDAQModule ddpdemo_BinaryWriter_duneDAQModule ddpdemo_SimpleDiskReader_duneDAQModule)
