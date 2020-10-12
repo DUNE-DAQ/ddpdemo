@@ -13,6 +13,7 @@
 #define DDPDEMO_SRC_STORAGEKEY_HPP_
 
 #include <ers/ers.h>
+#include <limits>
 #include <string>
 
 
@@ -37,6 +38,12 @@ struct Key {
 class StorageKey {
 
 public:
+
+  static const uint32_t INVALID_EVENTID = std::numeric_limits<uint32_t>::max();
+  inline static const std::string INVALID_DETECTORID = "Invalid";
+  static const uint32_t INVALID_GEOLOCATION = std::numeric_limits<uint32_t>::max();
+
+
   StorageKey(uint32_t eventID, std::string detectorID, uint32_t geoLocation): 
      m_key(eventID, detectorID, geoLocation){}
   ~StorageKey() {}

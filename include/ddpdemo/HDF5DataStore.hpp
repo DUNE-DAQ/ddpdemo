@@ -15,6 +15,7 @@
 
 #include "ddpdemo/DataStore.hpp"
 #include "ddpdemo/HDF5FileUtils.hpp"
+#include "ddpdemo/HDF5KeyTranslator.hpp"
 
 #include <ers/Issue.h>
 #include <TRACE/trace.h>
@@ -58,7 +59,13 @@ public:
   virtual void setup(const size_t eventId) {
      ERS_INFO("Setup ... " << eventId);
   }
-
+  
+  virtual KeyedDataBlock read(const StorageKey& data_key) {
+     ERS_INFO("reading data block from event ID " << data_key.getEventID() <<
+             ", detector ID " << data_key.getDetectorID() << ", geoLocation "<< data_key.getGeoLocation());   
+     KeyedDataBlock dataBlock(data_key);
+     return  dataBlock; 
+  }
 
 
   virtual void write(const KeyedDataBlock& dataBlock) {
