@@ -168,7 +168,6 @@ BinaryWriter::do_work(std::atomic<bool>& running_flag)
 
 
 
- 
   while (running_flag.load()) {
     sleep(1);
 

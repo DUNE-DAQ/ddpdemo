@@ -2,7 +2,7 @@
  * @file BinaryWriter.hpp
  *
  * BinaryWriter is a simple DAQModule implementation that
- * periodically writes data to an HDF5 file on disk.
+ * writes data to an HDF5 file on disk.
  *
  * This is part of the DUNE DAQ Software Suite, copyright 2020.
  * Licensing/copyright details are in the COPYING file that you should have
@@ -101,14 +101,6 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        InvalidDataWriterError,
                        appfwk::GeneralDAQModuleIssue,
                        "A valid dataWriter instance is not available so it will not be possible to write data. A likely cause for this is a skipped or missed Configure transition.",
-                       ((std::string)name),
-                       ERS_EMPTY)
-
-
-ERS_DECLARE_ISSUE_BASE(ddpdemo,
-                       InvalidHDF5Group,
-                       appfwk::GeneralDAQModuleIssue,
-                       "Invalid HDF5 group.",
                        ((std::string)name),
                        ERS_EMPTY)
 

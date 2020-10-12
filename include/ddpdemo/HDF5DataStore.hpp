@@ -2,11 +2,10 @@
 #define DDPDEMO_INCLUDE_DDPDEMO_HDF5DATASTORE_HPP_
 
 /**
- * @file TrashCanDataStore.hpp
+ * @file HDF5DataStore.hpp
  *
- * An implementation of the DataStore interface that simply throws
- * data away instead of storing it.  Obviously, this class is just
- * for demonstration and testing purposes.
+ * An implementation of the DataStore interface that uses the 
+ * highFive library to create objects in HDF5 Groups and datasets 
  *
  * This is part of the DUNE DAQ Application Framework, copyright 2020.
  * Licensing/copyright details are in the COPYING file that you should have
@@ -36,6 +35,8 @@ public:
   ERS_INFO("Directory path: " << path );
   ERS_INFO("Operation mode: " << operationMode );
 
+  operation_mode_ = operationMode;
+
   // Creating an empty HDF5 file
   if (operationMode == "one-event-per-file" ) {
     filePtr = new HighFive::File(path + "/" + fileName + "_event_" + idx + ".hdf5", HighFive::File::OpenOrCreate | HighFive::File::Truncate);
@@ -44,8 +45,7 @@ public:
   }
 
 
-  ERS_INFO("Created HDF5 file.");
-  operation_mode_ = operationMode;
+  ERS_INFO("Created HDF5 file(s).");
  
 
   }
@@ -55,50 +55,11 @@ public:
   }
 
 
-/*
-  void write_fragment(const KeyedDataBlock& dataBlock) {
-    ERS_INFO("Writing data from event ID " << dataBlock.data_key.getEventID() <<
-             " and geolocation ID " << dataBlock.data_key.getGeoLocation());
-     
-
-    const std::string datagroup_name = std::to_string(dataBlock.data_key.getEventID());
-   
-    // Check if a HDF5 group exists and if not create one
-    if (!filePtr->exist(datagroup_name)) {
-      filePtr->createGroup(datagroup_name);
-    }
-    HighFive::Group theGroup = filePtr->getGroup(datagroup_name);
-    if (!theGroup.isValid()) {
-      throw InvalidDataWriterError(ERS_HERE, get_name());
-    } else {
-      const std::string dataset_name = std::to_string(dataBlock.data_key.getGeoLocation());
-      HighFive::DataSpace theDataSpace = HighFive::DataSpace({ dataBlock.data_size, 1 });
-      HighFive::DataSetCreateProps dataCProps_;
-      HighFive::DataSetAccessProps dataAProps_;
-
-      auto theDataSet = theGroup.createDataSet<char>(dataset_name, theDataSpace, dataCProps_, dataAProps_);
-      theDataSet.write_raw(dataBlock.getDataStart());
-    }
-
-    // AAA: how often should we flush? After every write? 
-    filePtr->flush();
-
-  }
-
-
-
-  void write_event(const KeyedDataBlock& dataBlock) {
-
-
-  }
-*/
-
 
   virtual void write(const KeyedDataBlock& dataBlock) {
-    ERS_INFO("Writing data from event ID " << dataBlock.data_key.getEventID() <<
+    ERS_INFO("Writing data with event ID " << dataBlock.data_key.getEventID() <<
              " and geolocation ID " << dataBlock.data_key.getGeoLocation());
      
-
     const std::string datagroup_name = std::to_string(dataBlock.data_key.getEventID());
    
     // Check if a HDF5 group exists and if not create one
@@ -142,6 +103,19 @@ private:
 
 
 } // namespace ddpdemo
+
+
+
+ERS_DECLARE_ISSUE_BASE(ddpdemo,
+                       InvalidHDF5Group,
+                       appfwk::GeneralDAQModuleIssue,
+                       "Invalid HDF5 group.",
+                       ((std::string)name),
+                       ERS_EMPTY)
+
+
+
+
 } // namespace dunedaq
 
 #endif // DDPDEMO_INCLUDE_DDPDEMO_HDF5DATASTORE_HPP_
