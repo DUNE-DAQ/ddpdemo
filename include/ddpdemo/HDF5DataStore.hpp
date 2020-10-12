@@ -27,6 +27,14 @@
 #include <regex>
 
 namespace dunedaq {
+
+ERS_DECLARE_ISSUE_BASE(ddpdemo,
+                       InvalidGroupError,
+                       appfwk::GeneralDAQModuleIssue,
+                       "The HDF5 Group associated with name \"" << groupName << "\" is not valid. (file = " << filename << ")",
+                       ((std::string)name),
+                       ((std::string)groupName)((std::string)filename))
+
 namespace ddpdemo {
 
 
@@ -66,7 +74,7 @@ public:
     }
     HighFive::Group theGroup = filePtr->getGroup(datagroup_name);
     if (!theGroup.isValid()) {
-      throw InvalidDataWriterError(ERS_HERE, get_name());
+      throw InvalidGroupError(ERS_HERE, get_name(), datagroup_name, filePtr->getName());
     } else {
       const std::string dataset_name = std::to_string(dataBlock.data_key.getGeoLocation());
       HighFive::DataSpace theDataSpace = HighFive::DataSpace({ dataBlock.data_size, 1 });
