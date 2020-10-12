@@ -1,0 +1,270 @@
+/**
+ * @file HDF5WriteAndRead_test.cxx Application that tests and demonstrates
+ * the write *and* read functionality of the HDF5DataStore class.
+ *
+ * This is part of the DUNE DAQ Application Framework, copyright 2020.
+ * Licensing/copyright details are in the COPYING file that you should have
+ * received with this code.
+ */
+
+#include "ddpdemo/HDF5DataStore.hpp"
+
+#include "ers/ers.h"
+
+#define BOOST_TEST_MODULE HDF5WriteAndRead_test // NOLINT
+
+#include <boost/test/unit_test.hpp>
+
+#include <iostream>
+#include <filesystem>
+#include <fstream>
+#include <regex>
+#include <string>
+#include <vector>
+
+using namespace dunedaq::ddpdemo;
+
+std::vector<std::string> getFilesMatchingPattern(const std::string& path, const std::string& pattern)
+{
+  std::regex regexSearchPattern(pattern);
+  std::vector<std::string> fileList;
+  for (const auto& entry : std::filesystem::directory_iterator(path))
+  {
+    if (std::regex_match(entry.path().filename().string(), regexSearchPattern))
+    {
+      fileList.push_back(entry.path());
+    }
+  }
+  return fileList;
+}
+
+std::vector<std::string> deleteFilesMatchingPattern(const std::string& path, const std::string& pattern)
+{
+  std::regex regexSearchPattern(pattern);
+  std::vector<std::string> fileList;
+  for (const auto& entry : std::filesystem::directory_iterator(path))
+  {
+    if (std::regex_match(entry.path().filename().string(), regexSearchPattern))
+    {
+      if (std::filesystem::remove(entry.path()))
+      {
+        fileList.push_back(entry.path());
+      }
+    }
+  }
+  return fileList;
+}
+
+BOOST_AUTO_TEST_SUITE(HDF5WriteAndRead_test)
+
+BOOST_AUTO_TEST_CASE(WriteAndReadFragmentFilesSeparateDataStores)
+{
+  std::string filePath(std::filesystem::temp_directory_path());;
+
+  // delete any pre-existing files so that we start with a clean slate
+  std::string deletePattern = "demo.*event.*geoID.*.hdf5";
+  deleteFilesMatchingPattern(filePath, deletePattern);
+
+  // desired Constructor arguments:
+  // - name of the data store
+  // - directory path where the files should be stored and/or read from
+  // - filename prefix
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, "demo", "one-fragment-per-file"));
+
+  // write several events, each with several fragments
+  char dummyData[8];
+  for (int eventID = 1; eventID <= 3; ++eventID)
+  {
+    for (int geoLoc = 0; geoLoc < 2; ++geoLoc)
+    {
+      StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
+      KeyedDataBlock dataBlock(key);
+      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.data_size = 8;
+      dsPtr->write(dataBlock);
+    }
+  }
+  dsPtr.reset();  // explicit destruction
+
+  // check that the expected number of files was created
+  std::string searchPattern = "demo.*event.*geoID.*.hdf5";
+  std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
+  BOOST_REQUIRE_EQUAL(fileList.size(), 6);
+
+  // create a new DataStore instance to read back the data that was written
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempReader", filePath, "demo", "one-fragment-per-file"));
+
+  // fetch all of the keys that exist in the DataStore
+  std::vector<StorageKey> keyList = dsPtr->getAllExistingKeys();
+  BOOST_REQUIRE_EQUAL(keyList.size(), 6);
+
+  // loop over all of the keys to read in the data
+  for (size_t kdx = 0; kdx < keyList.size(); ++kdx)
+  {
+    KeyedDataBlock dataBlock = dsPtr->read(keyList[kdx]);
+    BOOST_REQUIRE_EQUAL(dataBlock.getDataSizeBytes(), 8);
+  }
+  dsPtr.reset();  // explicit destruction
+
+  // is there a way to check that we are not leaking memory?
+
+  // clean up the files that were created
+  fileList = deleteFilesMatchingPattern(filePath, deletePattern);
+  BOOST_REQUIRE_EQUAL(fileList.size(), 6);
+}
+
+BOOST_AUTO_TEST_CASE(WriteAndReadEventFilesSeparateDataStores)
+{
+  std::string filePath(std::filesystem::temp_directory_path());;
+
+  // delete any pre-existing files so that we start with a clean slate
+  std::string deletePattern = "demo.*event.*.hdf5";
+  deleteFilesMatchingPattern(filePath, deletePattern);
+
+  // desired Constructor arguments:
+  // - name of the data store
+  // - directory path where the files should be stored and/or read from
+  // - filename prefix
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, "demo", "one-event-per-file"));
+
+  // write several events, each with several fragments
+  char dummyData[8];
+  for (int eventID = 1; eventID <= 3; ++eventID)
+  {
+    for (int geoLoc = 0; geoLoc < 2; ++geoLoc)
+    {
+      StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
+      KeyedDataBlock dataBlock(key);
+      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.data_size = 8;
+      dsPtr->write(dataBlock);
+    }
+  }
+  dsPtr.reset();  // explicit destruction
+
+  // check that the expected number of files was created
+  std::string searchPattern = "demo.*event.*.hdf5";
+  std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
+  BOOST_REQUIRE_EQUAL(fileList.size(), 6);
+
+  // create a new DataStore instance to read back the data that was written
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempReader", filePath, "demo", "one-event-per-file"));
+
+  // fetch all of the keys that exist in the DataStore
+  std::vector<StorageKey> keyList = dsPtr->getAllExistingKeys();
+  BOOST_REQUIRE_EQUAL(keyList.size(), 6);
+
+  // loop over all of the keys to read in the data
+  for (size_t kdx = 0; kdx < keyList.size(); ++kdx)
+  {
+    KeyedDataBlock dataBlock = dsPtr->read(keyList[kdx]);
+    BOOST_REQUIRE_EQUAL(dataBlock.getDataSizeBytes(), 8);
+  }
+  dsPtr.reset();  // explicit destruction
+
+  // is there a way to check that we are not leaking memory?
+
+  // clean up the files that were created
+  fileList = deleteFilesMatchingPattern(filePath, deletePattern);
+  BOOST_REQUIRE_EQUAL(fileList.size(), 6);
+}
+
+BOOST_AUTO_TEST_CASE(WriteAndReadFragmentFilesSameDataStore)
+{
+  std::string filePath(std::filesystem::temp_directory_path());;
+
+  // delete any pre-existing files so that we start with a clean slate
+  std::string deletePattern = "demo.*event.*geoID.*.hdf5";
+  deleteFilesMatchingPattern(filePath, deletePattern);
+
+  // desired Constructor arguments:
+  // - name of the data store
+  // - directory path where the files should be stored and/or read from
+  // - filename prefix
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("hdfStore", filePath, "demo", "one-fragment-per-file"));
+
+  // write several events, each with several fragments
+  char dummyData[8];
+  for (int eventID = 1; eventID <= 3; ++eventID)
+  {
+    for (int geoLoc = 0; geoLoc < 2; ++geoLoc)
+    {
+      StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
+      KeyedDataBlock dataBlock(key);
+      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.data_size = 8;
+      dsPtr->write(dataBlock);
+    }
+  }
+
+  // Switch from writing to reading, continuing to use the same DataStore instance
+
+  // fetch all of the keys that exist in the DataStore
+  std::vector<StorageKey> keyList = dsPtr->getAllExistingKeys();
+  BOOST_REQUIRE_EQUAL(keyList.size(), 6);
+
+  // loop over all of the keys to read in the data
+  for (size_t kdx = 0; kdx < keyList.size(); ++kdx)
+  {
+    KeyedDataBlock dataBlock = dsPtr->read(keyList[kdx]);
+    BOOST_REQUIRE_EQUAL(dataBlock.getDataSizeBytes(), 8);
+  }
+  dsPtr.reset();  // explicit destruction
+
+  // is there a way to check that we are not leaking memory?
+
+  // clean up the files that were created
+  fileList = deleteFilesMatchingPattern(filePath, deletePattern);
+  BOOST_REQUIRE_EQUAL(fileList.size(), 6);
+}
+
+BOOST_AUTO_TEST_CASE(WriteAndReadEventFilesSameDataStore)
+{
+  std::string filePath(std::filesystem::temp_directory_path());;
+
+  // delete any pre-existing files so that we start with a clean slate
+  std::string deletePattern = "demo.*event.*.hdf5";
+  deleteFilesMatchingPattern(filePath, deletePattern);
+
+  // desired Constructor arguments:
+  // - name of the data store
+  // - directory path where the files should be stored and/or read from
+  // - filename prefix
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("hdfStore", filePath, "demo", "one-event-per-file"));
+
+  // write several events, each with several fragments
+  char dummyData[8];
+  for (int eventID = 1; eventID <= 3; ++eventID)
+  {
+    for (int geoLoc = 0; geoLoc < 2; ++geoLoc)
+    {
+      StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
+      KeyedDataBlock dataBlock(key);
+      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.data_size = 8;
+      dsPtr->write(dataBlock);
+    }
+  }
+
+  // Switch from writing to reading, continuing to use the same DataStore instance
+
+  // fetch all of the keys that exist in the DataStore
+  std::vector<StorageKey> keyList = dsPtr->getAllExistingKeys();
+  BOOST_REQUIRE_EQUAL(keyList.size(), 6);
+
+  // loop over all of the keys to read in the data
+  for (size_t kdx = 0; kdx < keyList.size(); ++kdx)
+  {
+    KeyedDataBlock dataBlock = dsPtr->read(keyList[kdx]);
+    BOOST_REQUIRE_EQUAL(dataBlock.getDataSizeBytes(), 8);
+  }
+  dsPtr.reset();  // explicit destruction
+
+  // is there a way to check that we are not leaking memory?
+
+  // clean up the files that were created
+  fileList = deleteFilesMatchingPattern(filePath, deletePattern);
+  BOOST_REQUIRE_EQUAL(fileList.size(), 6);
+}
+
+BOOST_AUTO_TEST_SUITE_END()

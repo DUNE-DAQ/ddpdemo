@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE(WriteEventFiles)
   dsPtr.reset();  // explicit destruction
 
   // check that the expected number of files was created
-  std::string searchPattern = "demo.*event.*geoID.*.hdf5";
+  std::string searchPattern = "demo.*event.*.hdf5";
   std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
   BOOST_REQUIRE_EQUAL(fileList.size(), 3);
 
