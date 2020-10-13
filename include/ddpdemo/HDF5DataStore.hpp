@@ -1,4 +1,4 @@
-	#ifndef DDPDEMO_INCLUDE_DDPDEMO_HDF5DATASTORE_HPP_
+#ifndef DDPDEMO_INCLUDE_DDPDEMO_HDF5DATASTORE_HPP_
 #define DDPDEMO_INCLUDE_DDPDEMO_HDF5DATASTORE_HPP_
 
 /**
@@ -39,7 +39,7 @@ namespace ddpdemo {
 class HDF5DataStore : public DataStore {
 
 public:
-  explicit HDF5DataStore(const std::string name, const std::string& path, const std::string& fileName,  const std::string operationMode, size_t event_number, size_t fragment_number) : DataStore(name) {
+  explicit HDF5DataStore(const std::string name, const std::string& path, const std::string& fileName,  const std::string operationMode) : DataStore(name) {
 	
   ERS_INFO("Filename prefix: " << fileName);
   ERS_INFO("Directory path: " << path );
@@ -48,8 +48,6 @@ public:
 
   fileName_ = fileName;
   path_ = path;
-  event_number_ = event_number;
-  fragment_number_ = fragment_number;
   operation_mode_ = operationMode;
 
 
@@ -67,64 +65,52 @@ public:
   }
 
 
-  virtual void prepare_write() {
 
-    dataWriterVec_.resize(event_number_);
 
+
+
+  virtual void write(const KeyedDataBlock& dataBlock) {
+
+    size_t idx = dataBlock.data_key.getEventID();
+    size_t geoID =dataBlock.data_key.getGeoLocation();
+ 
+
+    // Creating empty HDF5 file
+    // AAA: to be changed with open/read/write implementation from Carlos
     if (operation_mode_ == "one-event-per-file" ) {
-      for (size_t idx = 0; idx < event_number_; ++idx) {
+      filePtr = new HighFive::File(path_ + "/" + fileName_ + "_event_" + std::to_string(idx) + ".hdf5", HighFive::File::OpenOrCreate);
 
-        // Creating empty HDF5 file
-        dataWriterVec_[idx].push_back(new HighFive::File(path_ + "/" + fileName_ + "_event_" + std::to_string(idx) + ".hdf5", HighFive::File::OpenOrCreate | HighFive::File::Truncate));
-
-      }
     } else if (operation_mode_ == "one-fragment-per-file" ) {
-      for (size_t idx=0; idx < event_number_; ++idx) {
-        for (size_t geoID = 0; geoID < fragment_number_; ++geoID) {
 
-          // Creating empty HDF5 file
-          dataWriterVec_[idx].push_back(new HighFive::File(path_ + "/" + fileName_ + "_event_" + std::to_string(idx) + "_geoID_" + std::to_string(geoID) +  ".hdf5", HighFive::File::OpenOrCreate | HighFive::File::Truncate));
-        }
-      }
+      filePtr = new HighFive::File(path_ + "/" + fileName_ + "_event_" + std::to_string(idx) + "_geoID_" + std::to_string(geoID) +  ".hdf5", HighFive::File::OpenOrCreate | HighFive::File::Truncate);
+
     } else if (operation_mode_ == "all-per-file" ) {    
-      // Creating empty HDF5 file
-      dataWriterVec_[0].push_back(new HighFive::File(path_ + "/" + fileName_ + "_all_events" +  ".hdf5", HighFive::File::OpenOrCreate | HighFive::File::Truncate));    
+
+      filePtr = new HighFive::File(path_ + "/" + fileName_ + "_all_events" +  ".hdf5", HighFive::File::OpenOrCreate);    
     }
 
     ERS_INFO("Created HDF5 file(s).");
 
 
-  }
 
-
-  virtual void write(const KeyedDataBlock& dataBlock) {
     ERS_INFO("Writing data with event ID " << dataBlock.data_key.getEventID() <<
              " and geolocation ID " << dataBlock.data_key.getGeoLocation());
+         
 
-    size_t idx = dataBlock.data_key.getEventID();
-    size_t geoID =dataBlock.data_key.getGeoLocation();
-     
+    const std::string datagroup_name = std::to_string(idx);
 
 
-    //if (operation_mode_ == "one-event-per-file" ) {
-    //  geoID = 0;
-    //} else if (operation_mode_ == "all-per-file") {
-    //  geoID = 0;
-    //  idx = 0; 
-    //}
-     
-
-    const std::string datagroup_name = std::to_string(dataBlock.data_key.getGeoLocation());
-   
     // Check if a HDF5 group exists and if not create one
-    if (!dataWriterVec_[idx][geoID]->exist(datagroup_name)) {
-      dataWriterVec_[idx][geoID]->createGroup(datagroup_name);
+    if (!filePtr->exist(datagroup_name)) {
+      filePtr->createGroup(datagroup_name);
     }
-    HighFive::Group theGroup = dataWriterVec_[idx][geoID]->getGroup(datagroup_name);
+    HighFive::Group theGroup = filePtr->getGroup(datagroup_name);
+
+
     if (!theGroup.isValid()) {
       throw InvalidHDF5Group(ERS_HERE, get_name());
     } else {
-      const std::string dataset_name = std::to_string(dataBlock.data_key.getGeoLocation());
+      const std::string dataset_name = std::to_string(geoID);
       HighFive::DataSpace theDataSpace = HighFive::DataSpace({ dataBlock.data_size, 1 });
       HighFive::DataSetCreateProps dataCProps_;
       HighFive::DataSetAccessProps dataAProps_;
@@ -135,9 +121,10 @@ public:
       
     }
 
-    // AAA: how often should we flush? After every write? 
-    dataWriterVec_[idx][geoID]->flush();
-         
+    filePtr->flush();
+
+
+
   }
   
 
@@ -155,13 +142,9 @@ private:
 
   std::string path_;
   std::string fileName_;
-  size_t event_number_;
-  size_t fragment_number_;
   std::string operation_mode_;
 
 
-  // 2-dimensional vector for storing both the event ID and the geo ID
-  std::vector<std::vector<HighFive::File*>> dataWriterVec_;
 
 
 };

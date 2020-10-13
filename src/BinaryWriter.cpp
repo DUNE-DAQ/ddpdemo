@@ -60,10 +60,8 @@ BinaryWriter::do_configure(const std::vector<std::string>& /*args*/)
 
   // Creating empty HDF5 file
   dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_ , 
-                                          filename_pattern_ , operation_mode_,
-                                          nFakeEvent_, nGeoLoc_));  
-
-  dataWriter_->prepare_write();          
+                                          filename_pattern_ , operation_mode_ ));  
+        
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
 }
@@ -130,9 +128,8 @@ BinaryWriter::do_work(std::atomic<bool>& running_flag)
 
 
   
-
-
-  for (size_t idx = 0; idx < nFakeEvent_; ++idx) {
+  size_t idx = 0;
+  while (running_flag.load()) {
     for (size_t geoID = 0; geoID < nGeoLoc_; ++geoID) {
       
       // AAA: Component ID is fixed, to be changed later
@@ -145,18 +142,9 @@ BinaryWriter::do_work(std::atomic<bool>& running_flag)
       dataWriter_->write(dataBlock);
      
     }
-  }    
+    idx++;
 
-
-
-
-  while (running_flag.load()) {
     sleep(1);
-
-    // AAA: for now we generate a fixed number of events and then stop
-    // in the future delete the following line and add the HDF5 file 
-    // generation in this section
-    //running_flag = false;
 
   }
       

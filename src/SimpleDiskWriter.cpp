@@ -55,7 +55,7 @@ SimpleDiskWriter::do_configure(const std::vector<std::string>& /*args*/)
 
   // Initializing the HDF5 DataStore constructor
   // Creating empty HDF5 file
-  dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_ , filename_pattern_, "", 1, 1));
+  dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_ , filename_pattern_, ""));
 
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
