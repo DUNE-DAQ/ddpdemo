@@ -61,7 +61,7 @@ public:
     ERS_INFO("going to read data block from eventID/geoLocationID " << HDF5KeyTranslator::getPathString(key));
   
     const std::string groupName = std::to_string(key.getEventID());
-    const std::string detectorID = key.getDetectorID();
+    //    const std::string detectorID = key.getDetectorID();
     const std::string datasetName = std::to_string(key.getGeoLocation());
     KeyedDataBlock dataBlock(key) ; 
 
