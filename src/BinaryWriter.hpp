@@ -83,10 +83,8 @@ private:
 
   // Workers
   std::unique_ptr<DataStore> dataWriter_;
-  //std::vector<std::unique_ptr<DataStore>> dataWriterVec_;
 
-  // 2-dimensional vector for storing both the event ID and the geo ID
-  std::vector<std::vector<std::unique_ptr<DataStore>>> dataWriterVec_;
+
 };
 } // namespace ddpdemo
 

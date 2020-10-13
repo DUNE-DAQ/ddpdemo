@@ -12,7 +12,7 @@
       "data_store_parameters": {
       "data_store_module": "HDF5DataStore",
       "directory_path": ".",
-      "filename": "run_number_201012_", 
+      "filename": "run_number_201013", 
       "mode": "one-fragment-per-file"
       }
     }
