@@ -66,9 +66,10 @@ BOOST_AUTO_TEST_CASE(WriteAndReadFragmentFilesSeparateDataStores)
   deleteFilesMatchingPattern(filePath, deletePattern);
 
   // desired Constructor arguments:
-  // - name of the data store
+  // - name of the data store (just a descriptive name)
   // - directory path where the files should be stored and/or read from
   // - filename prefix
+  // - file mode
   std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, "demo", "one-fragment-per-file"));
 
   // write several events, each with several fragments
@@ -122,9 +123,10 @@ BOOST_AUTO_TEST_CASE(WriteAndReadEventFilesSeparateDataStores)
   deleteFilesMatchingPattern(filePath, deletePattern);
 
   // desired Constructor arguments:
-  // - name of the data store
+  // - name of the data store (just a descriptive name)
   // - directory path where the files should be stored and/or read from
   // - filename prefix
+  // - file mode
   std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, "demo", "one-event-per-file"));
 
   // write several events, each with several fragments
@@ -178,9 +180,10 @@ BOOST_AUTO_TEST_CASE(WriteAndReadFragmentFilesSameDataStore)
   deleteFilesMatchingPattern(filePath, deletePattern);
 
   // desired Constructor arguments:
-  // - name of the data store
+  // - name of the data store (just a descriptive name)
   // - directory path where the files should be stored and/or read from
   // - filename prefix
+  // - file mode
   std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("hdfStore", filePath, "demo", "one-fragment-per-file"));
 
   // write several events, each with several fragments
@@ -227,9 +230,10 @@ BOOST_AUTO_TEST_CASE(WriteAndReadEventFilesSameDataStore)
   deleteFilesMatchingPattern(filePath, deletePattern);
 
   // desired Constructor arguments:
-  // - name of the data store
+  // - name of the data store (just a descriptive name)
   // - directory path where the files should be stored and/or read from
   // - filename prefix
+  // - file mode
   std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("hdfStore", filePath, "demo", "one-event-per-file"));
 
   // write several events, each with several fragments
