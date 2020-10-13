@@ -14,18 +14,22 @@
  */
 
 #include "ddpdemo/DataStore.hpp"
+#include "ddpdemo/HDF5KeyTranslator.hpp"
 
 #include <ers/Issue.h>
 #include <TRACE/trace.h>
 
-
-//#include "H5Cpp.h"
 #include "highfive/H5File.hpp"
-#include "highfive/H5DataSet.hpp"
-#include "highfive/H5DataType.hpp"
+
 
 
 namespace dunedaq {
+ERS_DECLARE_ISSUE_BASE(ddpdemo,
+                       InvalidHDF5Group,
+                       appfwk::GeneralDAQModuleIssue,
+                       "Invalid HDF5 group.",
+                       ((std::string)name),
+                       ERS_EMPTY)
 namespace ddpdemo {
 
 
@@ -54,37 +58,36 @@ public:
 
 
   virtual KeyedDataBlock read(const StorageKey& key) {
-    ERS_INFO("reading data block from event ID " << key.getEventID() <<
-             ", detector ID " << key.getDetectorID() << ", geoLocation "<< key.getGeoLocation());
+    ERS_INFO("going to read data block from eventID/geoLocationID " << HDF5KeyTranslator::getPathString(key));
   
     const std::string groupName = std::to_string(key.getEventID());
     const std::string detectorID = key.getDetectorID();
     const std::string datasetName = std::to_string(key.getGeoLocation());
-    const std::string keyFragment = groupName+':'+detectorID+':'+datasetName;
     KeyedDataBlock dataBlock(key) ; 
 
     if(!filePtr->exist(groupName)) {
-       throw InvalidDataReaderError(ERS_HERE, get_name());
+       throw InvalidHDF5Group(ERS_HERE, get_name());
     } else {
       HighFive::Group theGroup = filePtr->getGroup(groupName);
        if (!theGroup.isValid()) {
-          throw InvalidDataReaderError(ERS_HERE, get_name());
+         throw InvalidHDF5Group(ERS_HERE, get_name());
        } else {
-          try {  // to determine if the dataset exists in the group
+          try {  // to determine if the dataset exists in the group and copy it to membuffer
              HighFive::DataSet theDataSet = theGroup.getDataSet( datasetName );
-             ERS_INFO("reading fragment " <<keyFragment<<  ", with storage size "<<theDataSet.getStorageSize());
-
              dataBlock.data_size = theDataSet.getStorageSize();
              HighFive::DataSpace thedataSpace = theDataSet.getSpace();
              char* membuffer = (char*)malloc(dataBlock.data_size);
              theDataSet.read( membuffer);
              dataBlock.unowned_data_start = membuffer;
+             ERS_INFO("finished reading eventID/geoLocationID " <<HDF5KeyTranslator::getPathString(key)<<  ", with storage size "<<theDataSet.getStorageSize());
+
           }
           catch( HighFive::DataSetException const& ) {
              ERS_INFO("HDF5DataSet "<< datasetName << " not found.");
           }
        }
     }
+    
     return dataBlock;
   }
 
