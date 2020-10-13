@@ -47,7 +47,6 @@ void
 BinaryWriter::do_configure(const std::vector<std::string>& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
-  nFakeEvent_ = get_config().value<size_t>("nFakeEvent", static_cast<size_t>(REASONABLE_DEFAULT_FAKEEVENT));
   nGeoLoc_ = get_config().value<size_t>("nGeoLoc", static_cast<size_t>(REASONABLE_DEFAULT_GEOLOC));
   waitBetweenSendsMsec_ = get_config().value<size_t>("waitBetweenSendsMsec", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
   io_size_ = get_config().value<size_t>("io_size", static_cast<size_t>(REASONABLE_IO_SIZE_BYTES));
@@ -88,7 +87,6 @@ void
 BinaryWriter::do_unconfigure(const std::vector<std::string>& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_unconfigure() method";
-  nFakeEvent_ = REASONABLE_DEFAULT_FAKEEVENT;
   waitBetweenSendsMsec_ = REASONABLE_DEFAULT_MSECBETWEENSENDS;
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_unconfigure() method";
 }
@@ -128,12 +126,12 @@ BinaryWriter::do_work(std::atomic<bool>& running_flag)
 
 
   
-  size_t idx = 0;
+  size_t event = 0;
   while (running_flag.load()) {
     for (size_t geoID = 0; geoID < nGeoLoc_; ++geoID) {
       
       // AAA: Component ID is fixed, to be changed later
-      StorageKey dataKey(idx, "FELIX", geoID); 
+      StorageKey dataKey(event, "FELIX", geoID); 
       KeyedDataBlock dataBlock(dataKey);
       dataBlock.data_size = io_size_;
 
@@ -142,7 +140,7 @@ BinaryWriter::do_work(std::atomic<bool>& running_flag)
       dataWriter_->write(dataBlock);
      
     }
-    idx++;
+    event++;
 
     sleep(1);
 
@@ -150,7 +148,7 @@ BinaryWriter::do_work(std::atomic<bool>& running_flag)
       
 
   std::ostringstream oss_summ;
-  oss_summ << ": Exiting the do_work() method, generated " << nFakeEvent_
+  oss_summ << ": Exiting the do_work() method, generated " << event
            << " fake events and successfully wrote " << nGeoLoc_  << " fragments to each event. ";
   ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_work() method";

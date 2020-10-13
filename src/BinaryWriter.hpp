@@ -62,7 +62,6 @@ private:
   void do_work(std::atomic<bool>&);
 
   // Configuration defaults
-  const size_t REASONABLE_DEFAULT_FAKEEVENT = 4;
   const size_t REASONABLE_DEFAULT_GEOLOC = 5;
   const size_t REASONABLE_DEFAULT_MSECBETWEENSENDS = 1000;
   const size_t REASONABLE_IO_SIZE_BYTES = 1024;
@@ -72,7 +71,6 @@ private:
   const std::string DEFAULT_MODE = "one-event-per-file";
 
   // Configuration
-  size_t nFakeEvent_ = REASONABLE_DEFAULT_FAKEEVENT;
   size_t nGeoLoc_ = REASONABLE_DEFAULT_GEOLOC;
   size_t waitBetweenSendsMsec_ = REASONABLE_DEFAULT_MSECBETWEENSENDS;
   size_t io_size_ = REASONABLE_IO_SIZE_BYTES;
@@ -80,6 +78,7 @@ private:
   std::string directory_path_ = DEFAULT_PATH;
   std::string filename_pattern_ = DEFAULT_FILENAME;
   std::string operation_mode_ = DEFAULT_MODE;
+
 
   // Workers
   std::unique_ptr<DataStore> dataWriter_;
