@@ -129,11 +129,13 @@ SimpleDiskReader::do_work(std::atomic<bool>& running_flag)
 
   TLOG(TLVL_WORK_STEPS) << get_name() << ": trying to read fragment " <<key_eventID_<<":"<< key_detectorID_<<":"<< key_geoLocationID_  <<", from file "<<filename_pattern_ ;
 
-  KeyedDataBlock dataBlock  = dataReader_->read(dataKey);
+  KeyedDataBlock dataBlock(dataKey) ; //= dataReader_->read(dataKey);
 
   while (running_flag.load()) {
       // for now just read the file/datafragment and then stop
     std::this_thread::sleep_for(std::chrono::milliseconds(waitBetweenSendsMsec_));
+    dataBlock  = dataReader_->read(dataKey);
+
   }
   
   TLOG(TLVL_WORK_STEPS) << get_name() << ": End of do_work loop";

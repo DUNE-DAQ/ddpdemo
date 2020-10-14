@@ -58,40 +58,51 @@ public:
   }
   
   virtual KeyedDataBlock read(const StorageKey& key) {
-    ERS_INFO("going to read data block from eventID/geoLocationID " << HDF5KeyTranslator::getPathString(key) << " from file"<<getFileNameFromKey(key));
-     // opening the file from Storage Key + path_ + fileName_ + operation_mode_ 
-     std::string fileName = getFileNameFromKey(key);
-     filePtr = new HighFive::File(fileName, HighFive::File::ReadOnly);
 
+    ERS_INFO("going to read data block from eventID/geoLocationID " << HDF5KeyTranslator::getPathString(key) << " from file "<<getFileNameFromKey(key));
+
+     // opening the file from Storage Key + path_ + fileName_ + operation_mode_ 
+     std::string fullFileName = getFileNameFromKey(key);
+     // filePtr will be the handler to the Opened-File after a call to openFileIfNeeded()
+     openFileIfNeeded(fullFileName, HighFive::File::ReadOnly);
 
      const std::string groupName = std::to_string(key.getEventID());
-     //    const std::string detectorID = key.getDetectorID();
      const std::string datasetName = std::to_string(key.getGeoLocation());
      KeyedDataBlock dataBlock(key);
 
      if(!filePtr->exist(groupName)) {
         throw InvalidHDF5Group(ERS_HERE, get_name());
-     } else {
-        HighFive::Group theGroup = filePtr->getGroup(groupName);
-        if (!theGroup.isValid()) {
-           throw InvalidHDF5Group(ERS_HERE, get_name());
-        } else {
-           try {  // to determine if the dataset exists in the group and copy it to membuffer
-              HighFive::DataSet theDataSet = theGroup.getDataSet( datasetName );
-              dataBlock.data_size = theDataSet.getStorageSize();
-              HighFive::DataSpace thedataSpace = theDataSet.getSpace();
-              char* membuffer = (char*)malloc(dataBlock.data_size);
-              theDataSet.read( membuffer);
-              dataBlock.unowned_data_start = membuffer;
-              ERS_INFO("finished reading eventID/geoLocationID " <<HDF5KeyTranslator::getPathString(key)<<  ", with storage size "<<theDataSet.getStorageSize());
 
-           }
-           catch( HighFive::DataSetException const& ) {
-              ERS_INFO("HDF5DataSet "<< datasetName << " not found.");
-           }
-        }
+     } else {
+
+       HighFive::Group theGroup = filePtr->getGroup(groupName);
+       
+       if (!theGroup.isValid()) {
+         
+         throw InvalidHDF5Group(ERS_HERE, get_name());
+         
+       } else {
+
+         try {  // to determine if the dataset exists in the group and copy it to membuffer
+           
+           HighFive::DataSet theDataSet = theGroup.getDataSet( datasetName );
+           dataBlock.data_size = theDataSet.getStorageSize();
+           HighFive::DataSpace thedataSpace = theDataSet.getSpace();
+           char* membuffer = (char*)malloc(dataBlock.data_size);
+           theDataSet.read( membuffer);
+           dataBlock.unowned_data_start = membuffer;
+           
+         }
+         catch( HighFive::DataSetException const& ) {
+           
+           ERS_INFO("HDF5DataSet "<< datasetName << " not found.");
+           
+         }
+
+       }
+       
      }
-     delete filePtr;
+     
      return dataBlock;
   }
 
@@ -106,11 +117,10 @@ public:
     size_t geoID =dataBlock.data_key.getGeoLocation();
  
     // opening the file from Storage Key + path_ + fileName_ + operation_mode_ 
-    // NEED all sort of checks on the file + Ptr 
-    std::string fileName = getFileNameFromKey(dataBlock.data_key);
-    filePtr = new HighFive::File(fileName, HighFive::File::OpenOrCreate);
+    std::string fullFileName = getFileNameFromKey(dataBlock.data_key);
+    // filePtr will be the handler to the Opened-File after a call to openFileIfNeeded()
+    openFileIfNeeded(fullFileName, HighFive::File::OpenOrCreate);
 
-    ERS_INFO("Created HDF5 file(s).");
 
 
 
@@ -143,8 +153,6 @@ public:
     }
 
     filePtr->flush();
-
-    delete filePtr;
    
   }
   
@@ -160,16 +168,20 @@ private:
   HDF5DataStore& operator=(HDF5DataStore&&) = delete;
 
   HighFive::File* filePtr; 
+  unsigned openFlags_ ;
 
   std::string path_;
   std::string fileName_;
   std::string operation_mode_;
+  std::string fullFileName_;
+
 
   std::string getFileNameFromKey(const StorageKey& data_key) {
     size_t idx = data_key.getEventID();
     size_t geoID = data_key.getGeoLocation();
     std::string file_name = std::string("") ;
     if (operation_mode_ == "one-event-per-file" ) {
+
       file_name = path_ + "/" + fileName_ + "_event_" + std::to_string(idx) + ".hdf5" ; 
       
     } else if (operation_mode_ == "one-fragment-per-file" ) {
@@ -180,9 +192,30 @@ private:
       
       file_name = path_ + "/" + fileName_ + "_all_events" +  ".hdf5" ;
     }
+
     return file_name ;
+
   }
     
+
+  void openFileIfNeeded(const std::string &fileName, unsigned openFlags = HighFive::File::ReadOnly){
+    
+    if( fullFileName_.compare(fileName) || openFlags_ != openFlags){
+
+      //opening file for the first time OR something changed in the name or the way of opening the file
+      ERS_INFO("going to open file " <<fileName<< " with openFlags " << std::to_string(openFlags));
+      fullFileName_ = fileName; 
+      openFlags_ = openFlags; 
+      filePtr = new HighFive::File(fullFileName_, openFlags_);      
+      ERS_INFO("Created HDF5 file.");
+
+    } else {
+      
+      ERS_INFO("Pointer file to  " <<fileName<< " was already opened with openFlags" << std::to_string(openFlags));
+      
+    }
+
+  }
 
 };
 
