@@ -4,7 +4,6 @@
   "modules": {
     "disk_writer": {
       "user_module_type": "BinaryWriter",
-      "nFakeEvent": 5, 
       "nGeoLoc": 10, 
       "io_size":1048576,
       "waitBetweenSendsMsec": 1000,
@@ -12,7 +11,8 @@
       "data_store_parameters": {
       "data_store_module": "HDF5DataStore",
       "directory_path": ".",
-      "filename_pattern": "demo_event_"
+      "filename": "run_number_201013", 
+      "mode": "all-per-file"
       }
     }
   },

@@ -1,16 +1,16 @@
 /**
- * @file BinaryWriter.hpp
+ * @file DataGenerator.hpp
  *
- * BinaryWriter is a simple DAQModule implementation that
- * writes data to an HDF5 file on disk.
+ * DataGenerator is a simple DAQModule implementation that
+ * writes data to HDF5 file(s) on disk.
  *
  * This is part of the DUNE DAQ Software Suite, copyright 2020.
  * Licensing/copyright details are in the COPYING file that you should have
  * received with this code.
  */
 
-#ifndef DDPDEMO_SRC_BinaryWriter_HPP_
-#define DDPDEMO_SRC_BinaryWriter_HPP_
+#ifndef DDPDEMO_SRC_DATAGENERATOR_HPP_
+#define DDPDEMO_SRC_DATAGENERATOR_HPP_
 
 #include "ddpdemo/DataStore.hpp"
 
@@ -27,26 +27,26 @@ namespace dunedaq {
 namespace ddpdemo {
 
 /**
- * @brief BinaryWriter creates fake events writes
+ * @brief DataGenerator creates fake events writes
  * them to an HDF5 file..
  */
-class BinaryWriter : public dunedaq::appfwk::DAQModule
+class DataGenerator : public dunedaq::appfwk::DAQModule
 {
 public:
   /**
-   * @brief BinaryWriter Constructor
-   * @param name Instance name for this BinaryWriter instance
+   * @brief DataGenerator Constructor
+   * @param name Instance name for this DataGenerator instance
    */
-  explicit BinaryWriter(const std::string& name);
+  explicit DataGenerator(const std::string& name);
 
-  BinaryWriter(const BinaryWriter&) =
-    delete; ///< BinaryWriter is not copy-constructible
-  BinaryWriter& operator=(const BinaryWriter&) =
-    delete; ///< BinaryWriter is not copy-assignable
-  BinaryWriter(BinaryWriter&&) =
-    delete; ///< BinaryWriter is not move-constructible
-  BinaryWriter& operator=(BinaryWriter&&) =
-    delete; ///< BinaryWriter is not move-assignable
+  DataGenerator(const DataGenerator&) =
+    delete; ///< DataGenerator is not copy-constructible
+  DataGenerator& operator=(const DataGenerator&) =
+    delete; ///< DataGenerator is not copy-assignable
+  DataGenerator(DataGenerator&&) =
+    delete; ///< DataGenerator is not move-constructible
+  DataGenerator& operator=(DataGenerator&&) =
+    delete; ///< DataGenerator is not move-assignable
 
   void init() override;
 
@@ -79,11 +79,8 @@ private:
   std::string filename_pattern_ = DEFAULT_FILENAME;
   std::string operation_mode_ = DEFAULT_MODE;
 
-
   // Workers
   std::unique_ptr<DataStore> dataWriter_;
-
-
 };
 } // namespace ddpdemo
 
@@ -94,16 +91,7 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        ((std::string)name),
                        ((std::string)message))
 
-ERS_DECLARE_ISSUE_BASE(ddpdemo,
-                       InvalidDataWriterError,
-                       appfwk::GeneralDAQModuleIssue,
-                       "A valid dataWriter instance is not available so it will not be possible to write data. A likely cause for this is a skipped or missed Configure transition.",
-                       ((std::string)name),
-                       ERS_EMPTY)
-
-
-
 
 } // namespace dunedaq
 
-#endif // DDPDEMO_SRC_BinaryWriter_HPP_
+#endif // DDPDEMO_SRC_DATAGENERATOR_HPP_
