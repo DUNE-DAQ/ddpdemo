@@ -39,8 +39,8 @@ file(COPY test/binary_writer_demo.json DESTINATION test)
 daq_point_build_to( unittest )
 daq_add_unit_test(HDF5KeyTranslator_test   appfwk::appfwk ddpdemo ers::ers)
 daq_add_unit_test(StorageKey_test          ddpdemo ers::ers)
-#daq_add_unit_test(HDF5Write_test           appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
- 
+daq_add_unit_test(HDF5Write_test           appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
+
 ##############################################################################
 
 daq_install(TARGETS ddpdemo ddpdemo_SimpleDiskWriter_duneDAQModule ddpdemo_BinaryWriter_duneDAQModule ddpdemo_SimpleDiskReader_duneDAQModule)
