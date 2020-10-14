@@ -39,7 +39,7 @@ namespace ddpdemo {
 class HDF5DataStore : public DataStore {
 
 public:
-  explicit HDF5DataStore(const std::string name, const std::string& path, const std::string& fileName,  const std::string operationMode) : DataStore(name) {
+  explicit HDF5DataStore(const std::string name, const std::string& path, const std::string& fileName,  const std::string& operationMode) : DataStore(name) {
 	
   ERS_INFO("Filename prefix: " << fileName);
   ERS_INFO("Directory path: " << path );
@@ -123,8 +123,8 @@ public:
 
     filePtr->flush();
 
-
-
+    delete filePtr;
+   
   }
   
 
