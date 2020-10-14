@@ -60,19 +60,14 @@ BOOST_AUTO_TEST_SUITE(HDF5Write_test)
 BOOST_AUTO_TEST_CASE(WriteFragmentFiles)
 {
   std::string filePath(std::filesystem::temp_directory_path());;
+  std::string filePrefix = "demo" + std::to_string(getpid());
 
   // delete any pre-existing files so that we start with a clean slate
-  std::string deletePattern = "demo.*event.*geoID.*.hdf5";
+  std::string deletePattern = filePrefix + ".*.hdf5";
   deleteFilesMatchingPattern(filePath, deletePattern);
 
-  // desired Constructor arguments:
-  // - name of the data store
-  // - directory path where the files should be stored and/or read from
-  // - filename prefix
-  //std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, "demo", "one-fragment-per-file"));
-
-  // current constructor arguments
-  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, "demo", "one-fragment-per-file", "1", "1"));
+  // create the DataStore
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, filePrefix, "one-fragment-per-file"));
 
   // write several events, each with several fragments
   char dummyData[8];
@@ -90,7 +85,7 @@ BOOST_AUTO_TEST_CASE(WriteFragmentFiles)
   dsPtr.reset();  // explicit destruction
 
   // check that the expected number of files was created
-  std::string searchPattern = "demo.*event.*geoID.*.hdf5";
+  std::string searchPattern = filePrefix + ".*event.*geoID.*.hdf5";
   std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
   BOOST_REQUIRE_EQUAL(fileList.size(), 6);
 
@@ -102,19 +97,14 @@ BOOST_AUTO_TEST_CASE(WriteFragmentFiles)
 BOOST_AUTO_TEST_CASE(WriteEventFiles)
 {
   std::string filePath(std::filesystem::temp_directory_path());;
+  std::string filePrefix = "demo" + std::to_string(getpid());
 
   // delete any pre-existing files so that we start with a clean slate
-  std::string deletePattern = "demo.*event.*.hdf5";
+  std::string deletePattern = filePrefix + ".*.hdf5";
   deleteFilesMatchingPattern(filePath, deletePattern);
 
-  // desired Constructor arguments:
-  // - name of the data store
-  // - directory path where the files should be stored and/or read from
-  // - filename prefix
-  //std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, "demo", "one-event-per-file"));
-
-  // current constructor arguments
-  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, "demo", "one-event-per-file", "1", "1"));
+  // create the DataStore
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, filePrefix, "one-event-per-file"));
 
   // write several events, each with several fragments
   char dummyData[8];
@@ -132,13 +122,50 @@ BOOST_AUTO_TEST_CASE(WriteEventFiles)
   dsPtr.reset();  // explicit destruction
 
   // check that the expected number of files was created
-  std::string searchPattern = "demo.*event.*.hdf5";
+  std::string searchPattern = filePrefix + ".*event.*.hdf5";
   std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
   BOOST_REQUIRE_EQUAL(fileList.size(), 3);
 
   // clean up the files that were created
   fileList = deleteFilesMatchingPattern(filePath, deletePattern);
   BOOST_REQUIRE_EQUAL(fileList.size(), 3);
+}
+
+BOOST_AUTO_TEST_CASE(WriteOneFile)
+{
+  std::string filePath(std::filesystem::temp_directory_path());;
+  std::string filePrefix = "demo" + std::to_string(getpid());
+
+  // delete any pre-existing files so that we start with a clean slate
+  std::string deletePattern = filePrefix + ".*.hdf5";
+  deleteFilesMatchingPattern(filePath, deletePattern);
+
+  // create the DataStore
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, filePrefix, "all-per-file"));
+
+  // write several events, each with several fragments
+  char dummyData[8];
+  for (int eventID = 1; eventID <= 3; ++eventID)
+  {
+    for (int geoLoc = 0; geoLoc < 2; ++geoLoc)
+    {
+      StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
+      KeyedDataBlock dataBlock(key);
+      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.data_size = 8;
+      dsPtr->write(dataBlock);
+    }
+  }
+  dsPtr.reset();  // explicit destruction
+
+  // check that the expected number of files was created
+  std::string searchPattern = filePrefix + ".*.hdf5";
+  std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
+  BOOST_REQUIRE_EQUAL(fileList.size(), 1);
+
+  // clean up the files that were created
+  fileList = deleteFilesMatchingPattern(filePath, deletePattern);
+  BOOST_REQUIRE_EQUAL(fileList.size(), 1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
