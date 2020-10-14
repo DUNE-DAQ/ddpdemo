@@ -78,6 +78,8 @@ private:
 
   // Workers
   std::unique_ptr<DataStore> dataWriter_;
+
+
 };
 } // namespace ddpdemo
 
