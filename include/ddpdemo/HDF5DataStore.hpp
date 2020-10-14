@@ -58,7 +58,11 @@ public:
   }
   
   virtual KeyedDataBlock read(const StorageKey& key) {
-     ERS_INFO("going to read data block from eventID/geoLocationID " << HDF5KeyTranslator::getPathString(key));
+    ERS_INFO("going to read data block from eventID/geoLocationID " << HDF5KeyTranslator::getPathString(key) << " from file"<<getFileNameFromKey(key));
+     // opening the file from Storage Key + path_ + fileName_ + operation_mode_ 
+     std::string fileName = getFileNameFromKey(key);
+     filePtr = new HighFive::File(fileName, HighFive::File::ReadOnly);
+
 
      const std::string groupName = std::to_string(key.getEventID());
      //    const std::string detectorID = key.getDetectorID();
@@ -87,6 +91,7 @@ public:
            }
         }
      }
+     delete filePtr;
      return dataBlock;
   }
 
@@ -100,20 +105,10 @@ public:
     size_t idx = dataBlock.data_key.getEventID();
     size_t geoID =dataBlock.data_key.getGeoLocation();
  
-
-    // Creating empty HDF5 file
-    // AAA: to be changed with open/read/write implementation from Carlos
-    if (operation_mode_ == "one-event-per-file" ) {
-      filePtr = new HighFive::File(path_ + "/" + fileName_ + "_event_" + std::to_string(idx) + ".hdf5", HighFive::File::OpenOrCreate);
-
-    } else if (operation_mode_ == "one-fragment-per-file" ) {
-
-      filePtr = new HighFive::File(path_ + "/" + fileName_ + "_event_" + std::to_string(idx) + "_geoID_" + std::to_string(geoID) +  ".hdf5", HighFive::File::OpenOrCreate | HighFive::File::Truncate);
-
-    } else if (operation_mode_ == "all-per-file" ) {    
-
-      filePtr = new HighFive::File(path_ + "/" + fileName_ + "_all_events" +  ".hdf5", HighFive::File::OpenOrCreate);    
-    }
+    // opening the file from Storage Key + path_ + fileName_ + operation_mode_ 
+    // NEED all sort of checks on the file + Ptr 
+    std::string fileName = getFileNameFromKey(dataBlock.data_key);
+    filePtr = new HighFive::File(fileName, HighFive::File::OpenOrCreate);
 
     ERS_INFO("Created HDF5 file(s).");
 
@@ -170,8 +165,24 @@ private:
   std::string fileName_;
   std::string operation_mode_;
 
-
-
+  std::string getFileNameFromKey(const StorageKey& data_key) {
+    size_t idx = data_key.getEventID();
+    size_t geoID = data_key.getGeoLocation();
+    std::string file_name = std::string("") ;
+    if (operation_mode_ == "one-event-per-file" ) {
+      file_name = path_ + "/" + fileName_ + "_event_" + std::to_string(idx) + ".hdf5" ; 
+      
+    } else if (operation_mode_ == "one-fragment-per-file" ) {
+      
+      file_name = path_ + "/" + fileName_ + "_event_" + std::to_string(idx) + "_geoID_" + std::to_string(geoID) +  ".hdf5" ;
+      
+    } else if (operation_mode_ == "all-per-file" ) {    
+      
+      file_name = path_ + "/" + fileName_ + "_all_events" +  ".hdf5" ;
+    }
+    return file_name ;
+  }
+    
 
 };
 

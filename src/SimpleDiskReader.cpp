@@ -8,7 +8,7 @@
 
 #include "SimpleDiskReader.hpp"
 #include "ddpdemo/KeyedDataBlock.hpp"
-#include "ddpdemo/HDF5DataReader.hpp"
+#include "ddpdemo/HDF5DataStore.hpp"
 
 #include <ers/ers.h>
 #include <TRACE/trace.h>
@@ -53,11 +53,11 @@ SimpleDiskReader::do_configure(const std::vector<std::string>& /*args*/)
   waitBetweenSendsMsec_ = get_config().value<size_t>("waitBetweenSendsMsec", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
 
   directory_path_ = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
-  filename_pattern_ = get_config()["data_store_parameters"]["filename_pattern"].get<std::string>();
-
-  // Initializing the HDF5 DataStore constructor
-  // Creating empty HDF5 file
-  dataReader_.reset(new HDF5DataReader("tempReader", directory_path_ , filename_pattern_));
+  filename_pattern_ = get_config()["data_store_parameters"]["filename"].get<std::string>();
+  operation_mode_ = get_config()["data_store_parameters"]["mode"].get<std::string>();
+  // Initializing the HDF5 DataStore constructor                                                                                               
+  // Creating empty HDF5 file                                                                                                                  
+  dataReader_.reset(new HDF5DataStore("tempWriter", directory_path_ , filename_pattern_, operation_mode_));
 
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
