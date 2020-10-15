@@ -180,11 +180,11 @@ private:
     std::string workString = fileName_;
     if (operation_mode_ == "one-event-per-file")
     {
-      workString += "_event_.*.hdf5";  // fix this to use \d
+      workString += "_event_\\d+.hdf5";
     }
     else if (operation_mode_ == "one-fragment-per-file")
     {
-      workString += "_event_.*_geoID_.*.hdf5";
+      workString += "_event_\\d+_geoID_\\d+.hdf5";
     }
     else
     {
