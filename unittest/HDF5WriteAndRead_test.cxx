@@ -69,8 +69,11 @@ BOOST_AUTO_TEST_CASE(WriteAndReadFragmentFilesSeparateDataStores)
   // - name of the data store (just a descriptive name)
   // - directory path where the files should be stored and/or read from
   // - filename prefix
-  // - file mode
+  // - operation mode
   std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, "demo", "one-fragment-per-file"));
+
+
+  std::vector<StorageKey> keyList; 
 
   // write several events, each with several fragments
   char dummyData[8];
@@ -83,6 +86,7 @@ BOOST_AUTO_TEST_CASE(WriteAndReadFragmentFilesSeparateDataStores)
       dataBlock.unowned_data_start = &dummyData[0];
       dataBlock.data_size = 8;
       dsPtr->write(dataBlock);
+      keyList.push_back(key);
     }
   }
   dsPtr.reset();  // explicit destruction
@@ -90,28 +94,22 @@ BOOST_AUTO_TEST_CASE(WriteAndReadFragmentFilesSeparateDataStores)
   // check that the expected number of files was created
   std::string searchPattern = "demo.*event.*geoID.*.hdf5";
   std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
-  BOOST_REQUIRE_EQUAL(fileList.size(), 6);
+
 
   // create a new DataStore instance to read back the data that was written
-  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempReader", filePath, "demo", "one-fragment-per-file"));
-
-  // fetch all of the keys that exist in the DataStore
-  std::vector<StorageKey> keyList = dsPtr->getAllExistingKeys();
-  BOOST_REQUIRE_EQUAL(keyList.size(), 6);
+  std::unique_ptr<HDF5DataStore> dsPtr2(new HDF5DataStore("tempReader", filePath, "demo", "one-fragment-per-file"));
 
   // loop over all of the keys to read in the data
   for (size_t kdx = 0; kdx < keyList.size(); ++kdx)
   {
-    KeyedDataBlock dataBlock = dsPtr->read(keyList[kdx]);
+    KeyedDataBlock dataBlock = dsPtr2->read(keyList[kdx]);
     BOOST_REQUIRE_EQUAL(dataBlock.getDataSizeBytes(), 8);
   }
-  dsPtr.reset();  // explicit destruction
+  dsPtr2.reset();  // explicit destruction
 
-  // is there a way to check that we are not leaking memory?
 
   // clean up the files that were created
   fileList = deleteFilesMatchingPattern(filePath, deletePattern);
-  BOOST_REQUIRE_EQUAL(fileList.size(), 6);
 }
 
 BOOST_AUTO_TEST_CASE(WriteAndReadEventFilesSeparateDataStores)
@@ -129,6 +127,8 @@ BOOST_AUTO_TEST_CASE(WriteAndReadEventFilesSeparateDataStores)
   // - file mode
   std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, "demo", "one-event-per-file"));
 
+  std::vector<StorageKey> keyList; 
+
   // write several events, each with several fragments
   char dummyData[8];
   for (int eventID = 1; eventID <= 3; ++eventID)
@@ -140,6 +140,7 @@ BOOST_AUTO_TEST_CASE(WriteAndReadEventFilesSeparateDataStores)
       dataBlock.unowned_data_start = &dummyData[0];
       dataBlock.data_size = 8;
       dsPtr->write(dataBlock);
+      keyList.push_back(key);
     }
   }
   dsPtr.reset();  // explicit destruction
@@ -147,28 +148,23 @@ BOOST_AUTO_TEST_CASE(WriteAndReadEventFilesSeparateDataStores)
   // check that the expected number of files was created
   std::string searchPattern = "demo.*event.*.hdf5";
   std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
-  BOOST_REQUIRE_EQUAL(fileList.size(), 6);
+  //BOOST_REQUIRE_EQUAL(fileList.size(), 6);
 
   // create a new DataStore instance to read back the data that was written
-  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempReader", filePath, "demo", "one-event-per-file"));
+  std::unique_ptr<HDF5DataStore> dsPtr2(new HDF5DataStore("tempReader", filePath, "demo", "one-event-per-file"));
 
-  // fetch all of the keys that exist in the DataStore
-  std::vector<StorageKey> keyList = dsPtr->getAllExistingKeys();
-  BOOST_REQUIRE_EQUAL(keyList.size(), 6);
 
   // loop over all of the keys to read in the data
   for (size_t kdx = 0; kdx < keyList.size(); ++kdx)
   {
-    KeyedDataBlock dataBlock = dsPtr->read(keyList[kdx]);
+    KeyedDataBlock dataBlock = dsPtr2->read(keyList[kdx]);
     BOOST_REQUIRE_EQUAL(dataBlock.getDataSizeBytes(), 8);
   }
-  dsPtr.reset();  // explicit destruction
-
-  // is there a way to check that we are not leaking memory?
+  dsPtr2.reset();  // explicit destruction
 
   // clean up the files that were created
   fileList = deleteFilesMatchingPattern(filePath, deletePattern);
-  BOOST_REQUIRE_EQUAL(fileList.size(), 6);
+  BOOST_REQUIRE_EQUAL(fileList.size(), 3);
 }
 
 BOOST_AUTO_TEST_CASE(WriteAndReadFragmentFilesSameDataStore)
@@ -186,6 +182,8 @@ BOOST_AUTO_TEST_CASE(WriteAndReadFragmentFilesSameDataStore)
   // - file mode
   std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("hdfStore", filePath, "demo", "one-fragment-per-file"));
 
+  std::vector<StorageKey> keyList; 
+
   // write several events, each with several fragments
   char dummyData[8];
   for (int eventID = 1; eventID <= 3; ++eventID)
@@ -197,14 +195,17 @@ BOOST_AUTO_TEST_CASE(WriteAndReadFragmentFilesSameDataStore)
       dataBlock.unowned_data_start = &dummyData[0];
       dataBlock.data_size = 8;
       dsPtr->write(dataBlock);
+      keyList.push_back(key);
     }
   }
 
+  // check that the expected number of files was created
+  std::string searchPattern = "demo.*event.*geoID.*.hdf5";
+  std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
+  BOOST_REQUIRE_EQUAL(fileList.size(), 6);
+  
   // Switch from writing to reading, continuing to use the same DataStore instance
 
-  // fetch all of the keys that exist in the DataStore
-  std::vector<StorageKey> keyList = dsPtr->getAllExistingKeys();
-  BOOST_REQUIRE_EQUAL(keyList.size(), 6);
 
   // loop over all of the keys to read in the data
   for (size_t kdx = 0; kdx < keyList.size(); ++kdx)
@@ -213,8 +214,6 @@ BOOST_AUTO_TEST_CASE(WriteAndReadFragmentFilesSameDataStore)
     BOOST_REQUIRE_EQUAL(dataBlock.getDataSizeBytes(), 8);
   }
   dsPtr.reset();  // explicit destruction
-
-  // is there a way to check that we are not leaking memory?
 
   // clean up the files that were created
   fileList = deleteFilesMatchingPattern(filePath, deletePattern);
@@ -236,8 +235,10 @@ BOOST_AUTO_TEST_CASE(WriteAndReadEventFilesSameDataStore)
   // - file mode
   std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("hdfStore", filePath, "demo", "one-event-per-file"));
 
+  std::vector<StorageKey> keyList; 
+
   // write several events, each with several fragments
-  char dummyData[8];
+  char dummyData[10];
   for (int eventID = 1; eventID <= 3; ++eventID)
   {
     for (int geoLoc = 0; geoLoc < 2; ++geoLoc)
@@ -245,30 +246,34 @@ BOOST_AUTO_TEST_CASE(WriteAndReadEventFilesSameDataStore)
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
       KeyedDataBlock dataBlock(key);
       dataBlock.unowned_data_start = &dummyData[0];
-      dataBlock.data_size = 8;
+      dataBlock.data_size = 10;
       dsPtr->write(dataBlock);
+      keyList.push_back(key);
     }
   }
 
-  // Switch from writing to reading, continuing to use the same DataStore instance
 
-  // fetch all of the keys that exist in the DataStore
-  std::vector<StorageKey> keyList = dsPtr->getAllExistingKeys();
-  BOOST_REQUIRE_EQUAL(keyList.size(), 6);
+  // check that the expected number of files was created
+  std::string searchPattern = "demo.*event.*.hdf5";
+  std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
+  //BOOST_REQUIRE_EQUAL(fileList.size(), 6);
+
+  // Switch from writing to reading, continuing to use the same DataStore instance
 
   // loop over all of the keys to read in the data
   for (size_t kdx = 0; kdx < keyList.size(); ++kdx)
   {
     KeyedDataBlock dataBlock = dsPtr->read(keyList[kdx]);
-    BOOST_REQUIRE_EQUAL(dataBlock.getDataSizeBytes(), 8);
+    BOOST_REQUIRE_EQUAL(dataBlock.getDataSizeBytes(), 10);
   }
   dsPtr.reset();  // explicit destruction
 
-  // is there a way to check that we are not leaking memory?
-
+  
   // clean up the files that were created
   fileList = deleteFilesMatchingPattern(filePath, deletePattern);
-  BOOST_REQUIRE_EQUAL(fileList.size(), 6);
+  BOOST_REQUIRE_EQUAL(fileList.size(), 3);
 }
+
+
 
 BOOST_AUTO_TEST_SUITE_END()
