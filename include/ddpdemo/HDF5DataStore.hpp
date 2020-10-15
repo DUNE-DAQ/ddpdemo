@@ -39,18 +39,17 @@ namespace ddpdemo {
 class HDF5DataStore : public DataStore {
 
 public:
-  explicit HDF5DataStore(const std::string name, const std::string& path, const std::string& fileName,  const std::string& operationMode) : DataStore(name) {
-	
-  ERS_INFO("Filename prefix: " << fileName);
-  ERS_INFO("Directory path: " << path );
-  ERS_INFO("Operation mode: " << operationMode );
+  explicit HDF5DataStore(const std::string name, const std::string& path,
+                         const std::string& fileName, const std::string& operationMode)
+    : DataStore(name), fullNameOfOpenFile_(""), openFlagsOfOpenFile_(0)
+  {
+    ERS_INFO("Filename prefix: " << fileName);
+    ERS_INFO("Directory path: " << path );
+    ERS_INFO("Operation mode: " << operationMode );
 
-
-  fileName_ = fileName;
-  path_ = path;
-  operation_mode_ = operationMode;
-
-
+    fileName_ = fileName;
+    path_ = path;
+    operation_mode_ = operationMode;
   }
 
   virtual void setup(const size_t eventId) {
@@ -63,7 +62,7 @@ public:
 
      // opening the file from Storage Key + path_ + fileName_ + operation_mode_ 
      std::string fullFileName = getFileNameFromKey(key);
-     // filePtr will be the handler to the Opened-File after a call to openFileIfNeeded()
+     // filePtr will be the handle to the Opened-File after a call to openFileIfNeeded()
      openFileIfNeeded(fullFileName, HighFive::File::ReadOnly);
 
      const std::string groupName = std::to_string(key.getEventID());
@@ -118,7 +117,7 @@ public:
  
     // opening the file from Storage Key + path_ + fileName_ + operation_mode_ 
     std::string fullFileName = getFileNameFromKey(dataBlock.data_key);
-    // filePtr will be the handler to the Opened-File after a call to openFileIfNeeded()
+    // filePtr will be the handle to the Opened-File after a call to openFileIfNeeded()
     openFileIfNeeded(fullFileName, HighFive::File::OpenOrCreate);
 
 
@@ -167,13 +166,13 @@ private:
   HDF5DataStore(HDF5DataStore&&) = delete;
   HDF5DataStore& operator=(HDF5DataStore&&) = delete;
 
-  HighFive::File* filePtr; 
-  unsigned openFlags_ ;
+  std::unique_ptr<HighFive::File> filePtr; 
 
   std::string path_;
   std::string fileName_;
   std::string operation_mode_;
-  std::string fullFileName_;
+  std::string fullNameOfOpenFile_;
+  unsigned openFlagsOfOpenFile_ ;
 
 
   std::string getFileNameFromKey(const StorageKey& data_key) {
@@ -200,18 +199,18 @@ private:
 
   void openFileIfNeeded(const std::string &fileName, unsigned openFlags = HighFive::File::ReadOnly){
     
-    if( fullFileName_.compare(fileName) || openFlags_ != openFlags){
+    if( fullNameOfOpenFile_.compare(fileName) || openFlagsOfOpenFile_ != openFlags){
 
       //opening file for the first time OR something changed in the name or the way of opening the file
       ERS_INFO("going to open file " <<fileName<< " with openFlags " << std::to_string(openFlags));
-      fullFileName_ = fileName; 
-      openFlags_ = openFlags; 
-      filePtr = new HighFive::File(fullFileName_, openFlags_);      
+      fullNameOfOpenFile_ = fileName; 
+      openFlagsOfOpenFile_ = openFlags; 
+      filePtr.reset(new HighFive::File(fileName, openFlags));
       ERS_INFO("Created HDF5 file.");
 
     } else {
       
-      ERS_INFO("Pointer file to  " <<fileName<< " was already opened with openFlags" << std::to_string(openFlags));
+      ERS_INFO("Pointer file to  " <<fullNameOfOpenFile_<< " was already opened with openFlags " << std::to_string(openFlagsOfOpenFile_));
       
     }
 
