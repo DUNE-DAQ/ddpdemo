@@ -64,14 +64,8 @@ private:
   // Configuration defaults
   const size_t REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING = 1000;
 
-  const std::string DEFAULT_PATH = ".";
-  const std::string DEFAULT_FILENAME = "demo.hdf5";
-
   // Configuration
   size_t sleepMsecWhileRunning_ = REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING;
-
-  std::string directory_path_ = DEFAULT_PATH;
-  std::string filename_pattern_ = DEFAULT_FILENAME;
 
   // Workers
   std::unique_ptr<DataStore> dataStore_;

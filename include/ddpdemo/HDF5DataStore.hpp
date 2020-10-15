@@ -177,13 +177,23 @@ private:
 
     // since this method is expected to find *all* files that match the expected pattern,
     // we can simply replace any "%e" and "%g" substrings with wildcards.
-    std::string workString = filePattern_ + ".hdf5";
-    workString = std::regex_replace(workString, std::regex("\\%e"), ".*");
-    workString = std::regex_replace(workString, std::regex("\\%g"), ".*");
+    std::string workString = fileName_;
+    if (operation_mode_ == "one-event-per-file")
+    {
+      workString += "_event_.*.hdf5";  // fix this to use \d
+    }
+    else if (operation_mode_ == "one-fragment-per-file")
+    {
+      workString += "_event_.*_geoID_.*.hdf5";
+    }
+    else
+    {
+      workString += "_all_events.hdf5";
+    }
     std::regex regexSearchPattern(workString);
 
     std::vector<std::string> fileList;
-    for (const auto& entry : std::filesystem::directory_iterator(directoryPath_))
+    for (const auto& entry : std::filesystem::directory_iterator(path_))
     {
       TLOG(TLVL_DEBUG) << "Directory element: " << entry.path().string();
       if (std::regex_match(entry.path().filename().string(), regexSearchPattern))

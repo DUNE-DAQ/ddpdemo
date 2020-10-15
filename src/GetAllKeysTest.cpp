@@ -49,10 +49,11 @@ GetAllKeysTest::do_configure(const std::vector<std::string>& /*args*/)
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
   sleepMsecWhileRunning_ = get_config().value<size_t>("sleepMsecWhileRunning", static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
 
-  directory_path_ = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
-  filename_pattern_ = get_config()["data_store_parameters"]["filename_pattern"].get<std::string>();
+  std::string directoryPath = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
+  std::string filenamePrefix = get_config()["data_store_parameters"]["filename_prefix"].get<std::string>();
+  std::string operationMode = get_config()["data_store_parameters"]["mode"].get<std::string>();
 
-  dataStore_.reset(new HDF5DataStore("tempWriter", directory_path_ , filename_pattern_));
+  dataStore_.reset(new HDF5DataStore("hdfStore", directoryPath , filenamePrefix, operationMode));
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
 }
