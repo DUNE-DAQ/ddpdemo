@@ -52,10 +52,10 @@ SimpleDiskWriter::do_configure(const std::vector<std::string>& /*args*/)
 
   directory_path_ = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
   filename_pattern_ = get_config()["data_store_parameters"]["filename_pattern"].get<std::string>();
-
+  operation_mode_ = get_config()["data_store_parameters"]["mode"].get<std::string>();
   // Initializing the HDF5 DataStore constructor
   // Creating empty HDF5 file
-  dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_ , filename_pattern_, ""));
+  dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_ , filename_pattern_, operation_mode_));
 
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
