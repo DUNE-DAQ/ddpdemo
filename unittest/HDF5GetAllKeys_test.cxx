@@ -1,0 +1,423 @@
+/**
+ * @file HDF5GetAllKeys_test.cxx Application that tests and demonstrates
+ * the write() *and* getAllExistingKeys() functionality of the HDF5DataStore class.
+ *
+ * This is part of the DUNE DAQ Application Framework, copyright 2020.
+ * Licensing/copyright details are in the COPYING file that you should have
+ * received with this code.
+ */
+
+#include "ddpdemo/HDF5DataStore.hpp"
+
+#include "ers/ers.h"
+
+#define BOOST_TEST_MODULE HDF5GetAllKeys_test // NOLINT
+
+#include <boost/test/unit_test.hpp>
+
+#include <iostream>
+#include <filesystem>
+#include <fstream>
+#include <regex>
+#include <string>
+#include <vector>
+
+using namespace dunedaq::ddpdemo;
+
+std::vector<std::string> getFilesMatchingPattern(const std::string& path, const std::string& pattern)
+{
+  std::regex regexSearchPattern(pattern);
+  std::vector<std::string> fileList;
+  for (const auto& entry : std::filesystem::directory_iterator(path))
+  {
+    if (std::regex_match(entry.path().filename().string(), regexSearchPattern))
+    {
+      fileList.push_back(entry.path());
+    }
+  }
+  return fileList;
+}
+
+std::vector<std::string> deleteFilesMatchingPattern(const std::string& path, const std::string& pattern)
+{
+  std::regex regexSearchPattern(pattern);
+  std::vector<std::string> fileList;
+  for (const auto& entry : std::filesystem::directory_iterator(path))
+  {
+    if (std::regex_match(entry.path().filename().string(), regexSearchPattern))
+    {
+      if (std::filesystem::remove(entry.path()))
+      {
+        fileList.push_back(entry.path());
+      }
+    }
+  }
+  return fileList;
+}
+
+BOOST_AUTO_TEST_SUITE(HDF5GetAllKeys_test)
+
+BOOST_AUTO_TEST_CASE(GetKeysFromFragmentFiles)
+{
+  std::string filePath(std::filesystem::temp_directory_path());;
+  std::string filePrefix = "demo" + std::to_string(getpid());
+  const int EVENT_COUNT = 5;
+  const int GEOLOC_COUNT = 3;
+  const int DUMMYDATA_SIZE = 20;
+
+  // delete any pre-existing files so that we start with a clean slate
+  std::string deletePattern = filePrefix + ".*.hdf5";
+  deleteFilesMatchingPattern(filePath, deletePattern);
+
+  // create the DataStore instance for writing
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("hdfDataStore", filePath, filePrefix, "one-fragment-per-file"));
+
+  // write several events, each with several fragments
+  char dummyData[DUMMYDATA_SIZE];
+  for (int eventID = 1; eventID <= EVENT_COUNT; ++eventID)
+  {
+    for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc)
+    {
+      StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
+      KeyedDataBlock dataBlock(key);
+      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.data_size = DUMMYDATA_SIZE;
+      dsPtr->write(dataBlock);
+    }
+  }
+  dsPtr.reset();  // explicit destruction
+
+  // check that the expected number of files was created (remove this later?)
+  std::string searchPattern = filePrefix + ".*event.*geoID.*.hdf5";
+  std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
+  BOOST_REQUIRE_EQUAL(fileList.size(), (EVENT_COUNT * GEOLOC_COUNT));
+
+  // create a second DataStore instance to fetch the keys
+  dsPtr.reset(new HDF5DataStore("hdfStore", filePath, filePrefix, "one-fragment-per-file"));
+
+  // fetch all of the keys that exist in the DataStore
+  std::vector<StorageKey> keyList = dsPtr->getAllExistingKeys();
+  BOOST_REQUIRE_EQUAL(keyList.size(), (EVENT_COUNT * GEOLOC_COUNT));
+
+  // verify that all of the expected keys are present, there are no duplicates, etc.
+  int individualKeyCount[EVENT_COUNT][GEOLOC_COUNT];
+  for (int edx = 0; edx < EVENT_COUNT; ++edx)
+  {
+    for (int gdx = 0; gdx < GEOLOC_COUNT; ++gdx)
+    {
+      individualKeyCount[edx][gdx] = 0;
+    }
+  }
+  for (auto& key : keyList)
+  {
+    uint32_t eventID = key.getEventID();
+    uint32_t geoLoc = key.getGeoLocation();
+    if (eventID > 0 && ((int)eventID) <= EVENT_COUNT &&
+        /*geoLoc >= 0 &&*/ ((int)geoLoc) < GEOLOC_COUNT)
+    {
+      ++individualKeyCount[eventID-1][geoLoc];
+    }
+    else
+    {
+      ERS_LOG("Unexpected key found: eventID=" << eventID << ", geoLoc=" << geoLoc);
+    }
+  }
+  int correctlyFoundKeyCount = 0;
+  for (int edx = 0; edx < EVENT_COUNT; ++edx)
+  {
+    for (int gdx = 0; gdx < GEOLOC_COUNT; ++gdx)
+    {
+      if (individualKeyCount[edx][gdx] == 1)
+      {
+        ++correctlyFoundKeyCount;
+      }
+      else
+      {
+        ERS_LOG("Missing or duplicate key found:  eventID=" << (edx+1) << ", geoLoc=" << gdx <<
+                ", count=" << individualKeyCount[edx][gdx]);
+      }
+    }
+  }
+  BOOST_REQUIRE_EQUAL(correctlyFoundKeyCount, (EVENT_COUNT * GEOLOC_COUNT));
+  dsPtr.reset();  // explicit destruction
+
+  // clean up the files that were created
+  fileList = deleteFilesMatchingPattern(filePath, deletePattern);
+  BOOST_REQUIRE_EQUAL(fileList.size(), (EVENT_COUNT * GEOLOC_COUNT));  // (remove this later?)
+}
+
+BOOST_AUTO_TEST_CASE(GetKeysFromEventFiles)
+{
+  std::string filePath(std::filesystem::temp_directory_path());;
+  std::string filePrefix = "demo" + std::to_string(getpid());
+  const int EVENT_COUNT = 5;
+  const int GEOLOC_COUNT = 3;
+  const int DUMMYDATA_SIZE = 20;
+
+  // delete any pre-existing files so that we start with a clean slate
+  std::string deletePattern = filePrefix + ".*.hdf5";
+  deleteFilesMatchingPattern(filePath, deletePattern);
+
+  // create the DataStore instance for writing
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("hdfDataStore", filePath, filePrefix, "one-event-per-file"));
+
+  // write several events, each with several fragments
+  char dummyData[DUMMYDATA_SIZE];
+  for (int eventID = 1; eventID <= EVENT_COUNT; ++eventID)
+  {
+    for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc)
+    {
+      StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
+      KeyedDataBlock dataBlock(key);
+      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.data_size = DUMMYDATA_SIZE;
+      dsPtr->write(dataBlock);
+    }
+  }
+  dsPtr.reset();  // explicit destruction
+
+  // check that the expected number of files was created (remove this later?)
+  std::string searchPattern = filePrefix + ".*event.*.hdf5";
+  std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
+  BOOST_REQUIRE_EQUAL(fileList.size(), EVENT_COUNT);
+
+  // create a second DataStore instance to fetch the keys
+  dsPtr.reset(new HDF5DataStore("hdfStore", filePath, filePrefix, "one-event-per-file"));
+
+  // fetch all of the keys that exist in the DataStore
+  std::vector<StorageKey> keyList = dsPtr->getAllExistingKeys();
+  BOOST_REQUIRE_EQUAL(keyList.size(), (EVENT_COUNT * GEOLOC_COUNT));
+
+  // verify that all of the expected keys are present, there are no duplicates, etc.
+  int individualKeyCount[EVENT_COUNT][GEOLOC_COUNT];
+  for (int edx = 0; edx < EVENT_COUNT; ++edx)
+  {
+    for (int gdx = 0; gdx < GEOLOC_COUNT; ++gdx)
+    {
+      individualKeyCount[edx][gdx] = 0;
+    }
+  }
+  for (auto& key : keyList)
+  {
+    uint32_t eventID = key.getEventID();
+    uint32_t geoLoc = key.getGeoLocation();
+    if (eventID > 0 && ((int)eventID) <= EVENT_COUNT &&
+        /*geoLoc >= 0 &&*/ ((int)geoLoc) < GEOLOC_COUNT)
+    {
+      ++individualKeyCount[eventID-1][geoLoc];
+    }
+    else
+    {
+      ERS_LOG("Unexpected key found: eventID=" << eventID << ", geoLoc=" << geoLoc);
+    }
+  }
+  int correctlyFoundKeyCount = 0;
+  for (int edx = 0; edx < EVENT_COUNT; ++edx)
+  {
+    for (int gdx = 0; gdx < GEOLOC_COUNT; ++gdx)
+    {
+      if (individualKeyCount[edx][gdx] == 1)
+      {
+        ++correctlyFoundKeyCount;
+      }
+      else
+      {
+        ERS_LOG("Missing or duplicate key found:  eventID=" << (edx+1) << ", geoLoc=" << gdx <<
+                ", count=" << individualKeyCount[edx][gdx]);
+      }
+    }
+  }
+  BOOST_REQUIRE_EQUAL(correctlyFoundKeyCount, (EVENT_COUNT * GEOLOC_COUNT));
+  dsPtr.reset();  // explicit destruction
+
+  // clean up the files that were created
+  fileList = deleteFilesMatchingPattern(filePath, deletePattern);
+  BOOST_REQUIRE_EQUAL(fileList.size(), EVENT_COUNT);  // (remove this later?)
+}
+
+BOOST_AUTO_TEST_CASE(GetKeysFromAllInOneFiles)
+{
+  std::string filePath(std::filesystem::temp_directory_path());;
+  std::string filePrefix = "demo" + std::to_string(getpid());
+  const int EVENT_COUNT = 5;
+  const int GEOLOC_COUNT = 3;
+  const int DUMMYDATA_SIZE = 20;
+
+  // delete any pre-existing files so that we start with a clean slate
+  std::string deletePattern = filePrefix + ".*.hdf5";
+  deleteFilesMatchingPattern(filePath, deletePattern);
+
+  // create the DataStore instance for writing
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("hdfDataStore", filePath, filePrefix, "all-per-file"));
+
+  // write several events, each with several fragments
+  char dummyData[DUMMYDATA_SIZE];
+  for (int eventID = 1; eventID <= EVENT_COUNT; ++eventID)
+  {
+    for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc)
+    {
+      StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
+      KeyedDataBlock dataBlock(key);
+      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.data_size = DUMMYDATA_SIZE;
+      dsPtr->write(dataBlock);
+    }
+  }
+  dsPtr.reset();  // explicit destruction
+
+  // check that the expected number of files was created (remove this later?)
+  std::string searchPattern = filePrefix + "_all_events.hdf5";
+  std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
+  BOOST_REQUIRE_EQUAL(fileList.size(), 1);
+
+  // create a second DataStore instance to fetch the keys
+  dsPtr.reset(new HDF5DataStore("hdfStore", filePath, filePrefix, "all-per-file"));
+
+  // fetch all of the keys that exist in the DataStore
+  std::vector<StorageKey> keyList = dsPtr->getAllExistingKeys();
+  BOOST_REQUIRE_EQUAL(keyList.size(), (EVENT_COUNT * GEOLOC_COUNT));
+
+  // verify that all of the expected keys are present, there are no duplicates, etc.
+  int individualKeyCount[EVENT_COUNT][GEOLOC_COUNT];
+  for (int edx = 0; edx < EVENT_COUNT; ++edx)
+  {
+    for (int gdx = 0; gdx < GEOLOC_COUNT; ++gdx)
+    {
+      individualKeyCount[edx][gdx] = 0;
+    }
+  }
+  for (auto& key : keyList)
+  {
+    uint32_t eventID = key.getEventID();
+    uint32_t geoLoc = key.getGeoLocation();
+    if (eventID > 0 && ((int)eventID) <= EVENT_COUNT &&
+        /*geoLoc >= 0 &&*/ ((int)geoLoc) < GEOLOC_COUNT)
+    {
+      ++individualKeyCount[eventID-1][geoLoc];
+    }
+    else
+    {
+      ERS_LOG("Unexpected key found: eventID=" << eventID << ", geoLoc=" << geoLoc);
+    }
+  }
+  int correctlyFoundKeyCount = 0;
+  for (int edx = 0; edx < EVENT_COUNT; ++edx)
+  {
+    for (int gdx = 0; gdx < GEOLOC_COUNT; ++gdx)
+    {
+      if (individualKeyCount[edx][gdx] == 1)
+      {
+        ++correctlyFoundKeyCount;
+      }
+      else
+      {
+        ERS_LOG("Missing or duplicate key found:  eventID=" << (edx+1) << ", geoLoc=" << gdx <<
+                ", count=" << individualKeyCount[edx][gdx]);
+      }
+    }
+  }
+  BOOST_REQUIRE_EQUAL(correctlyFoundKeyCount, (EVENT_COUNT * GEOLOC_COUNT));
+  dsPtr.reset();  // explicit destruction
+
+  // clean up the files that were created
+  fileList = deleteFilesMatchingPattern(filePath, deletePattern);
+  BOOST_REQUIRE_EQUAL(fileList.size(), 1);  // (remove this later?)
+}
+
+//
+// Do we want copies of the tests where a single DataStore instance is used
+// for both writing and getting all keys?
+//
+
+BOOST_AUTO_TEST_CASE(CheckCrossTalk)
+{
+  std::string filePath(std::filesystem::temp_directory_path());;
+  std::string filePrefix = "demo" + std::to_string(getpid());
+  const int EVENT_COUNT = 5;
+  const int GEOLOC_COUNT = 3;
+  const int DUMMYDATA_SIZE = 20;
+  char dummyData[DUMMYDATA_SIZE];
+  std::unique_ptr<HDF5DataStore> dsPtr;
+  std::vector<StorageKey> keyList;
+
+  // delete any pre-existing files so that we start with a clean slate
+  std::string deletePattern = filePrefix + ".*.hdf5";
+  deleteFilesMatchingPattern(filePath, deletePattern);
+
+  // ****************************************
+  // * write some fragment-based-file data
+  // ****************************************
+  dsPtr.reset(new HDF5DataStore("hdfDataStore", filePath, filePrefix, "one-fragment-per-file"));
+  for (int eventID = 1; eventID <= EVENT_COUNT; ++eventID)
+  {
+    for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc)
+    {
+      StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
+      KeyedDataBlock dataBlock(key);
+      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.data_size = DUMMYDATA_SIZE;
+      dsPtr->write(dataBlock);
+    }
+  }
+  dsPtr.reset();  // explicit destruction
+
+  // ****************************************
+  // * write some event-based-file data
+  // ****************************************
+  dsPtr.reset(new HDF5DataStore("hdfDataStore", filePath, filePrefix, "one-event-per-file"));
+  for (int eventID = 1; eventID <= EVENT_COUNT; ++eventID)
+  {
+    for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc)
+    {
+      StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
+      KeyedDataBlock dataBlock(key);
+      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.data_size = DUMMYDATA_SIZE;
+      dsPtr->write(dataBlock);
+    }
+  }
+  dsPtr.reset();  // explicit destruction
+
+  // ****************************************
+  // * write some single-file data
+  // ****************************************
+  dsPtr.reset(new HDF5DataStore("hdfDataStore", filePath, filePrefix, "all-per-file"));
+  for (int eventID = 1; eventID <= EVENT_COUNT; ++eventID)
+  {
+    for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc)
+    {
+      StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
+      KeyedDataBlock dataBlock(key);
+      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.data_size = DUMMYDATA_SIZE;
+      dsPtr->write(dataBlock);
+    }
+  }
+  dsPtr.reset();  // explicit destruction
+
+  // **************************************************
+  // * check that fragment-based-file key lookup works
+  // **************************************************
+  dsPtr.reset(new HDF5DataStore("hdfDataStore", filePath, filePrefix, "one-fragment-per-file"));
+  keyList = dsPtr->getAllExistingKeys();
+  BOOST_REQUIRE_EQUAL(keyList.size(), (EVENT_COUNT * GEOLOC_COUNT));
+
+  // **************************************************
+  // * check that event-based-file key lookup works
+  // **************************************************
+  dsPtr.reset(new HDF5DataStore("hdfDataStore", filePath, filePrefix, "one-event-per-file"));
+  keyList = dsPtr->getAllExistingKeys();
+  BOOST_REQUIRE_EQUAL(keyList.size(), (EVENT_COUNT * GEOLOC_COUNT));
+
+  // **************************************************
+  // * check that single-file key lookup works
+  // **************************************************
+  dsPtr.reset(new HDF5DataStore("hdfDataStore", filePath, filePrefix, "all-per-file"));
+  keyList = dsPtr->getAllExistingKeys();
+  BOOST_REQUIRE_EQUAL(keyList.size(), (EVENT_COUNT * GEOLOC_COUNT));
+
+  // clean up the files that were created
+  deleteFilesMatchingPattern(filePath, deletePattern);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
