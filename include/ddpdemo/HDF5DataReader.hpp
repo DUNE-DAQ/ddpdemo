@@ -15,11 +15,13 @@
 
 #include "ddpdemo/DataStore.hpp"
 #include "ddpdemo/HDF5KeyTranslator.hpp"
-
+#include "highfive/H5File.hpp"
+#include <memory>
+#include <string>
 #include <ers/Issue.h>
 #include <TRACE/trace.h>
 
-#include "highfive/H5File.hpp"
+
 
 
 
@@ -109,9 +111,8 @@ private:
 } // namespace dunedaq
   // Operator function
 
-#endif // DDPDEMO_INCLUDE_DDPDEMO_HDF5DATASTORE_HPP_
+#endif // DDPDEMO_INCLUDE_DDPDEMO_HDF5DATAREADER_HPP_
 
 // Local Variables:
 // c-basic-offset: 2
 // End:
-
