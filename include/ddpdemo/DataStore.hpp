@@ -60,6 +60,12 @@ public:
    */
   virtual void write(const KeyedDataBlock& dataBlock) = 0;
 
+  /**
+   * @brief Returns the list of all keys that currently existing in the DataStore
+   * @return list of StorageKeys
+   */
+  virtual std::vector<StorageKey> getAllExistingKeys() const = 0;
+
   // Ideas for future work...
   //virtual void write(const std::vector<KeyedDataBlock>& dataBlockList) = 0;
   virtual KeyedDataBlock read(const StorageKey& key) = 0;

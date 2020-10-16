@@ -91,8 +91,11 @@ public:
     return dataBlock;
   }
 
-
-
+  virtual std::vector<StorageKey> getAllExistingKeys() const
+  {
+    std::vector<StorageKey> emptyList;
+    return emptyList;
+  }
 
 private: 
   HDF5DataReader(const HDF5DataReader&) = delete;

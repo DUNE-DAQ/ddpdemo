@@ -13,24 +13,38 @@
  */
 
 #include "ddpdemo/DataStore.hpp"
+#include "ddpdemo/HDF5FileUtils.hpp"
 #include "ddpdemo/HDF5KeyTranslator.hpp"
 #include "appfwk/DAQModule.hpp"
 
 #include <ers/Issue.h>
 #include <TRACE/trace.h>
 
-
 #include "highfive/H5File.hpp"
+#include <boost/lexical_cast.hpp>
 
+#include <filesystem>
+#include <memory>
+#include <regex>
 
 namespace dunedaq {
 
 ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        InvalidHDF5Group,
                        appfwk::GeneralDAQModuleIssue,
-                       "Invalid HDF5 group.",
+                       "The HDF5 Group associated with name \"" << groupName << "\" is invalid. (file = " << filename << ")",
                        ((std::string)name),
-                       ERS_EMPTY)
+                       ((std::string)groupName)((std::string)filename))
+
+
+ERS_DECLARE_ISSUE_BASE(ddpdemo,
+                       InvalidHDF5Dataset,
+                       appfwk::GeneralDAQModuleIssue,
+                       "The HDF5 Dataset associated with name \"" << dataSet << "\" is invalid. (file = " << filename << ")",
+                       ((std::string)name),
+                       ((std::string)dataSet)((std::string)filename))
+
+
 
 namespace ddpdemo {
 
@@ -70,7 +84,7 @@ public:
      KeyedDataBlock dataBlock(key);
 
      if(!filePtr->exist(groupName)) {
-        throw InvalidHDF5Group(ERS_HERE, get_name());
+       throw InvalidHDF5Group(ERS_HERE, get_name(), groupName, fullFileName);
 
      } else {
 
@@ -78,7 +92,7 @@ public:
        
        if (!theGroup.isValid()) {
          
-         throw InvalidHDF5Group(ERS_HERE, get_name());
+         throw InvalidHDF5Group(ERS_HERE, get_name(), groupName, fullFileName);
          
        } else {
 
@@ -138,7 +152,7 @@ public:
 
 
     if (!theGroup.isValid()) {
-      throw InvalidHDF5Group(ERS_HERE, get_name());
+      throw InvalidHDF5Group(ERS_HERE, get_name(), datagroup_name, filePtr->getName());
     } else {
       const std::string dataset_name = std::to_string(geoID);
       HighFive::DataSpace theDataSpace = HighFive::DataSpace({ dataBlock.data_size, 1 });
@@ -146,18 +160,44 @@ public:
       HighFive::DataSetAccessProps dataAProps_;
 
       auto theDataSet = theGroup.createDataSet<char>(dataset_name, theDataSpace, dataCProps_, dataAProps_);
-
-      theDataSet.write_raw(dataBlock.getDataStart());
+      if (theDataSet.isValid()) {
+        theDataSet.write_raw(dataBlock.getDataStart());
+      } else {
+        throw InvalidHDF5Dataset(ERS_HERE, get_name(), dataset_name, filePtr->getName());
+      }
       
     }
 
     filePtr->flush();
-   
   }
   
 
 
+  virtual std::vector<StorageKey> getAllExistingKeys() const
+  {
+    std::vector<StorageKey> keyList;
+    std::vector<std::string> fileList = getAllFiles_();
 
+    for (auto& filename : fileList)
+    {
+      std::unique_ptr<HighFive::File> localFilePtr(new HighFive::File(filename, HighFive::File::ReadOnly));
+      TLOG(TLVL_DEBUG) << get_name() << ": Opened HDF5 file " << filename;
+
+      std::vector<std::string> pathList = HDF5FileUtils::getAllDataSetPaths(*localFilePtr);
+      ERS_INFO("Path list has element count: " << pathList.size());
+
+      for (auto& path : pathList)
+      {
+        StorageKey thisKey(0, "", 0);
+        thisKey = HDF5KeyTranslator::getKeyFromString(path);
+        keyList.push_back(thisKey);
+      }
+
+      localFilePtr.reset();  // explicit destruction
+    }
+
+    return keyList;
+  }
 
 
 private: 
@@ -182,18 +222,47 @@ private:
     if (operation_mode_ == "one-event-per-file" ) {
 
       file_name = path_ + "/" + fileName_ + "_event_" + std::to_string(idx) + ".hdf5" ; 
-      
+
     } else if (operation_mode_ == "one-fragment-per-file" ) {
-      
+
       file_name = path_ + "/" + fileName_ + "_event_" + std::to_string(idx) + "_geoID_" + std::to_string(geoID) +  ".hdf5" ;
-      
+
     } else if (operation_mode_ == "all-per-file" ) {    
-      
+
       file_name = path_ + "/" + fileName_ + "_all_events" +  ".hdf5" ;
     }
 
-    return file_name ;
+    return file_name;
+  }
 
+  std::vector<std::string> getAllFiles_() const
+  {
+    std::string workString = fileName_;
+    if (operation_mode_ == "one-event-per-file")
+    {
+      workString += "_event_\\d+.hdf5";
+    }
+    else if (operation_mode_ == "one-fragment-per-file")
+    {
+      workString += "_event_\\d+_geoID_\\d+.hdf5";
+    }
+    else
+    {
+      workString += "_all_events.hdf5";
+    }
+    std::regex regexSearchPattern(workString);
+
+    std::vector<std::string> fileList;
+    for (const auto& entry : std::filesystem::directory_iterator(path_))
+    {
+      TLOG(TLVL_DEBUG) << "Directory element: " << entry.path().string();
+      if (std::regex_match(entry.path().filename().string(), regexSearchPattern))
+      {
+        TLOG(TLVL_DEBUG) << "Matching directory element: " << entry.path().string();
+        fileList.push_back(entry.path());
+      }
+    }
+    return fileList;
   }
     
 
