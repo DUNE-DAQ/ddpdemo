@@ -12,7 +12,8 @@
       "data_store_parameters": {
       "data_store_module": "HDF5DataReader",
       "directory_path": "./",
-      "filename_pattern": "demo_event_1.hdf5"
+      "filename": "demo",
+      "mode": "one-fragment-per-file"
       }
     }
   },
