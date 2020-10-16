@@ -1,3 +1,5 @@
+#ifndef DDPDEMO_INCLUDE_DDPDEMO_HDF5FILEUTILS_HPP_
+#define DDPDEMO_INCLUDE_DDPDEMO_HDF5FILEUTILS_HPP_
 /**
  * @file HDF5FileUtils.hpp
  *
@@ -9,8 +11,6 @@
  * received with this code.
  */
 
-#ifndef DDPDEMO_INCLUDE_HDF5FILEUTILS_HPP_
-#define DDPDEMO_INCLUDE_HDF5FILEUTILS_HPP_
 
 #include "highfive/H5File.hpp"
 #include <ers/ers.h>
@@ -104,7 +104,7 @@ namespace HDF5FileUtils {
 
 } // namespace HDF5FileUtils
 
-} // namespace dddpdemo
+} // namespace ddpdemo
 } // namespace dunedaq
 
-#endif // DDPDEMO_INCLUDE_HDF5FILEUTILS_HPP_
+#endif // DDPDEMO_INCLUDE_DDPDEMO_HDF5FILEUTILS_HPP_

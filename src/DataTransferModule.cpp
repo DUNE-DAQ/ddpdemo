@@ -16,13 +16,15 @@
 #include <chrono>
 #include <cstdlib>
 #include <thread>
+#include <string>
+#include <vector>
 
 /**
  * @brief Name used by TRACE TLOG calls from this source file
  */
 #define TRACE_NAME "DataTransferModule" // NOLINT
-#define TLVL_ENTER_EXIT_METHODS 10
-#define TLVL_WORK_STEPS 15
+#define TLVL_ENTER_EXIT_METHODS 10 // NOLINT 
+#define TLVL_WORK_STEPS 15 // NOLINT 
 
 namespace dunedaq {
 namespace ddpdemo {

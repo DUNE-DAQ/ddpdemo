@@ -21,6 +21,7 @@
 #include <regex>
 #include <string>
 #include <vector>
+#include <memory> 
 
 using namespace dunedaq::ddpdemo;
 

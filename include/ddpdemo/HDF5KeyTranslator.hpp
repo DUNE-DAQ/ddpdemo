@@ -1,3 +1,5 @@
+#ifndef DDPDEMO_INCLUDE_DDPDEMO_HDF5KEYTRANSLATOR_HPP_
+#define DDPDEMO_INCLUDE_DDPDEMO_HDF5KEYTRANSLATOR_HPP_
 /**
  * @file HDF5KeyTranslator.hpp
  *
@@ -9,8 +11,6 @@
  * received with this code.
  */
 
-#ifndef DDPDEMO_INCLUDE_HDF5KEYTRANSLATOR_HPP_
-#define DDPDEMO_INCLUDE_HDF5KEYTRANSLATOR_HPP_
 
 #include "ddpdemo/StorageKey.hpp"
 #include <ers/ers.h>
@@ -18,15 +18,12 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace dunedaq {
 namespace ddpdemo {
 
 class HDF5KeyTranslator {
-
-private:
-
-  static const int CURRENT_VERSION = 1;
 
 public:
 
@@ -102,9 +99,9 @@ public:
   {
     if (translationVersion == 1)
     {
-      uint32_t eventId = StorageKey::INVALID_EVENTID;
+      int eventId = StorageKey::INVALID_EVENTID;
       std::string detectorId = StorageKey::INVALID_DETECTORID;
-      uint32_t geoLocation = StorageKey::INVALID_GEOLOCATION;
+      int geoLocation = StorageKey::INVALID_GEOLOCATION;
 
       if (pathElements.size() >= 1)
       {
@@ -127,9 +124,14 @@ public:
     }
   }
 
+private:
+
+  static const int CURRENT_VERSION = 1;
+
+
 };
 
-} // namespace dddpdemo
+} // namespace ddpdemo
 } // namespace dunedaq
 
-#endif // DDPDEMO_INCLUDE_HDF5KEYTRANSLATOR_HPP_
+#endif // DDPDEMO_INCLUDE_DDPDEMO_HDF5KEYTRANSLATOR_HPP_

@@ -16,13 +16,14 @@
 #include <chrono>
 #include <cstdlib>
 #include <thread>
-
+#include <string>
+#include <vector>
 /**
  * @brief Name used by TRACE TLOG calls from this source file
  */
 #define TRACE_NAME "BinaryWriter" // NOLINT
-#define TLVL_ENTER_EXIT_METHODS 10
-#define TLVL_WORK_STEPS 15
+#define TLVL_ENTER_EXIT_METHODS 10 // NOLINT
+#define TLVL_WORK_STEPS 15 // NOLINT
 
 namespace dunedaq {
 namespace ddpdemo {
@@ -118,7 +119,7 @@ BinaryWriter::do_work(std::atomic<bool>& running_flag)
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_work() method";
 
   // create a memory buffer
-  char* membuffer = (char*)malloc(io_size_);
+  char* membuffer = static_cast<char*>(malloc(io_size_));
   memset(membuffer, 'X', io_size_);
 
 

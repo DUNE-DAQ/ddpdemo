@@ -16,13 +16,15 @@
 #include <chrono>
 #include <cstdlib>
 #include <thread>
+#include <string> 
+#include <vector> 
 
 /**
  * @brief Name used by TRACE TLOG calls from this source file
  */
 #define TRACE_NAME "SimpleDiskWriter" // NOLINT
-#define TLVL_ENTER_EXIT_METHODS 10
-#define TLVL_WORK_STEPS 15
+#define TLVL_ENTER_EXIT_METHODS 10 // NOLINT 
+#define TLVL_WORK_STEPS 15 // NOLINT 
 
 namespace dunedaq {
 namespace ddpdemo {
@@ -130,7 +132,8 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
     TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of fill loop";
     for (size_t idx = 0; idx < nIntsPerFakeEvent_; ++idx)
     {
-      theFakeEvent[idx] = fakeDataValue++;
+      theFakeEvent[idx] = fakeDataValue;
+      fakeDataValue++;
     }
     ++generatedCount;
     std::ostringstream oss_prog;
@@ -142,7 +145,7 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
     StorageKey dataKey(generatedCount, "FELIX", 101);
     KeyedDataBlock dataBlock(dataKey);
     dataBlock.data_size = theFakeEvent.size() * sizeof(int);
-    dataBlock.unowned_data_start = reinterpret_cast<char*>(&theFakeEvent[0]);
+    dataBlock.unowned_data_start = reinterpret_cast<char*>(&theFakeEvent[0]); // NOLINT
     TLOG(TLVL_WORK_STEPS) << get_name() << ": size of fake event number " << dataBlock.data_key.getEventID()
                           << " is " << dataBlock.data_size << " bytes.";
     dataWriter_->write(dataBlock);
