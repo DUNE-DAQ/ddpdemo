@@ -36,6 +36,16 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        ((std::string)name),
                        ((std::string)groupName)((std::string)filename))
 
+
+ERS_DECLARE_ISSUE_BASE(ddpdemo,
+                       InvalidHDF5Dataset,
+                       appfwk::GeneralDAQModuleIssue,
+                       "The HDF5 Dataset associated with name \"" << dataSet << "\" is invalid. (file = " << filename << ")",
+                       ((std::string)name),
+                       ((std::string)dataSet)((std::string)filename))
+
+
+
 namespace ddpdemo {
 
 
@@ -150,8 +160,11 @@ public:
       HighFive::DataSetAccessProps dataAProps_;
 
       auto theDataSet = theGroup.createDataSet<char>(dataset_name, theDataSpace, dataCProps_, dataAProps_);
-
-      theDataSet.write_raw(dataBlock.getDataStart());
+      if (theDataSet.isValid()) {
+        theDataSet.write_raw(dataBlock.getDataStart());
+      } else {
+        throw InvalidHDF5Dataset(ERS_HERE, get_name(), dataset_name, filePtr->getName());
+      }
       
     }
 
