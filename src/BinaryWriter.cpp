@@ -57,7 +57,6 @@ BinaryWriter::do_configure(const std::vector<std::string>& /*args*/)
   operation_mode_ = get_config()["data_store_parameters"]["mode"].get<std::string>();
 
 
-
   // Creating empty HDF5 file
   dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_ , 
                                           filename_pattern_ , operation_mode_ ));  

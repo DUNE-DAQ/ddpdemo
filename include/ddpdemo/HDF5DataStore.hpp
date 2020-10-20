@@ -30,6 +30,16 @@
 #include <vector>
 namespace dunedaq {
 
+
+
+ERS_DECLARE_ISSUE_BASE(ddpdemo,
+                       InvalidOperationMode,
+                       appfwk::GeneralDAQModuleIssue,
+                       "Selected opearation mode in the configuration file is NOT supported.",
+                       ((std::string)name),
+                       ERS_EMPTY)
+
+
 ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        InvalidHDF5Group,
                        appfwk::GeneralDAQModuleIssue,
@@ -74,6 +84,17 @@ public:
     fileName_ = fileName;
     path_ = path;
     operation_mode_ = operationMode;
+
+    if (operation_mode_ != "one-event-per-file" &&
+        operation_mode_ != "one-fragment-per-file" &&
+        operation_mode_ != "all-per-file") { 
+    
+      throw InvalidOperationMode(ERS_HERE, get_name());      
+    }
+
+
+
+
   }
 
   virtual void setup(const size_t eventId) {
