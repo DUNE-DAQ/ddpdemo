@@ -145,7 +145,7 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
     StorageKey dataKey(generatedCount, "FELIX", 101);
     KeyedDataBlock dataBlock(dataKey);
     dataBlock.data_size = theFakeEvent.size() * sizeof(int);
-    dataBlock.unowned_data_start = reinterpret_cast<char*>(&theFakeEvent[0]); // NOLINT
+    dataBlock.unowned_data_start = reinterpret_cast<void*>(&theFakeEvent[0]); // NOLINT
     TLOG(TLVL_WORK_STEPS) << get_name() << ": size of fake event number " << dataBlock.data_key.getEventID()
                           << " is " << dataBlock.data_size << " bytes.";
     dataWriter_->write(dataBlock);

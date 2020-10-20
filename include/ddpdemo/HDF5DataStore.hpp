@@ -98,12 +98,11 @@ public:
        } else {
 
          try {  // to determine if the dataset exists in the group and copy it to membuffer
-           
            HighFive::DataSet theDataSet = theGroup.getDataSet( datasetName );
            dataBlock.data_size = theDataSet.getStorageSize();
            HighFive::DataSpace thedataSpace = theDataSet.getSpace();
-           char* membuffer = static_cast<char*>(malloc(dataBlock.data_size));
-           theDataSet.read( membuffer);
+           void* membuffer = malloc(dataBlock.data_size);
+           theDataSet.read( static_cast<char*>(membuffer));
            dataBlock.unowned_data_start = membuffer;
            
          }
@@ -160,12 +159,14 @@ public:
       HighFive::DataSetCreateProps dataCProps_;
       HighFive::DataSetAccessProps dataAProps_;
 
+      
       auto theDataSet = theGroup.createDataSet<char>(dataset_name, theDataSpace, dataCProps_, dataAProps_);
       if (theDataSet.isValid()) {
-        theDataSet.write_raw(dataBlock.getDataStart());
+        theDataSet.write_raw(static_cast<char*>(dataBlock.getDataStart()));
       } else {
         throw InvalidHDF5Dataset(ERS_HERE, get_name(), dataset_name, filePtr->getName());
       }
+      
       
     }
 

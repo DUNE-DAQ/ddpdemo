@@ -118,7 +118,7 @@ DataGenerator::do_work(std::atomic<bool>& running_flag)
   size_t writtenCount = 0;
 
   // create a memory buffer
-  char* membuffer = static_cast<char*>(malloc(io_size_));
+  void* membuffer = static_cast<void*>(malloc(io_size_));
   memset(membuffer, 'X', io_size_);
 
   TLOG(TLVL_WORK_STEPS) << get_name() << ": Generating data ";

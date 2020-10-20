@@ -19,14 +19,14 @@ target_link_libraries(ddpdemo ers::ers)
 ###add_library(ddpdemo SHARED src/StorageKey.cpp src/HDF5DataStore.cpp)
 ###target_link_libraries(ddpdemo ers::ers HighFive)
 
-add_library(ddpdemo_SimpleDiskWriter_duneDAQModule src/SimpleDiskWriter.cpp)
-target_link_libraries(ddpdemo_SimpleDiskWriter_duneDAQModule appfwk::appfwk ddpdemo HighFive)
+#add_library(ddpdemo_SimpleDiskWriter_duneDAQModule src/SimpleDiskWriter.cpp)
+#target_link_libraries(ddpdemo_SimpleDiskWriter_duneDAQModule appfwk::appfwk ddpdemo HighFive)
 
 add_library(ddpdemo_BinaryWriter_duneDAQModule src/BinaryWriter.cpp)
 target_link_libraries(ddpdemo_BinaryWriter_duneDAQModule appfwk::appfwk ddpdemo HighFive)
 
-add_library(ddpdemo_SimpleDiskReader_duneDAQModule src/SimpleDiskReader.cpp)
-target_link_libraries(ddpdemo_SimpleDiskReader_duneDAQModule appfwk::appfwk ddpdemo HighFive)
+#add_library(ddpdemo_SimpleDiskReader_duneDAQModule src/SimpleDiskReader.cpp)
+#target_link_libraries(ddpdemo_SimpleDiskReader_duneDAQModule appfwk::appfwk ddpdemo HighFive)
 
 add_library(ddpdemo_GetAllKeysTest_duneDAQModule src/GetAllKeysTest.cpp)
 target_link_libraries(ddpdemo_GetAllKeysTest_duneDAQModule appfwk::appfwk ddpdemo HighFive stdc++fs)
@@ -51,8 +51,14 @@ daq_add_unit_test(HDF5GetAllKeys_test      appfwk::appfwk ddpdemo ers::ers HighF
 ##############################################################################
 
 daq_install(TARGETS ddpdemo
-                    ddpdemo_SimpleDiskWriter_duneDAQModule
                     ddpdemo_BinaryWriter_duneDAQModule
-                    ddpdemo_SimpleDiskReader_duneDAQModule
                     ddpdemo_GetAllKeysTest_duneDAQModule
 )
+
+
+#daq_install(TARGETS ddpdemo
+#                    ddpdemo_SimpleDiskWriter_duneDAQModule
+#                    ddpdemo_BinaryWriter_duneDAQModule
+#                    ddpdemo_SimpleDiskReader_duneDAQModule
+#                    ddpdemo_GetAllKeysTest_duneDAQModule
+#)

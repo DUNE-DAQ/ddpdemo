@@ -119,7 +119,7 @@ BinaryWriter::do_work(std::atomic<bool>& running_flag)
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_work() method";
 
   // create a memory buffer
-  char* membuffer = static_cast<char*>(malloc(io_size_));
+  void* membuffer = static_cast<void*>(malloc(io_size_));
   memset(membuffer, 'X', io_size_);
 
 
