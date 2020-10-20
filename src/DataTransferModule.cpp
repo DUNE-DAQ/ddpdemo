@@ -23,8 +23,8 @@
  * @brief Name used by TRACE TLOG calls from this source file
  */
 #define TRACE_NAME "DataTransferModule" // NOLINT
-#define TLVL_ENTER_EXIT_METHODS 10 // NOLINT 
-#define TLVL_WORK_STEPS 15 // NOLINT 
+#define TLVL_ENTER_EXIT_METHODS 10 // NOLINT
+#define TLVL_WORK_STEPS 15 // NOLINT
 
 namespace dunedaq {
 namespace ddpdemo {
@@ -51,10 +51,15 @@ DataTransferModule::do_configure(const std::vector<std::string>& /*args*/)
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
   sleepMsecWhileRunning_ = get_config().value<size_t>("sleepMsecWhileRunning", static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
 
-  // need to fetch the input and output DataStore parameters from the JSON...
+  std::string inputPath = get_config()["input_data_store_parameters"]["directory_path"].get<std::string>();
+  std::string inputFilenamePrefix = get_config()["input_data_store_parameters"]["filename_prefix"].get<std::string>();
+  std::string inputMode = get_config()["input_data_store_parameters"]["mode"].get<std::string>();
+  inputDataStore_.reset(new HDF5DataStore("input", inputPath, inputFilenamePrefix, inputMode));
 
-  inputDataStore_.reset(new HDF5DataStore("input", inpath_, input_filename_pattern, input_filemode));
-  outputDataStore_.reset(new HDF5DataStore("output", out_path, output_filename_pattern, output_filemode));
+  std::string outputPath = get_config()["output_data_store_parameters"]["directory_path"].get<std::string>();
+  std::string outputFilenamePrefix = get_config()["output_data_store_parameters"]["filename_prefix"].get<std::string>();
+  std::string outputMode = get_config()["output_data_store_parameters"]["mode"].get<std::string>();
+  outputDataStore_.reset(new HDF5DataStore("output", outputPath, outputFilenamePrefix, outputMode));
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
 }
@@ -90,6 +95,16 @@ DataTransferModule::do_work(std::atomic<bool>& running_flag)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_work() method";
 
+  // ensure that we have a valid dataStore instances
+  if (inputDataStore_.get() == nullptr)
+  {
+    throw InvalidDataStoreError(ERS_HERE, get_name(), "reading");
+  }
+  if (outputDataStore_.get() == nullptr)
+  {
+    throw InvalidDataStoreError(ERS_HERE, get_name(), "writing");
+  }
+
   std::vector<StorageKey> keyList = inputDataStore_->getAllExistingKeys();
   for (auto& key : keyList)
   {
@@ -103,6 +118,9 @@ DataTransferModule::do_work(std::atomic<bool>& running_flag)
     TLOG(TLVL_WORK_STEPS) << get_name() << ": End of sleep while waiting for run Stop";
   }
 
+  std::ostringstream oss_summ;
+  oss_summ << ": Exiting the do_work() method, copied data for " << keyList.size() << " keys.";
+  ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_work() method";
 }
 

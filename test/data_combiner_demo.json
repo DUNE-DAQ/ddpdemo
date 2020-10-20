@@ -3,21 +3,21 @@
   },
   "modules": {
     "data_combiner": {
-      "user_module_type": "DataTransfer",
+      "user_module_type": "DataTransferModule",
       "sleepMsecWhileRunning": 1000,
 
       "input_data_store_parameters": {
         "data_store_module": "HDF5DataStore",
         "directory_path": ".",
-        "filename_prefix": "demo_run201012_",
+        "filename_prefix": "demo_run20201019",
         "mode": "one-fragment-per-file"
       },
 
       "output_data_store_parameters": {
         "data_store_module": "HDF5DataStore",
         "directory_path": ".",
-        "filename_prefix": "demo_run201012_",
-        "mode": "one-event-per-file"   # or maybe soon "all-events-in-one-file"
+        "filename_prefix": "demo_run20201019",
+        "mode": "one-event-per-file"
       }
     }
   },

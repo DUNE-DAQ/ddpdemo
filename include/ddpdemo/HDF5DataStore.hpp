@@ -28,6 +28,7 @@
 #include <regex>
 #include <string>
 #include <vector>
+
 namespace dunedaq {
 
 ERS_DECLARE_ISSUE_BASE(ddpdemo,
@@ -185,7 +186,7 @@ public:
       TLOG(TLVL_DEBUG) << get_name() << ": Opened HDF5 file " << filename;
 
       std::vector<std::string> pathList = HDF5FileUtils::getAllDataSetPaths(*localFilePtr);
-      ERS_INFO("Path list has element count: " << pathList.size());
+      TLOG(TLVL_DEBUG) << get_name() << ": Path list has element count: " << pathList.size();
 
       for (auto& path : pathList)
       {

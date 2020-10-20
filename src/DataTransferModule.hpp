@@ -79,6 +79,13 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        ((std::string)name),
                        ((std::string)message))
 
+ERS_DECLARE_ISSUE_BASE(ddpdemo,
+                       InvalidDataStoreError,
+                       appfwk::GeneralDAQModuleIssue,
+                       "A valid dataStore instance is not available for " << operation << ", so it will not be possible to combine data. A likely cause for this is a skipped or missed Configure transition.",
+                       ((std::string)name),
+                       ((std::string)operation))
+
 } // namespace dunedaq
 
 #endif // DDPDEMO_SRC_DATATRANSFERMODULE_HPP_

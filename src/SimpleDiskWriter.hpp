@@ -98,7 +98,6 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        ((std::string)name),
                        ERS_EMPTY)
 
-
 } // namespace dunedaq
 
 #endif // DDPDEMO_SRC_SIMPLEDISKWRITER_HPP_
