@@ -50,10 +50,19 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
 namespace ddpdemo {
 
 
-
+/**
+ * @brief HDF5DataStore creates an HDF5 instance
+ * of the DataStore class
+ * 
+ */
 class HDF5DataStore : public DataStore {
 
 public:
+  /*
+   * @brief HDF5DataStore Constructor
+   * @param name, path, fileName, operationMode
+   *
+   */
   explicit HDF5DataStore(const std::string name, const std::string& path,
                          const std::string& fileName, const std::string& operationMode)
     : DataStore(name), fullNameOfOpenFile_(""), openFlagsOfOpenFile_(0)
@@ -122,9 +131,13 @@ public:
 
 
 
-
-
-
+  /*
+   * @brief HDF5DataStore write()
+   * Method used to write constant data 
+   * into HDF5 format. Operational mode
+   * defined in the configuration file.
+   *
+   */
   virtual void write(const KeyedDataBlock& dataBlock) {
 
     size_t idx = dataBlock.data_key.getEventID();
@@ -172,8 +185,12 @@ public:
     filePtr->flush();
   }
   
-
-
+  /*
+   * @brief HDF5DataStore getAllExistingKeys
+   * Method used to retrieve a vector with all 
+   * the StorageKeys
+   *
+   */
   virtual std::vector<StorageKey> getAllExistingKeys() const
   {
     std::vector<StorageKey> keyList;
