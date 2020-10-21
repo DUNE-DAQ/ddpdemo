@@ -129,8 +129,8 @@ public:
           HighFive::DataSpace thedataSpace = theDataSet.getSpace();
           char* membuffer = static_cast<char*>(malloc(dataBlock.data_size));
           theDataSet.read(membuffer);
-          dataBlock.unowned_data_start = membuffer;
-
+          std::unique_ptr<char> memPtr(membuffer);
+          dataBlock.owned_data_start = std::move(memPtr);
         } catch (HighFive::DataSetException const&) {
 
           ERS_INFO("HDF5DataSet " << datasetName << " not found.");
