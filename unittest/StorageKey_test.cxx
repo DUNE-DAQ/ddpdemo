@@ -18,9 +18,9 @@
 
 namespace {
 
-  constexpr uint32_t eventID=111 ; 
+  constexpr int eventID=111 ; 
   const  std::string detectorID("LARTPC") ; 
-  constexpr uint32_t geoLocation =333 ;
+  constexpr int geoLocation =333 ;
   dunedaq::ddpdemo::StorageKey stk(eventID, detectorID, geoLocation) ; ///< StorageKey instance for the test
 
 } // namespace ""
@@ -31,9 +31,9 @@ BOOST_AUTO_TEST_SUITE(StorageKey_test)
 BOOST_AUTO_TEST_CASE(sanity_checks)
 {
 
-  uint32_t m_eventID=-999 ;
+  int m_eventID=-999 ;
   std::string m_detectorID="XXXXX" ;
-  uint32_t m_geoLocation=-999 ;
+  int m_geoLocation=-999 ;
   BOOST_TEST_MESSAGE("Attempted StorageKey sanity checks for Key::eventID,detectorID,geoLocation") ;
   m_eventID = stk.getEventID() ;
   m_detectorID = stk.getDetectorID() ;

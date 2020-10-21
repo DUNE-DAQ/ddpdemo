@@ -16,13 +16,15 @@
 #include <chrono>
 #include <cstdlib>
 #include <thread>
+#include <string>
+#include <vector>
 
 /**
  * @brief Name used by TRACE TLOG calls from this source file
  */
 #define TRACE_NAME "DataGenerator" // NOLINT
-#define TLVL_ENTER_EXIT_METHODS 10
-#define TLVL_WORK_STEPS 15
+#define TLVL_ENTER_EXIT_METHODS 10 // NOLINT 
+#define TLVL_WORK_STEPS 15 // NOLINT 
 
 namespace dunedaq {
 namespace ddpdemo {
@@ -116,7 +118,7 @@ DataGenerator::do_work(std::atomic<bool>& running_flag)
   size_t writtenCount = 0;
 
   // create a memory buffer
-  char* membuffer = (char*)malloc(io_size_);
+  char* membuffer = static_cast<char*>(malloc(io_size_));
   memset(membuffer, 'X', io_size_);
 
   TLOG(TLVL_WORK_STEPS) << get_name() << ": Generating data ";

@@ -21,6 +21,7 @@
 #include <regex>
 #include <string>
 #include <vector>
+#include <memory>
 
 using namespace dunedaq::ddpdemo;
 
@@ -110,12 +111,12 @@ BOOST_AUTO_TEST_CASE(GetKeysFromFragmentFiles)
   }
   for (auto& key : keyList)
   {
-    uint32_t eventID = key.getEventID();
-    uint32_t geoLoc = key.getGeoLocation();
-    if (eventID > 0 && ((int)eventID) <= EVENT_COUNT &&
-        /*geoLoc >= 0 &&*/ ((int)geoLoc) < GEOLOC_COUNT)
+    int eventID = key.getEventID();
+    int geoLoc = key.getGeoLocation();
+    if (eventID > 0 && (static_cast<int>(eventID)) <= EVENT_COUNT &&
+        (static_cast<int>(geoLoc)) < GEOLOC_COUNT)  // geoLoc >= 0 &&
     {
-      ++individualKeyCount[eventID-1][geoLoc];
+      ++individualKeyCount[eventID-1][geoLoc]; // NOLINT
     }
     else
     {
@@ -199,12 +200,12 @@ BOOST_AUTO_TEST_CASE(GetKeysFromEventFiles)
   }
   for (auto& key : keyList)
   {
-    uint32_t eventID = key.getEventID();
-    uint32_t geoLoc = key.getGeoLocation();
-    if (eventID > 0 && ((int)eventID) <= EVENT_COUNT &&
-        /*geoLoc >= 0 &&*/ ((int)geoLoc) < GEOLOC_COUNT)
+    int eventID = key.getEventID();
+    int geoLoc = key.getGeoLocation();
+    if (eventID > 0 && (static_cast<int>(eventID)) <= EVENT_COUNT &&
+        (static_cast<int>(geoLoc)) < GEOLOC_COUNT) // geoLoc >= 0 &&
     {
-      ++individualKeyCount[eventID-1][geoLoc];
+      ++individualKeyCount[eventID-1][geoLoc]; // NOLINT
     }
     else
     {
@@ -288,12 +289,12 @@ BOOST_AUTO_TEST_CASE(GetKeysFromAllInOneFiles)
   }
   for (auto& key : keyList)
   {
-    uint32_t eventID = key.getEventID();
-    uint32_t geoLoc = key.getGeoLocation();
-    if (eventID > 0 && ((int)eventID) <= EVENT_COUNT &&
-        /*geoLoc >= 0 &&*/ ((int)geoLoc) < GEOLOC_COUNT)
+    int eventID = key.getEventID();
+    int geoLoc = key.getGeoLocation();
+    if (eventID > 0 && (static_cast<int>(eventID)) <= EVENT_COUNT &&
+        (static_cast<int>(geoLoc)) < GEOLOC_COUNT) //geoLoc >= 0 &&
     {
-      ++individualKeyCount[eventID-1][geoLoc];
+      ++individualKeyCount[eventID-1][geoLoc]; // NOLINT
     }
     else
     {

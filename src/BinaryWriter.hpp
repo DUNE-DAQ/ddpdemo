@@ -9,8 +9,8 @@
  * received with this code.
  */
 
-#ifndef DDPDEMO_SRC_BinaryWriter_HPP_
-#define DDPDEMO_SRC_BinaryWriter_HPP_
+#ifndef DDPDEMO_SRC_BINARYWRITER_HPP_
+#define DDPDEMO_SRC_BINARYWRITER_HPP_
 
 #include "ddpdemo/DataStore.hpp"
 
@@ -106,4 +106,4 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
 
 } // namespace dunedaq
 
-#endif // DDPDEMO_SRC_BinaryWriter_HPP_
+#endif // DDPDEMO_SRC_BINARYWRITER_HPP_

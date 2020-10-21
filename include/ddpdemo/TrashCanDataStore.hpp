@@ -18,6 +18,8 @@
 #include <ers/Issue.h>
 
 #include <iomanip>
+#include <vector>
+#include <string>
 
 namespace dunedaq {
 namespace ddpdemo {
@@ -36,8 +38,8 @@ public:
     ERS_INFO("Throwing away the data from event ID " << dataBlock.data_key.getEventID() <<
              ", which has size of " << dataBlock.data_size << " bytes, and the following data " <<
              "in the first few bytes: 0x" << std::hex << std::setfill('0') << std::setw(2) <<
-             ((int)dataPtr[0]) << " 0x" << ((int)dataPtr[1]) << " 0x" << ((int)dataPtr[2]) <<
-             " 0x" << ((int)dataPtr[3]) << std::dec);
+             (static_cast<int>(dataPtr[0])) << " 0x" << (static_cast<int>(dataPtr[1])) << " 0x" << (static_cast<int>(dataPtr[2])) <<
+             " 0x" << (static_cast<int>(dataPtr[3])) << std::dec ) ;
   }
 
   virtual std::vector<StorageKey> getAllExistingKeys() const

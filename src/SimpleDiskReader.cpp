@@ -16,13 +16,15 @@
 #include <chrono>
 #include <cstdlib>
 #include <thread>
+#include <string> 
+#include <vector> 
 
 /**
  * @brief Name used by TRACE TLOG calls from this source file
  */
 #define TRACE_NAME "SimpleDiskReader" // NOLINT
-#define TLVL_ENTER_EXIT_METHODS 10
-#define TLVL_WORK_STEPS 15
+#define TLVL_ENTER_EXIT_METHODS 10 // NOLINT 
+#define TLVL_WORK_STEPS 15 // NOLINT 
 
 namespace dunedaq {
 namespace ddpdemo {
@@ -129,7 +131,7 @@ SimpleDiskReader::do_work(std::atomic<bool>& running_flag)
 
   TLOG(TLVL_WORK_STEPS) << get_name() << ": trying to read fragment " <<key_eventID_<<":"<< key_detectorID_<<":"<< key_geoLocationID_  <<", from file "<<filename_pattern_ ;
 
-  KeyedDataBlock dataBlock(dataKey) ; //= dataReader_->read(dataKey);
+  KeyedDataBlock dataBlock(dataKey) ; 
 
   while (running_flag.load()) {
       // for now just read the file/datafragment and then stop

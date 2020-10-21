@@ -13,6 +13,7 @@
  */
 
 #include "ddpdemo/DataStore.hpp"
+#include "highfive/H5File.hpp"
 #include "ddpdemo/HDF5FileUtils.hpp"
 #include "ddpdemo/HDF5KeyTranslator.hpp"
 #include "appfwk/DAQModule.hpp"
@@ -20,14 +21,24 @@
 #include <ers/Issue.h>
 #include <TRACE/trace.h>
 
-#include "highfive/H5File.hpp"
 #include <boost/lexical_cast.hpp>
 
 #include <filesystem>
 #include <memory>
 #include <regex>
-
+#include <string>
+#include <vector>
 namespace dunedaq {
+
+
+
+ERS_DECLARE_ISSUE_BASE(ddpdemo,
+                       InvalidOperationMode,
+                       appfwk::GeneralDAQModuleIssue,
+                       "Selected opearation mode in the configuration file is NOT supported.",
+                       ((std::string)name),
+                       ERS_EMPTY)
+
 
 ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        InvalidHDF5Group,
@@ -49,10 +60,19 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
 namespace ddpdemo {
 
 
-
+/**
+ * @brief HDF5DataStore creates an HDF5 instance
+ * of the DataStore class
+ * 
+ */
 class HDF5DataStore : public DataStore {
 
 public:
+  /*
+   * @brief HDF5DataStore Constructor
+   * @param name, path, fileName, operationMode
+   *
+   */
   explicit HDF5DataStore(const std::string name, const std::string& path,
                          const std::string& fileName, const std::string& operationMode)
     : DataStore(name), fullNameOfOpenFile_(""), openFlagsOfOpenFile_(0)
@@ -64,6 +84,17 @@ public:
     fileName_ = fileName;
     path_ = path;
     operation_mode_ = operationMode;
+
+    if (operation_mode_ != "one-event-per-file" &&
+        operation_mode_ != "one-fragment-per-file" &&
+        operation_mode_ != "all-per-file") { 
+    
+      throw InvalidOperationMode(ERS_HERE, get_name());      
+    }
+
+
+
+
   }
 
   virtual void setup(const size_t eventId) {
@@ -101,7 +132,7 @@ public:
            HighFive::DataSet theDataSet = theGroup.getDataSet( datasetName );
            dataBlock.data_size = theDataSet.getStorageSize();
            HighFive::DataSpace thedataSpace = theDataSet.getSpace();
-           char* membuffer = (char*)malloc(dataBlock.data_size);
+           char* membuffer = static_cast<char*>(malloc(dataBlock.data_size));
            theDataSet.read( membuffer);
            dataBlock.unowned_data_start = membuffer;
            
@@ -121,9 +152,13 @@ public:
 
 
 
-
-
-
+  /*
+   * @brief HDF5DataStore write()
+   * Method used to write constant data 
+   * into HDF5 format. Operational mode
+   * defined in the configuration file.
+   *
+   */
   virtual void write(const KeyedDataBlock& dataBlock) {
 
     size_t idx = dataBlock.data_key.getEventID();
@@ -171,8 +206,12 @@ public:
     filePtr->flush();
   }
   
-
-
+  /*
+   * @brief HDF5DataStore getAllExistingKeys
+   * Method used to retrieve a vector with all 
+   * the StorageKeys
+   *
+   */
   virtual std::vector<StorageKey> getAllExistingKeys() const
   {
     std::vector<StorageKey> keyList;

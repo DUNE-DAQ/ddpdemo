@@ -13,13 +13,13 @@
 #include "ddpdemo/StorageKey.hpp"
 
 #include <ers/ers.h>
-
+#include <string>
 
 namespace dunedaq {
 namespace ddpdemo {
 
 
-uint32_t
+int
 StorageKey::getEventID() const
 {
   return m_key.m_event_id;
@@ -31,12 +31,12 @@ StorageKey::getDetectorID() const
   return m_key.m_detector_id;
 }
 
-uint32_t
+int
 StorageKey::getGeoLocation() const
 {
   return m_key.m_geoLocation;
 }
 
 
-} // namespace dddpdemo
+} // namespace ddpdemo
 } // namespace dunedaq
