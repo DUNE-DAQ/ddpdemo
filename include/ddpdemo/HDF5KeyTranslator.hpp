@@ -114,9 +114,8 @@ public:
       }
 
       return StorageKey(eventId, detectorId, geoLocation);
-    }
 
-    else {
+    } else {
       StorageKey emptyKey(StorageKey::INVALID_EVENTID, StorageKey::INVALID_DETECTORID, StorageKey::INVALID_GEOLOCATION);
       return emptyKey;
     }
