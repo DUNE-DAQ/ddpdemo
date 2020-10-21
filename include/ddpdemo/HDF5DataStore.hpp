@@ -28,6 +28,7 @@
 #include <regex>
 #include <string>
 #include <vector>
+#include <utility>
 namespace dunedaq {
 
 ERS_DECLARE_ISSUE_BASE(ddpdemo,
@@ -64,11 +65,11 @@ class HDF5DataStore : public DataStore
 {
 
 public:
-  /*
-   * @brief HDF5DataStore Constructor
-   * @param name, path, fileName, operationMode
-   *
-   */
+  //
+  // @brief HDF5DataStore Constructor
+  // @param name, path, fileName, operationMode
+  //
+
   explicit HDF5DataStore(const std::string name,
                          const std::string& path,
                          const std::string& fileName,
@@ -141,13 +142,13 @@ public:
     return dataBlock;
   }
 
-  /*
-   * @brief HDF5DataStore write()
-   * Method used to write constant data
-   * into HDF5 format. Operational mode
-   * defined in the configuration file.
-   *
-   */
+  //
+  // @brief HDF5DataStore write()
+  // Method used to write constant data
+  // into HDF5 format. Operational mode
+  // defined in the configuration file.
+  //
+
   virtual void write(const KeyedDataBlock& dataBlock)
   {
 
@@ -189,12 +190,12 @@ public:
     filePtr->flush();
   }
 
-  /*
-   * @brief HDF5DataStore getAllExistingKeys
-   * Method used to retrieve a vector with all
-   * the StorageKeys
-   *
-   */
+  //
+  // @brief HDF5DataStore getAllExistingKeys
+  // Method used to retrieve a vector with all
+  // the StorageKeys
+  //
+
   virtual std::vector<StorageKey> getAllExistingKeys() const
   {
     std::vector<StorageKey> keyList;
