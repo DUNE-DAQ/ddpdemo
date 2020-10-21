@@ -27,8 +27,8 @@
 #include <memory>
 #include <regex>
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 namespace dunedaq {
 
 ERS_DECLARE_ISSUE_BASE(ddpdemo,
