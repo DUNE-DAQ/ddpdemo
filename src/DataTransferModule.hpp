@@ -14,9 +14,8 @@
 
 #include "ddpdemo/DataStore.hpp"
 
-#include "appfwk/DAQModule.hpp"
-#include "appfwk/ThreadHelper.hpp"
-
+#include <appfwk/DAQModule.hpp>
+#include <appfwk/ThreadHelper.hpp>
 #include <ers/Issue.h>
 
 #include <memory>

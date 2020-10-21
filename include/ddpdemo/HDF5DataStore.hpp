@@ -12,16 +12,16 @@
  * received with this code.
  */
 
-#include "appfwk/DAQModule.hpp"
 #include "ddpdemo/DataStore.hpp"
 #include "ddpdemo/HDF5FileUtils.hpp"
 #include "ddpdemo/HDF5KeyTranslator.hpp"
-#include "highfive/H5File.hpp"
 
 #include <TRACE/trace.h>
+#include <appfwk/DAQModule.hpp>
 #include <ers/Issue.h>
 
 #include <boost/lexical_cast.hpp>
+#include <highfive/H5File.hpp>
 
 #include <filesystem>
 #include <memory>

@@ -10,6 +10,7 @@
 #define DDPDEMO_INCLUDE_DDPDEMO_KEYEDDATABLOCK_HPP_
 
 #include "ddpdemo/StorageKey.hpp"
+
 #include <cstdint>
 #include <memory>
 

@@ -11,8 +11,8 @@
  * received with this code.
  */
 
-#include "highfive/H5File.hpp"
 #include <ers/ers.h>
+#include <highfive/H5File.hpp>
 
 #include <filesystem>
 #include <regex>

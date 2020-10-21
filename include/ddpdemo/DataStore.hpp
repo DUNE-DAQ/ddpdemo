@@ -15,8 +15,9 @@
 #ifndef DDPDEMO_INCLUDE_DDPDEMO_DATASTORE_HPP_
 #define DDPDEMO_INCLUDE_DDPDEMO_DATASTORE_HPP_
 
-#include "appfwk/NamedObject.hpp"
 #include "ddpdemo/KeyedDataBlock.hpp"
+
+#include <appfwk/NamedObject.hpp>
 
 #include <ers/Issue.h>
 

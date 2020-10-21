@@ -12,8 +12,11 @@
  */
 
 #include "ddpdemo/StorageKey.hpp"
-#include <boost/algorithm/string.hpp>
+
 #include <ers/ers.h>
+
+#include <boost/algorithm/string.hpp>
+
 #include <iomanip>
 #include <sstream>
 #include <string>
