@@ -15,25 +15,23 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <iostream>
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <regex>
 #include <string>
 #include <vector>
 
 using namespace dunedaq::ddpdemo;
 
-std::vector<std::string> deleteFilesMatchingPattern(const std::string& path, const std::string& pattern)
+std::vector<std::string>
+deleteFilesMatchingPattern(const std::string& path, const std::string& pattern)
 {
   std::regex regexSearchPattern(pattern);
   std::vector<std::string> fileList;
-  for (const auto& entry : std::filesystem::directory_iterator(path))
-  {
-    if (std::regex_match(entry.path().filename().string(), regexSearchPattern))
-    {
-      if (std::filesystem::remove(entry.path()))
-      {
+  for (const auto& entry : std::filesystem::directory_iterator(path)) {
+    if (std::regex_match(entry.path().filename().string(), regexSearchPattern)) {
+      if (std::filesystem::remove(entry.path())) {
         fileList.push_back(entry.path());
       }
     }
@@ -41,7 +39,8 @@ std::vector<std::string> deleteFilesMatchingPattern(const std::string& path, con
   return fileList;
 }
 
-void touchFile(const std::string& filepath)
+void
+touchFile(const std::string& filepath)
 {
   std::fstream fs;
   fs.open(filepath, std::ios::out);
@@ -52,7 +51,8 @@ BOOST_AUTO_TEST_SUITE(HDF5FileUtils_test)
 
 BOOST_AUTO_TEST_CASE(GetFileList)
 {
-  std::string filePath(std::filesystem::temp_directory_path());;
+  std::string filePath(std::filesystem::temp_directory_path());
+  ;
   std::string filePrefix = "kurt";
   std::string fileExtension = ".tmp";
   std::string pid = std::to_string(getpid());

@@ -7,24 +7,24 @@
  */
 
 #include "SimpleDiskWriter.hpp"
-#include "ddpdemo/KeyedDataBlock.hpp"
 #include "ddpdemo/HDF5DataStore.hpp"
+#include "ddpdemo/KeyedDataBlock.hpp"
 
-#include <ers/ers.h>
 #include <TRACE/trace.h>
+#include <ers/ers.h>
 
 #include <chrono>
 #include <cstdlib>
+#include <string>
 #include <thread>
-#include <string> 
-#include <vector> 
+#include <vector>
 
 /**
  * @brief Name used by TRACE TLOG calls from this source file
  */
 #define TRACE_NAME "SimpleDiskWriter" // NOLINT
-#define TLVL_ENTER_EXIT_METHODS 10 // NOLINT 
-#define TLVL_WORK_STEPS 15 // NOLINT 
+#define TLVL_ENTER_EXIT_METHODS 10    // NOLINT
+#define TLVL_WORK_STEPS 15            // NOLINT
 
 namespace dunedaq {
 namespace ddpdemo {
@@ -34,12 +34,13 @@ SimpleDiskWriter::SimpleDiskWriter(const std::string& name)
   , thread_(std::bind(&SimpleDiskWriter::do_work, this, std::placeholders::_1))
 {
   register_command("configure", &SimpleDiskWriter::do_configure);
-  register_command("start",  &SimpleDiskWriter::do_start);
-  register_command("stop",  &SimpleDiskWriter::do_stop);
-  register_command("unconfigure",  &SimpleDiskWriter::do_unconfigure);
+  register_command("start", &SimpleDiskWriter::do_start);
+  register_command("stop", &SimpleDiskWriter::do_stop);
+  register_command("unconfigure", &SimpleDiskWriter::do_unconfigure);
 }
 
-void SimpleDiskWriter::init()
+void
+SimpleDiskWriter::init()
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
@@ -49,16 +50,17 @@ void
 SimpleDiskWriter::do_configure(const std::vector<std::string>& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
-  nIntsPerFakeEvent_ = get_config().value<size_t>("nIntsPerFakeEvent", static_cast<size_t>(REASONABLE_DEFAULT_INTSPERFAKEEVENT));
-  waitBetweenSendsMsec_ = get_config().value<size_t>("waitBetweenSendsMsec", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
+  nIntsPerFakeEvent_ =
+    get_config().value<size_t>("nIntsPerFakeEvent", static_cast<size_t>(REASONABLE_DEFAULT_INTSPERFAKEEVENT));
+  waitBetweenSendsMsec_ =
+    get_config().value<size_t>("waitBetweenSendsMsec", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
 
   directory_path_ = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
   filename_pattern_ = get_config()["data_store_parameters"]["filename_pattern"].get<std::string>();
   operation_mode_ = get_config()["data_store_parameters"]["mode"].get<std::string>();
   // Initializing the HDF5 DataStore constructor
   // Creating empty HDF5 file
-  dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_ , filename_pattern_, operation_mode_));
-
+  dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_, filename_pattern_, operation_mode_));
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
 }
@@ -108,7 +110,6 @@ operator<<(std::ostream& t, std::vector<int> ints)
     t << i;
   }
   return t << "}";
-
 }
 
 void
@@ -120,8 +121,7 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
   int fakeDataValue = 1;
 
   // ensure that we have a valid dataWriter instance
-  if (dataWriter_.get() == nullptr)
-  {
+  if (dataWriter_.get() == nullptr) {
     throw InvalidDataWriterError(ERS_HERE, get_name());
   }
 
@@ -130,15 +130,14 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
     std::vector<int> theFakeEvent(nIntsPerFakeEvent_);
 
     TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of fill loop";
-    for (size_t idx = 0; idx < nIntsPerFakeEvent_; ++idx)
-    {
+    for (size_t idx = 0; idx < nIntsPerFakeEvent_; ++idx) {
       theFakeEvent[idx] = fakeDataValue;
       fakeDataValue++;
     }
     ++generatedCount;
     std::ostringstream oss_prog;
-    oss_prog << "Generated fake event #" << generatedCount << " with contents " << theFakeEvent
-             << " and size " << theFakeEvent.size() << ". ";
+    oss_prog << "Generated fake event #" << generatedCount << " with contents " << theFakeEvent << " and size "
+             << theFakeEvent.size() << ". ";
     ers::debug(ProgressUpdate(ERS_HERE, get_name(), oss_prog.str()));
 
     // Here is where we will eventually write the data out to disk
@@ -146,8 +145,8 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
     KeyedDataBlock dataBlock(dataKey);
     dataBlock.data_size = theFakeEvent.size() * sizeof(int);
     dataBlock.unowned_data_start = reinterpret_cast<char*>(&theFakeEvent[0]); // NOLINT
-    TLOG(TLVL_WORK_STEPS) << get_name() << ": size of fake event number " << dataBlock.data_key.getEventID()
-                          << " is " << dataBlock.data_size << " bytes.";
+    TLOG(TLVL_WORK_STEPS) << get_name() << ": size of fake event number " << dataBlock.data_key.getEventID() << " is "
+                          << dataBlock.data_size << " bytes.";
     dataWriter_->write(dataBlock);
     ++writtenCount;
 
@@ -157,13 +156,13 @@ SimpleDiskWriter::do_work(std::atomic<bool>& running_flag)
   }
 
   std::ostringstream oss_summ;
-  oss_summ << ": Exiting the do_work() method, generated " << generatedCount
-           << " fake events and successfully wrote " << writtenCount << " of them to disk. ";
+  oss_summ << ": Exiting the do_work() method, generated " << generatedCount << " fake events and successfully wrote "
+           << writtenCount << " of them to disk. ";
   ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_work() method";
 }
 
-} // namespace ddpdemo 
+} // namespace ddpdemo
 } // namespace dunedaq
 
 DEFINE_DUNE_DAQ_MODULE(dunedaq::ddpdemo::SimpleDiskWriter)

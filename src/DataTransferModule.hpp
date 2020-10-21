@@ -38,14 +38,10 @@ public:
    */
   explicit DataTransferModule(const std::string& name);
 
-  DataTransferModule(const DataTransferModule&) =
-    delete; ///< DataTransferModule is not copy-constructible
-  DataTransferModule& operator=(const DataTransferModule&) =
-    delete; ///< DataTransferModule is not copy-assignable
-  DataTransferModule(DataTransferModule&&) =
-    delete; ///< DataTransferModule is not move-constructible
-  DataTransferModule& operator=(DataTransferModule&&) =
-    delete; ///< DataTransferModule is not move-assignable
+  DataTransferModule(const DataTransferModule&) = delete;            ///< DataTransferModule is not copy-constructible
+  DataTransferModule& operator=(const DataTransferModule&) = delete; ///< DataTransferModule is not copy-assignable
+  DataTransferModule(DataTransferModule&&) = delete;                 ///< DataTransferModule is not move-constructible
+  DataTransferModule& operator=(DataTransferModule&&) = delete;      ///< DataTransferModule is not move-assignable
 
   void init() override;
 

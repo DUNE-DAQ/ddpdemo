@@ -39,14 +39,10 @@ public:
    */
   explicit SimpleDiskReader(const std::string& name);
 
-  SimpleDiskReader(const SimpleDiskReader&) =
-    delete; ///< SimpleDiskReader is not copy-constructible
-  SimpleDiskReader& operator=(const SimpleDiskReader&) =
-    delete; ///< SimpleDiskReader is not copy-assignable
-  SimpleDiskReader(SimpleDiskReader&&) =
-    delete; ///< SimpleDiskReader is not move-constructible
-  SimpleDiskReader& operator=(SimpleDiskReader&&) =
-    delete; ///< SimpleDiskReader is not move-assignable
+  SimpleDiskReader(const SimpleDiskReader&) = delete;            ///< SimpleDiskReader is not copy-constructible
+  SimpleDiskReader& operator=(const SimpleDiskReader&) = delete; ///< SimpleDiskReader is not copy-assignable
+  SimpleDiskReader(SimpleDiskReader&&) = delete;                 ///< SimpleDiskReader is not move-constructible
+  SimpleDiskReader& operator=(SimpleDiskReader&&) = delete;      ///< SimpleDiskReader is not move-assignable
 
   void init() override;
 
@@ -70,14 +66,13 @@ private:
 
   // Configuration
   size_t key_eventID_ = REASONABLE_DEFAULT_INTFRAGMENT;
-  std::string key_detectorID_ = "FELIX" ;
+  std::string key_detectorID_ = "FELIX";
   size_t key_geoLocationID_ = REASONABLE_DEFAULT_INTFRAGMENT;
   size_t waitBetweenSendsMsec_ = REASONABLE_DEFAULT_MSECBETWEENSENDS;
 
-
   std::string directory_path_ = DEFAULT_PATH;
   std::string filename_pattern_ = DEFAULT_FILENAME;
-  std::string operation_mode_ = "" ;
+  std::string operation_mode_ = "";
   // Workers
   std::unique_ptr<DataStore> dataReader_;
 };
@@ -93,10 +88,10 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
 ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        InvalidDataReaderError,
                        appfwk::GeneralDAQModuleIssue,
-                       "A valid dataReader instance is not available so it will not be possible to read data. A likely cause for this is a skipped or missed Configure transition.",
+                       "A valid dataReader instance is not available so it will not be possible to read data. A likely "
+                       "cause for this is a skipped or missed Configure transition.",
                        ((std::string)name),
                        ERS_EMPTY)
-
 
 } // namespace dunedaq
 

@@ -3,7 +3,7 @@
 /**
  * @file HDF5KeyTranslator.hpp
  *
- * HDF5KeyTranslator collection of functions to translate between 
+ * HDF5KeyTranslator collection of functions to translate between
  * StorageKeys and HDF5 Group/DataSet 'paths'.
  *
  * This is part of the DUNE DAQ Software Suite, copyright 2020.
@@ -11,10 +11,9 @@
  * received with this code.
  */
 
-
 #include "ddpdemo/StorageKey.hpp"
-#include <ers/ers.h>
 #include <boost/algorithm/string.hpp>
+#include <ers/ers.h>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -23,10 +22,10 @@
 namespace dunedaq {
 namespace ddpdemo {
 
-class HDF5KeyTranslator {
+class HDF5KeyTranslator
+{
 
 public:
-
   inline static const std::string PATH_SEPARATOR = "/";
 
   static const int EVENT_ID_DIGITS = 4;
@@ -43,10 +42,9 @@ public:
   {
     std::vector<std::string> elementList = getPathElements(key);
 
-    std::string path = elementList[0];  // need error checking
+    std::string path = elementList[0]; // need error checking
 
-    for (size_t idx = 1; idx < elementList.size(); ++idx)
-    {
+    for (size_t idx = 1; idx < elementList.size(); ++idx) {
       path = path + PATH_SEPARATOR + elementList[idx];
     }
 
@@ -80,7 +78,7 @@ public:
    * returned by this class. This is independent of the translations from HDF5 paths
    * to StorageKeys (that translation may support multiple versions).
    */
-  static int getCurrentVersion() {return CURRENT_VERSION;}
+  static int getCurrentVersion() { return CURRENT_VERSION; }
 
   /**
    * @brief Translates the specified HDF5 'path' into the appropriate StorageKey.
@@ -95,21 +93,19 @@ public:
   /**
    * @brief Translates the specified HDF5 'path' elements into the appropriate StorageKey.
    */
-  static StorageKey getKeyFromList(const std::vector<std::string>& pathElements, int translationVersion = CURRENT_VERSION)
+  static StorageKey getKeyFromList(const std::vector<std::string>& pathElements,
+                                   int translationVersion = CURRENT_VERSION)
   {
-    if (translationVersion == 1)
-    {
+    if (translationVersion == 1) {
       int eventId = StorageKey::INVALID_EVENTID;
       std::string detectorId = StorageKey::INVALID_DETECTORID;
       int geoLocation = StorageKey::INVALID_GEOLOCATION;
 
-      if (pathElements.size() >= 1)
-      {
+      if (pathElements.size() >= 1) {
         std::stringstream evId(pathElements[0]);
         evId >> eventId;
       }
-      if (pathElements.size() >= 2)
-      {
+      if (pathElements.size() >= 2) {
         std::stringstream geoLoc(pathElements[1]);
         geoLoc >> geoLocation;
       }
@@ -117,18 +113,14 @@ public:
       return StorageKey(eventId, detectorId, geoLocation);
     }
 
-    else
-    {
+    else {
       StorageKey emptyKey(StorageKey::INVALID_EVENTID, StorageKey::INVALID_DETECTORID, StorageKey::INVALID_GEOLOCATION);
       return emptyKey;
     }
   }
 
 private:
-
   static const int CURRENT_VERSION = 1;
-
-
 };
 
 } // namespace ddpdemo

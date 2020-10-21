@@ -22,31 +22,26 @@ namespace ddpdemo {
 struct KeyedDataBlock
 {
 public:
-
   // These data members will be made private, at some point in time.
   StorageKey data_key;
   size_t data_size;
   const char* unowned_data_start;
   std::unique_ptr<char> owned_data_start;
 
-  explicit KeyedDataBlock(StorageKey theKey): data_key(theKey) {}
+  explicit KeyedDataBlock(StorageKey theKey)
+    : data_key(theKey)
+  {}
 
   const char* getDataStart() const
   {
-    if (owned_data_start.get() != nullptr)
-    {
+    if (owned_data_start.get() != nullptr) {
       return owned_data_start.get();
-    }
-    else
-    {
+    } else {
       return unowned_data_start;
     }
   }
 
-  size_t getDataSizeBytes() const
-  {
-    return data_size;
-  }
+  size_t getDataSizeBytes() const { return data_size; }
 };
 
 } // namespace ddpdemo
