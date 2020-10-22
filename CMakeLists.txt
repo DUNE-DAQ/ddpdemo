@@ -56,6 +56,7 @@ daq_add_unit_test(HDF5FileUtils_test       appfwk::appfwk ddpdemo ers::ers HighF
 daq_add_unit_test(HDF5Write_test           appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
 daq_add_unit_test(HDF5Read_test            appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
 daq_add_unit_test(HDF5GetAllKeys_test      appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
+daq_add_unit_test(HDF5Combiner_test        appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
 
 ##############################################################################
 

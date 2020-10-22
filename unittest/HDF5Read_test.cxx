@@ -26,19 +26,6 @@
 using namespace dunedaq::ddpdemo;
 
 std::vector<std::string>
-getFilesMatchingPattern(const std::string& path, const std::string& pattern)
-{
-  std::regex regexSearchPattern(pattern);
-  std::vector<std::string> fileList;
-  for (const auto& entry : std::filesystem::directory_iterator(path)) {
-    if (std::regex_match(entry.path().filename().string(), regexSearchPattern)) {
-      fileList.push_back(entry.path());
-    }
-  }
-  return fileList;
-}
-
-std::vector<std::string>
 deleteFilesMatchingPattern(const std::string& path, const std::string& pattern)
 {
   std::regex regexSearchPattern(pattern);
@@ -73,8 +60,7 @@ BOOST_AUTO_TEST_CASE(ReadFragmentFiles)
   // write several events, each with several fragments
   int initializedChecksum = 0;
   char dummyData[DUMMYDATA_SIZE];
-  for (int idx = 0; idx < DUMMYDATA_SIZE; ++idx)
-  {
+  for (int idx = 0; idx < DUMMYDATA_SIZE; ++idx) {
     int val = 0x7f & idx;
     dummyData[idx] = val;
     initializedChecksum += val;
@@ -102,7 +88,9 @@ BOOST_AUTO_TEST_CASE(ReadFragmentFiles)
 
     const char* data_ptr = static_cast<const char*>(dataBlock.getDataStart());
     int readbackChecksum = 0;
-    for (int idx = 0; idx < DUMMYDATA_SIZE; ++idx) {readbackChecksum += static_cast<int>(data_ptr[idx]);}
+    for (int idx = 0; idx < DUMMYDATA_SIZE; ++idx) {
+      readbackChecksum += static_cast<int>(data_ptr[idx]);
+    }
     BOOST_REQUIRE_EQUAL(readbackChecksum, initializedChecksum);
   }
   dsPtr2.reset(); // explicit destruction
@@ -129,8 +117,7 @@ BOOST_AUTO_TEST_CASE(ReadEventFiles)
   // write several events, each with several fragments
   int initializedChecksum = 0;
   char dummyData[DUMMYDATA_SIZE];
-  for (int idx = 0; idx < DUMMYDATA_SIZE; ++idx)
-  {
+  for (int idx = 0; idx < DUMMYDATA_SIZE; ++idx) {
     int val = 0x7f & idx;
     dummyData[idx] = val;
     initializedChecksum += val;
@@ -158,7 +145,9 @@ BOOST_AUTO_TEST_CASE(ReadEventFiles)
 
     const char* data_ptr = static_cast<const char*>(dataBlock.getDataStart());
     int readbackChecksum = 0;
-    for (int idx = 0; idx < DUMMYDATA_SIZE; ++idx) {readbackChecksum += static_cast<int>(data_ptr[idx]);}
+    for (int idx = 0; idx < DUMMYDATA_SIZE; ++idx) {
+      readbackChecksum += static_cast<int>(data_ptr[idx]);
+    }
     BOOST_REQUIRE_EQUAL(readbackChecksum, initializedChecksum);
   }
   dsPtr2.reset(); // explicit destruction
@@ -185,8 +174,7 @@ BOOST_AUTO_TEST_CASE(ReadSingleFile)
   // write several events, each with several fragments
   int initializedChecksum = 0;
   char dummyData[DUMMYDATA_SIZE];
-  for (int idx = 0; idx < DUMMYDATA_SIZE; ++idx)
-  {
+  for (int idx = 0; idx < DUMMYDATA_SIZE; ++idx) {
     int val = 0x7f & idx;
     dummyData[idx] = val;
     initializedChecksum += val;
@@ -214,7 +202,9 @@ BOOST_AUTO_TEST_CASE(ReadSingleFile)
 
     const char* data_ptr = static_cast<const char*>(dataBlock.getDataStart());
     int readbackChecksum = 0;
-    for (int idx = 0; idx < DUMMYDATA_SIZE; ++idx) {readbackChecksum += static_cast<int>(data_ptr[idx]);}
+    for (int idx = 0; idx < DUMMYDATA_SIZE; ++idx) {
+      readbackChecksum += static_cast<int>(data_ptr[idx]);
+    }
     BOOST_REQUIRE_EQUAL(readbackChecksum, initializedChecksum);
   }
   dsPtr2.reset(); // explicit destruction
