@@ -15,40 +15,37 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <iostream>
 #include <filesystem>
 #include <fstream>
+#include <iostream>
+#include <memory>
 #include <regex>
 #include <string>
 #include <vector>
-#include <memory> 
 
 using namespace dunedaq::ddpdemo;
 
-std::vector<std::string> getFilesMatchingPattern(const std::string& path, const std::string& pattern)
+std::vector<std::string>
+getFilesMatchingPattern(const std::string& path, const std::string& pattern)
 {
   std::regex regexSearchPattern(pattern);
   std::vector<std::string> fileList;
-  for (const auto& entry : std::filesystem::directory_iterator(path))
-  {
-    if (std::regex_match(entry.path().filename().string(), regexSearchPattern))
-    {
+  for (const auto& entry : std::filesystem::directory_iterator(path)) {
+    if (std::regex_match(entry.path().filename().string(), regexSearchPattern)) {
       fileList.push_back(entry.path());
     }
   }
   return fileList;
 }
 
-std::vector<std::string> deleteFilesMatchingPattern(const std::string& path, const std::string& pattern)
+std::vector<std::string>
+deleteFilesMatchingPattern(const std::string& path, const std::string& pattern)
 {
   std::regex regexSearchPattern(pattern);
   std::vector<std::string> fileList;
-  for (const auto& entry : std::filesystem::directory_iterator(path))
-  {
-    if (std::regex_match(entry.path().filename().string(), regexSearchPattern))
-    {
-      if (std::filesystem::remove(entry.path()))
-      {
+  for (const auto& entry : std::filesystem::directory_iterator(path)) {
+    if (std::regex_match(entry.path().filename().string(), regexSearchPattern)) {
+      if (std::filesystem::remove(entry.path())) {
         fileList.push_back(entry.path());
       }
     }
@@ -60,7 +57,8 @@ BOOST_AUTO_TEST_SUITE(HDF5Write_test)
 
 BOOST_AUTO_TEST_CASE(WriteFragmentFiles)
 {
-  std::string filePath(std::filesystem::temp_directory_path());;
+  std::string filePath(std::filesystem::temp_directory_path());
+  ;
   std::string filePrefix = "demo" + std::to_string(getpid());
 
   // delete any pre-existing files so that we start with a clean slate
@@ -72,10 +70,8 @@ BOOST_AUTO_TEST_CASE(WriteFragmentFiles)
 
   // write several events, each with several fragments
   char dummyData[8];
-  for (int eventID = 1; eventID <= 3; ++eventID)
-  {
-    for (int geoLoc = 0; geoLoc < 2; ++geoLoc)
-    {
+  for (int eventID = 1; eventID <= 3; ++eventID) {
+    for (int geoLoc = 0; geoLoc < 2; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
       KeyedDataBlock dataBlock(key);
       dataBlock.unowned_data_start = &dummyData[0];
@@ -83,7 +79,7 @@ BOOST_AUTO_TEST_CASE(WriteFragmentFiles)
       dsPtr->write(dataBlock);
     }
   }
-  dsPtr.reset();  // explicit destruction
+  dsPtr.reset(); // explicit destruction
 
   // check that the expected number of files was created
   std::string searchPattern = filePrefix + ".*event.*geoID.*.hdf5";
@@ -97,7 +93,8 @@ BOOST_AUTO_TEST_CASE(WriteFragmentFiles)
 
 BOOST_AUTO_TEST_CASE(WriteEventFiles)
 {
-  std::string filePath(std::filesystem::temp_directory_path());;
+  std::string filePath(std::filesystem::temp_directory_path());
+  ;
   std::string filePrefix = "demo" + std::to_string(getpid());
 
   // delete any pre-existing files so that we start with a clean slate
@@ -109,10 +106,8 @@ BOOST_AUTO_TEST_CASE(WriteEventFiles)
 
   // write several events, each with several fragments
   char dummyData[8];
-  for (int eventID = 1; eventID <= 3; ++eventID)
-  {
-    for (int geoLoc = 0; geoLoc < 2; ++geoLoc)
-    {
+  for (int eventID = 1; eventID <= 3; ++eventID) {
+    for (int geoLoc = 0; geoLoc < 2; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
       KeyedDataBlock dataBlock(key);
       dataBlock.unowned_data_start = &dummyData[0];
@@ -120,7 +115,7 @@ BOOST_AUTO_TEST_CASE(WriteEventFiles)
       dsPtr->write(dataBlock);
     }
   }
-  dsPtr.reset();  // explicit destruction
+  dsPtr.reset(); // explicit destruction
 
   // check that the expected number of files was created
   std::string searchPattern = filePrefix + ".*event.*.hdf5";
@@ -134,7 +129,8 @@ BOOST_AUTO_TEST_CASE(WriteEventFiles)
 
 BOOST_AUTO_TEST_CASE(WriteOneFile)
 {
-  std::string filePath(std::filesystem::temp_directory_path());;
+  std::string filePath(std::filesystem::temp_directory_path());
+  ;
   std::string filePrefix = "demo" + std::to_string(getpid());
 
   // delete any pre-existing files so that we start with a clean slate
@@ -146,10 +142,8 @@ BOOST_AUTO_TEST_CASE(WriteOneFile)
 
   // write several events, each with several fragments
   char dummyData[8];
-  for (int eventID = 1; eventID <= 3; ++eventID)
-  {
-    for (int geoLoc = 0; geoLoc < 2; ++geoLoc)
-    {
+  for (int eventID = 1; eventID <= 3; ++eventID) {
+    for (int geoLoc = 0; geoLoc < 2; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
       KeyedDataBlock dataBlock(key);
       dataBlock.unowned_data_start = &dummyData[0];
@@ -157,7 +151,7 @@ BOOST_AUTO_TEST_CASE(WriteOneFile)
       dsPtr->write(dataBlock);
     }
   }
-  dsPtr.reset();  // explicit destruction
+  dsPtr.reset(); // explicit destruction
 
   // check that the expected number of files was created
   std::string searchPattern = filePrefix + ".*.hdf5";

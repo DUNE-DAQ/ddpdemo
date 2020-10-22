@@ -18,8 +18,8 @@
 #include <ers/Issue.h>
 
 #include <iomanip>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace dunedaq {
 namespace ddpdemo {
@@ -27,7 +27,6 @@ namespace ddpdemo {
 class TrashCanDataStore : public DataStore
 {
 public:
-
   explicit TrashCanDataStore(const std::string& name)
     : DataStore(name)
   {}
@@ -35,11 +34,12 @@ public:
   virtual void write(const KeyedDataBlock& dataBlock)
   {
     const char* dataPtr = dataBlock.getDataStart();
-    ERS_INFO("Throwing away the data from event ID " << dataBlock.data_key.getEventID() <<
-             ", which has size of " << dataBlock.data_size << " bytes, and the following data " <<
-             "in the first few bytes: 0x" << std::hex << std::setfill('0') << std::setw(2) <<
-             (static_cast<int>(dataPtr[0])) << " 0x" << (static_cast<int>(dataPtr[1])) << " 0x" << (static_cast<int>(dataPtr[2])) <<
-             " 0x" << (static_cast<int>(dataPtr[3])) << std::dec ) ;
+    ERS_INFO("Throwing away the data from event ID "
+             << dataBlock.data_key.getEventID() << ", which has size of " << dataBlock.data_size
+             << " bytes, and the following data "
+             << "in the first few bytes: 0x" << std::hex << std::setfill('0') << std::setw(2)
+             << (static_cast<int>(dataPtr[0])) << " 0x" << (static_cast<int>(dataPtr[1])) << " 0x"
+             << (static_cast<int>(dataPtr[2])) << " 0x" << (static_cast<int>(dataPtr[3])) << std::dec);
   }
 
   virtual std::vector<StorageKey> getAllExistingKeys() const

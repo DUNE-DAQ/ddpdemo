@@ -14,9 +14,8 @@
 
 #include "ddpdemo/DataStore.hpp"
 
-#include "appfwk/DAQModule.hpp"
-#include "appfwk/ThreadHelper.hpp"
-
+#include <appfwk/DAQModule.hpp>
+#include <appfwk/ThreadHelper.hpp>
 #include <ers/Issue.h>
 
 #include <memory>
@@ -39,14 +38,10 @@ public:
    */
   explicit GetAllKeysTest(const std::string& name);
 
-  GetAllKeysTest(const GetAllKeysTest&) =
-    delete; ///< GetAllKeysTest is not copy-constructible
-  GetAllKeysTest& operator=(const GetAllKeysTest&) =
-    delete; ///< GetAllKeysTest is not copy-assignable
-  GetAllKeysTest(GetAllKeysTest&&) =
-    delete; ///< GetAllKeysTest is not move-constructible
-  GetAllKeysTest& operator=(GetAllKeysTest&&) =
-    delete; ///< GetAllKeysTest is not move-assignable
+  GetAllKeysTest(const GetAllKeysTest&) = delete;            ///< GetAllKeysTest is not copy-constructible
+  GetAllKeysTest& operator=(const GetAllKeysTest&) = delete; ///< GetAllKeysTest is not copy-assignable
+  GetAllKeysTest(GetAllKeysTest&&) = delete;                 ///< GetAllKeysTest is not move-constructible
+  GetAllKeysTest& operator=(GetAllKeysTest&&) = delete;      ///< GetAllKeysTest is not move-assignable
 
   void init() override;
 
@@ -78,7 +73,6 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        message,
                        ((std::string)name),
                        ((std::string)message))
-
 
 } // namespace dunedaq
 

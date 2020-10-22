@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(PathElements)
 
 BOOST_AUTO_TEST_CASE(KeyFromString)
 {
-  StorageKey key(0,"",0);  // do we want to add support for a default constructor in StorageKey?
+  StorageKey key(0, "", 0); // do we want to add support for a default constructor in StorageKey?
 
   std::string path1 = "1/2";
   key = HDF5KeyTranslator::getKeyFromString(path1, 1);
@@ -75,9 +75,9 @@ BOOST_AUTO_TEST_CASE(KeyFromString)
 
 BOOST_AUTO_TEST_CASE(KeyFromList)
 {
-  StorageKey key(0,"",0);  // do we want to add support for a default constructor in StorageKey?
+  StorageKey key(0, "", 0); // do we want to add support for a default constructor in StorageKey?
 
-  std::vector<std::string> list1 = {"8", "9"};
+  std::vector<std::string> list1 = { "8", "9" };
   key = HDF5KeyTranslator::getKeyFromList(list1, 1);
   BOOST_REQUIRE_EQUAL(key.getEventID(), 8);
   BOOST_REQUIRE_EQUAL(key.getDetectorID(), StorageKey::INVALID_DETECTORID);
