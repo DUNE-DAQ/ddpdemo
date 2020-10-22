@@ -49,13 +49,13 @@ file(COPY test/get_all_keys_test.json DESTINATION test)
 
 ##############################################################################
 daq_point_build_to( unittest )
-daq_add_unit_test(HDF5FileUtils_test       appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
-daq_add_unit_test(HDF5KeyTranslator_test   appfwk::appfwk ddpdemo ers::ers)
 daq_add_unit_test(StorageKey_test          ddpdemo ers::ers)
-daq_add_unit_test(HDF5Write_test           appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
-daq_add_unit_test(HDF5WriteAndRead_test    appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
-daq_add_unit_test(HDF5GetAllKeys_test      appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
 daq_add_unit_test(KeyedDataBlock_test      appfwk::appfwk ddpdemo ers::ers)
+daq_add_unit_test(HDF5KeyTranslator_test   appfwk::appfwk ddpdemo ers::ers)
+daq_add_unit_test(HDF5FileUtils_test       appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
+daq_add_unit_test(HDF5Write_test           appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
+daq_add_unit_test(HDF5Read_test            appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
+daq_add_unit_test(HDF5GetAllKeys_test      appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
 
 ##############################################################################
 

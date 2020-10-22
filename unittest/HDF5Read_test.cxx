@@ -1,5 +1,5 @@
 /**
- * @file HDF5WriteAndRead_test.cxx Application that tests and demonstrates
+ * @file HDF5Read_test.cxx Application that tests and demonstrates
  * the read functionality of the HDF5DataStore class.
  *
  * This is part of the DUNE DAQ Application Framework, copyright 2020.
@@ -11,7 +11,7 @@
 
 #include "ers/ers.h"
 
-#define BOOST_TEST_MODULE HDF5WriteAndRead_test // NOLINT
+#define BOOST_TEST_MODULE HDF5Read_test // NOLINT
 
 #include <boost/test/unit_test.hpp>
 
@@ -53,7 +53,7 @@ deleteFilesMatchingPattern(const std::string& path, const std::string& pattern)
   return fileList;
 }
 
-BOOST_AUTO_TEST_SUITE(HDF5WriteAndRead_test)
+BOOST_AUTO_TEST_SUITE(HDF5Read_test)
 
 BOOST_AUTO_TEST_CASE(ReadFragmentFiles)
 {
