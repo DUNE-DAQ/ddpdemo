@@ -16,10 +16,10 @@
 #define DDPDEMO_INCLUDE_DDPDEMO_DATASTORE_HPP_
 
 #include "ddpdemo/KeyedDataBlock.hpp"
-#include "appfwk/NamedObject.hpp"
+
+#include <appfwk/NamedObject.hpp>
 
 #include <ers/Issue.h>
-
 
 #include <chrono>
 #include <cstddef>
@@ -36,7 +36,6 @@ namespace ddpdemo {
 class DataStore : public appfwk::NamedObject
 {
 public:
-
   /**
    * @brief DataStore Constructor
    * @param name Name of the DataStore instance
@@ -45,14 +44,11 @@ public:
     : appfwk::NamedObject(name)
   {}
 
-
   /**
    * @brief Setup the DataStore for reading/writign.
    * @param directory path and filename.
    */
   virtual void setup(const size_t eventId) = 0;
-
-
 
   /**
    * @brief Writes the specified data payload into the DataStore.
@@ -67,9 +63,9 @@ public:
   virtual std::vector<StorageKey> getAllExistingKeys() const = 0;
 
   // Ideas for future work...
-  //virtual void write(const std::vector<KeyedDataBlock>& dataBlockList) = 0;
+  // virtual void write(const std::vector<KeyedDataBlock>& dataBlockList) = 0;
   virtual KeyedDataBlock read(const StorageKey& key) = 0;
-  //virtual std::vector<KeyedDataBlock> read(const std::vector<StorageKey>& key) = 0;
+  // virtual std::vector<KeyedDataBlock> read(const std::vector<StorageKey>& key) = 0;
 
 private:
   DataStore(const DataStore&) = delete;

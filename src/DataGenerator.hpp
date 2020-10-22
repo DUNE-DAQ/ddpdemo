@@ -14,9 +14,8 @@
 
 #include "ddpdemo/DataStore.hpp"
 
-#include "appfwk/DAQModule.hpp"
-#include "appfwk/ThreadHelper.hpp"
-
+#include <appfwk/DAQModule.hpp>
+#include <appfwk/ThreadHelper.hpp>
 #include <ers/Issue.h>
 
 #include <memory>
@@ -39,14 +38,10 @@ public:
    */
   explicit DataGenerator(const std::string& name);
 
-  DataGenerator(const DataGenerator&) =
-    delete; ///< DataGenerator is not copy-constructible
-  DataGenerator& operator=(const DataGenerator&) =
-    delete; ///< DataGenerator is not copy-assignable
-  DataGenerator(DataGenerator&&) =
-    delete; ///< DataGenerator is not move-constructible
-  DataGenerator& operator=(DataGenerator&&) =
-    delete; ///< DataGenerator is not move-assignable
+  DataGenerator(const DataGenerator&) = delete;            ///< DataGenerator is not copy-constructible
+  DataGenerator& operator=(const DataGenerator&) = delete; ///< DataGenerator is not copy-assignable
+  DataGenerator(DataGenerator&&) = delete;                 ///< DataGenerator is not move-constructible
+  DataGenerator& operator=(DataGenerator&&) = delete;      ///< DataGenerator is not move-assignable
 
   void init() override;
 
@@ -90,7 +85,6 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        message,
                        ((std::string)name),
                        ((std::string)message))
-
 
 } // namespace dunedaq
 

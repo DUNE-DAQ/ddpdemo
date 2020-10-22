@@ -7,24 +7,24 @@
  */
 
 #include "SimpleDiskReader.hpp"
-#include "ddpdemo/KeyedDataBlock.hpp"
 #include "ddpdemo/HDF5DataStore.hpp"
+#include "ddpdemo/KeyedDataBlock.hpp"
 
-#include <ers/ers.h>
 #include <TRACE/trace.h>
+#include <ers/ers.h>
 
 #include <chrono>
 #include <cstdlib>
+#include <string>
 #include <thread>
-#include <string> 
-#include <vector> 
+#include <vector>
 
 /**
  * @brief Name used by TRACE TLOG calls from this source file
  */
 #define TRACE_NAME "SimpleDiskReader" // NOLINT
-#define TLVL_ENTER_EXIT_METHODS 10 // NOLINT 
-#define TLVL_WORK_STEPS 15 // NOLINT 
+#define TLVL_ENTER_EXIT_METHODS 10    // NOLINT
+#define TLVL_WORK_STEPS 15            // NOLINT
 
 namespace dunedaq {
 namespace ddpdemo {
@@ -34,12 +34,13 @@ SimpleDiskReader::SimpleDiskReader(const std::string& name)
   , thread_(std::bind(&SimpleDiskReader::do_work, this, std::placeholders::_1))
 {
   register_command("configure", &SimpleDiskReader::do_configure);
-  register_command("start",  &SimpleDiskReader::do_start);
-  register_command("stop",  &SimpleDiskReader::do_stop);
-  register_command("unconfigure",  &SimpleDiskReader::do_unconfigure);
+  register_command("start", &SimpleDiskReader::do_start);
+  register_command("stop", &SimpleDiskReader::do_stop);
+  register_command("unconfigure", &SimpleDiskReader::do_unconfigure);
 }
 
-void SimpleDiskReader::init()
+void
+SimpleDiskReader::init()
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
@@ -51,16 +52,17 @@ SimpleDiskReader::do_configure(const std::vector<std::string>& /*args*/)
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
   key_eventID_ = get_config().value<size_t>("event_id", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
   key_detectorID_ = get_config()["detector_id"].get<std::string>();
-  key_geoLocationID_ = get_config().value<size_t>("geolocation_id", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
-  waitBetweenSendsMsec_ = get_config().value<size_t>("waitBetweenSendsMsec", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
+  key_geoLocationID_ =
+    get_config().value<size_t>("geolocation_id", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
+  waitBetweenSendsMsec_ =
+    get_config().value<size_t>("waitBetweenSendsMsec", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
 
   directory_path_ = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
   filename_pattern_ = get_config()["data_store_parameters"]["filename"].get<std::string>();
   operation_mode_ = get_config()["data_store_parameters"]["mode"].get<std::string>();
-  // Initializing the HDF5 DataStore constructor                                                                                               
-  // Creating empty HDF5 file                                                                                                                  
-  dataReader_.reset(new HDF5DataStore("tempWriter", directory_path_ , filename_pattern_, operation_mode_));
-
+  // Initializing the HDF5 DataStore constructor
+  // Creating empty HDF5 file
+  dataReader_.reset(new HDF5DataStore("tempWriter", directory_path_, filename_pattern_, operation_mode_));
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
 }
@@ -110,7 +112,6 @@ operator<<(std::ostream& t, std::vector<int> ints)
     t << i;
   }
   return t << "}";
-
 }
 
 void
@@ -119,36 +120,34 @@ SimpleDiskReader::do_work(std::atomic<bool>& running_flag)
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_work() method";
 
   // ensure that we have a valid dataReader instance
-  if (dataReader_.get() == nullptr)
-  {
+  if (dataReader_.get() == nullptr) {
     throw InvalidDataReaderError(ERS_HERE, get_name());
   }
 
+  TLOG(TLVL_WORK_STEPS) << get_name() << ": reading fakeEvent  ";
 
-  TLOG(TLVL_WORK_STEPS) << get_name() << ": reading fakeEvent  " ;
+  StorageKey dataKey(key_eventID_, key_detectorID_, key_geoLocationID_);
 
-  StorageKey dataKey(key_eventID_, key_detectorID_, key_geoLocationID_ );
+  TLOG(TLVL_WORK_STEPS) << get_name() << ": trying to read fragment " << key_eventID_ << ":" << key_detectorID_ << ":"
+                        << key_geoLocationID_ << ", from file " << filename_pattern_;
 
-  TLOG(TLVL_WORK_STEPS) << get_name() << ": trying to read fragment " <<key_eventID_<<":"<< key_detectorID_<<":"<< key_geoLocationID_  <<", from file "<<filename_pattern_ ;
-
-  KeyedDataBlock dataBlock(dataKey) ; 
+  KeyedDataBlock dataBlock(dataKey);
 
   while (running_flag.load()) {
-      // for now just read the file/datafragment and then stop
+    // for now just read the file/datafragment and then stop
     std::this_thread::sleep_for(std::chrono::milliseconds(waitBetweenSendsMsec_));
-    dataBlock  = dataReader_->read(dataKey);
-
+    dataBlock = dataReader_->read(dataKey);
   }
-  
+
   TLOG(TLVL_WORK_STEPS) << get_name() << ": End of do_work loop";
   std::ostringstream oss_summ;
   oss_summ << ": Exiting the do_work() method, read fragment of size " << dataBlock.data_size
-           << "  and successfully read it " ;
+           << "  and successfully read it ";
   ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_work() method";
 }
 
-} // namespace ddpdemo 
+} // namespace ddpdemo
 } // namespace dunedaq
 
 DEFINE_DUNE_DAQ_MODULE(dunedaq::ddpdemo::SimpleDiskReader)

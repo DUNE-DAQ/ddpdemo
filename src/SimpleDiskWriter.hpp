@@ -14,9 +14,8 @@
 
 #include "ddpdemo/DataStore.hpp"
 
-#include "appfwk/DAQModule.hpp"
-#include "appfwk/ThreadHelper.hpp"
-
+#include <appfwk/DAQModule.hpp>
+#include <appfwk/ThreadHelper.hpp>
 #include <ers/Issue.h>
 
 #include <memory>
@@ -39,14 +38,10 @@ public:
    */
   explicit SimpleDiskWriter(const std::string& name);
 
-  SimpleDiskWriter(const SimpleDiskWriter&) =
-    delete; ///< SimpleDiskWriter is not copy-constructible
-  SimpleDiskWriter& operator=(const SimpleDiskWriter&) =
-    delete; ///< SimpleDiskWriter is not copy-assignable
-  SimpleDiskWriter(SimpleDiskWriter&&) =
-    delete; ///< SimpleDiskWriter is not move-constructible
-  SimpleDiskWriter& operator=(SimpleDiskWriter&&) =
-    delete; ///< SimpleDiskWriter is not move-assignable
+  SimpleDiskWriter(const SimpleDiskWriter&) = delete;            ///< SimpleDiskWriter is not copy-constructible
+  SimpleDiskWriter& operator=(const SimpleDiskWriter&) = delete; ///< SimpleDiskWriter is not copy-assignable
+  SimpleDiskWriter(SimpleDiskWriter&&) = delete;                 ///< SimpleDiskWriter is not move-constructible
+  SimpleDiskWriter& operator=(SimpleDiskWriter&&) = delete;      ///< SimpleDiskWriter is not move-assignable
 
   void init() override;
 
@@ -72,15 +67,12 @@ private:
   size_t nIntsPerFakeEvent_ = REASONABLE_DEFAULT_INTSPERFAKEEVENT;
   size_t waitBetweenSendsMsec_ = REASONABLE_DEFAULT_MSECBETWEENSENDS;
 
-
   std::string directory_path_ = DEFAULT_PATH;
   std::string filename_pattern_ = DEFAULT_FILENAME;
-  std::string operation_mode_ = "" ;
+  std::string operation_mode_ = "";
 
   // Workers
   std::unique_ptr<DataStore> dataWriter_;
-
-
 };
 } // namespace ddpdemo
 
@@ -94,10 +86,10 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
 ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        InvalidDataWriterError,
                        appfwk::GeneralDAQModuleIssue,
-                       "A valid dataWriter instance is not available so it will not be possible to write data. A likely cause for this is a skipped or missed Configure transition.",
+                       "A valid dataWriter instance is not available so it will not be possible to write data. A "
+                       "likely cause for this is a skipped or missed Configure transition.",
                        ((std::string)name),
                        ERS_EMPTY)
-
 
 } // namespace dunedaq
 

@@ -14,9 +14,8 @@
 
 #include "ddpdemo/DataStore.hpp"
 
-#include "appfwk/DAQModule.hpp"
-#include "appfwk/ThreadHelper.hpp"
-
+#include <appfwk/DAQModule.hpp>
+#include <appfwk/ThreadHelper.hpp>
 #include <ers/Issue.h>
 
 #include <memory>
@@ -39,14 +38,10 @@ public:
    */
   explicit BinaryWriter(const std::string& name);
 
-  BinaryWriter(const BinaryWriter&) =
-    delete; ///< BinaryWriter is not copy-constructible
-  BinaryWriter& operator=(const BinaryWriter&) =
-    delete; ///< BinaryWriter is not copy-assignable
-  BinaryWriter(BinaryWriter&&) =
-    delete; ///< BinaryWriter is not move-constructible
-  BinaryWriter& operator=(BinaryWriter&&) =
-    delete; ///< BinaryWriter is not move-assignable
+  BinaryWriter(const BinaryWriter&) = delete;            ///< BinaryWriter is not copy-constructible
+  BinaryWriter& operator=(const BinaryWriter&) = delete; ///< BinaryWriter is not copy-assignable
+  BinaryWriter(BinaryWriter&&) = delete;                 ///< BinaryWriter is not move-constructible
+  BinaryWriter& operator=(BinaryWriter&&) = delete;      ///< BinaryWriter is not move-assignable
 
   void init() override;
 
@@ -79,11 +74,8 @@ private:
   std::string filename_pattern_ = DEFAULT_FILENAME;
   std::string operation_mode_ = DEFAULT_MODE;
 
-
   // Workers
   std::unique_ptr<DataStore> dataWriter_;
-
-
 };
 } // namespace ddpdemo
 
@@ -97,12 +89,10 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
 ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        InvalidDataWriterError,
                        appfwk::GeneralDAQModuleIssue,
-                       "A valid dataWriter instance is not available so it will not be possible to write data. A likely cause for this is a skipped or missed Configure transition.",
+                       "A valid dataWriter instance is not available so it will not be possible to write data. A "
+                       "likely cause for this is a skipped or missed Configure transition.",
                        ((std::string)name),
                        ERS_EMPTY)
-
-
-
 
 } // namespace dunedaq
 

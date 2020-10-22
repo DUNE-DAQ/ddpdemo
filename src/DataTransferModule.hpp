@@ -14,9 +14,8 @@
 
 #include "ddpdemo/DataStore.hpp"
 
-#include "appfwk/DAQModule.hpp"
-#include "appfwk/ThreadHelper.hpp"
-
+#include <appfwk/DAQModule.hpp>
+#include <appfwk/ThreadHelper.hpp>
 #include <ers/Issue.h>
 
 #include <memory>
@@ -38,14 +37,10 @@ public:
    */
   explicit DataTransferModule(const std::string& name);
 
-  DataTransferModule(const DataTransferModule&) =
-    delete; ///< DataTransferModule is not copy-constructible
-  DataTransferModule& operator=(const DataTransferModule&) =
-    delete; ///< DataTransferModule is not copy-assignable
-  DataTransferModule(DataTransferModule&&) =
-    delete; ///< DataTransferModule is not move-constructible
-  DataTransferModule& operator=(DataTransferModule&&) =
-    delete; ///< DataTransferModule is not move-assignable
+  DataTransferModule(const DataTransferModule&) = delete;            ///< DataTransferModule is not copy-constructible
+  DataTransferModule& operator=(const DataTransferModule&) = delete; ///< DataTransferModule is not copy-assignable
+  DataTransferModule(DataTransferModule&&) = delete;                 ///< DataTransferModule is not move-constructible
+  DataTransferModule& operator=(DataTransferModule&&) = delete;      ///< DataTransferModule is not move-assignable
 
   void init() override;
 
