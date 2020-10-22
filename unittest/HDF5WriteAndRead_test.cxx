@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(WriteAndReadFragmentFilesSeparateDataStores)
     for (int geoLoc = 0; geoLoc < 2; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
       KeyedDataBlock dataBlock(key);
-      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.unowned_data_start = static_cast<void*>(&dummyData[0]);
       dataBlock.data_size = 8;
       dsPtr->write(dataBlock);
       keyList.push_back(key);
@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE(WriteAndReadEventFilesSeparateDataStores)
     for (int geoLoc = 0; geoLoc < 2; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
       KeyedDataBlock dataBlock(key);
-      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.unowned_data_start = static_cast<void*>(&dummyData[0]);
       dataBlock.data_size = 8;
       dsPtr->write(dataBlock);
       keyList.push_back(key);
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(WriteAndReadFragmentFilesSameDataStore)
     for (int geoLoc = 0; geoLoc < 2; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
       KeyedDataBlock dataBlock(key);
-      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.unowned_data_start = static_cast<void*>(&dummyData[0]);
       dataBlock.data_size = 8;
       dsPtr->write(dataBlock);
       keyList.push_back(key);
@@ -231,7 +231,7 @@ BOOST_AUTO_TEST_CASE(WriteAndReadEventFilesSameDataStore)
     for (int geoLoc = 0; geoLoc < 2; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
       KeyedDataBlock dataBlock(key);
-      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.unowned_data_start = static_cast<void*>(&dummyData[0]);
       dataBlock.data_size = 10;
       dsPtr->write(dataBlock);
       keyList.push_back(key);

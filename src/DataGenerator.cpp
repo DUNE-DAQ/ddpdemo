@@ -105,7 +105,7 @@ DataGenerator::do_work(std::atomic<bool>& running_flag)
   }
 
   // create a memory buffer
-  char* membuffer = static_cast<char*>(malloc(io_size_));
+  void* membuffer = malloc(io_size_);
   memset(membuffer, 'X', io_size_);
 
   TLOG(TLVL_WORK_STEPS) << get_name() << ": Generating data ";
@@ -130,6 +130,7 @@ DataGenerator::do_work(std::atomic<bool>& running_flag)
     std::this_thread::sleep_for(std::chrono::milliseconds(sleepMsecWhileRunning_));
     TLOG(TLVL_WORK_STEPS) << get_name() << ": End of do_work loop";
   }
+  free(membuffer);
 
   std::ostringstream oss_summ;
   oss_summ << ": Exiting the do_work() method, wrote " << writtenCount << " fragments associated with " << (eventID - 1)

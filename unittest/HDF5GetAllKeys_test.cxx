@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(GetKeysFromFragmentFiles)
     for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
       KeyedDataBlock dataBlock(key);
-      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.unowned_data_start = static_cast<void*>(&dummyData[0]);
       dataBlock.data_size = DUMMYDATA_SIZE;
       dsPtr->write(dataBlock);
     }
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(GetKeysFromEventFiles)
     for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
       KeyedDataBlock dataBlock(key);
-      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.unowned_data_start = static_cast<void*>(&dummyData[0]);
       dataBlock.data_size = DUMMYDATA_SIZE;
       dsPtr->write(dataBlock);
     }
@@ -234,7 +234,7 @@ BOOST_AUTO_TEST_CASE(GetKeysFromAllInOneFiles)
     for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
       KeyedDataBlock dataBlock(key);
-      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.unowned_data_start = static_cast<void*>(&dummyData[0]);
       dataBlock.data_size = DUMMYDATA_SIZE;
       dsPtr->write(dataBlock);
     }
@@ -319,7 +319,7 @@ BOOST_AUTO_TEST_CASE(CheckCrossTalk)
     for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
       KeyedDataBlock dataBlock(key);
-      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.unowned_data_start = static_cast<void*>(&dummyData[0]);
       dataBlock.data_size = DUMMYDATA_SIZE;
       dsPtr->write(dataBlock);
     }
@@ -334,7 +334,7 @@ BOOST_AUTO_TEST_CASE(CheckCrossTalk)
     for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
       KeyedDataBlock dataBlock(key);
-      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.unowned_data_start = static_cast<void*>(&dummyData[0]);
       dataBlock.data_size = DUMMYDATA_SIZE;
       dsPtr->write(dataBlock);
     }
@@ -349,7 +349,7 @@ BOOST_AUTO_TEST_CASE(CheckCrossTalk)
     for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
       KeyedDataBlock dataBlock(key);
-      dataBlock.unowned_data_start = &dummyData[0];
+      dataBlock.unowned_data_start = static_cast<void*>(&dummyData[0]);
       dataBlock.data_size = DUMMYDATA_SIZE;
       dsPtr->write(dataBlock);
     }

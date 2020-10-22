@@ -116,7 +116,7 @@ BinaryWriter::do_work(std::atomic<bool>& running_flag)
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_work() method";
 
   // create a memory buffer
-  char* membuffer = static_cast<char*>(malloc(io_size_));
+  void* membuffer = malloc(io_size_);
   memset(membuffer, 'X', io_size_);
 
   TLOG(TLVL_WORK_STEPS) << get_name() << ": Generating data ";
@@ -138,6 +138,7 @@ BinaryWriter::do_work(std::atomic<bool>& running_flag)
 
     sleep(1);
   }
+  free(membuffer);
 
   std::ostringstream oss_summ;
   oss_summ << ": Exiting the do_work() method, generated " << event << " fake events and successfully wrote "
