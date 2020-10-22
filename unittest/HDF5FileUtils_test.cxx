@@ -52,12 +52,9 @@ BOOST_AUTO_TEST_SUITE(HDF5FileUtils_test)
 BOOST_AUTO_TEST_CASE(GetFileList)
 {
   std::string filePath(std::filesystem::temp_directory_path());
-  ;
   std::string filePrefix = "kurt";
   std::string fileExtension = ".tmp";
   std::string pid = std::to_string(getpid());
-
-  //  BOOST_REQUIRE(deleteFilePattern(filePath + "/" + filePrefix + "\\*" + fileExtension));
 
   // delete any pre-existing files so that we start with a clean slate
   std::string deletePattern = filePrefix + ".*" + pid + ".*" + fileExtension;
@@ -78,22 +75,6 @@ BOOST_AUTO_TEST_CASE(GetFileList)
 
   fileList = deleteFilesMatchingPattern(filePath, deletePattern);
   BOOST_REQUIRE_EQUAL(fileList.size(), 3);
-
-#if 0
-  std::string path;
-
-  StorageKey key1(1, "None", 2);
-  path = HDF5FileUtils::getPathString(key1);
-  BOOST_REQUIRE_EQUAL(path, "0001/002");
-
-  StorageKey key2(12345, "None", 6);
-  path = HDF5FileUtils::getPathString(key2);
-  BOOST_REQUIRE_EQUAL(path, "12345/006");
-
-  StorageKey key3(123, "None", 4567);
-  path = HDF5FileUtils::getPathString(key3);
-  BOOST_REQUIRE_EQUAL(path, "0123/4567");
-#endif
 }
 
 BOOST_AUTO_TEST_SUITE_END()

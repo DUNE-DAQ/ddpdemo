@@ -23,9 +23,7 @@
 #include <boost/lexical_cast.hpp>
 #include <highfive/H5File.hpp>
 
-#include <filesystem>
 #include <memory>
-#include <regex>
 #include <string>
 #include <utility>
 #include <vector>
@@ -80,9 +78,9 @@ public:
     , fullNameOfOpenFile_("")
     , openFlagsOfOpenFile_(0)
   {
-    ERS_INFO("Filename prefix: " << fileName);
-    ERS_INFO("Directory path: " << path);
-    ERS_INFO("Operation mode: " << operationMode);
+    TLOG(TLVL_DEBUG) << get_name() << ": Filename prefix: " << fileName;
+    TLOG(TLVL_DEBUG) << get_name() << ": Directory path: " << path;
+    TLOG(TLVL_DEBUG) << get_name() << ": Operation mode: " << operationMode;
 
     fileName_ = fileName;
     path_ = path;
@@ -99,9 +97,8 @@ public:
 
   virtual KeyedDataBlock read(const StorageKey& key)
   {
-
-    ERS_INFO("going to read data block from eventID/geoLocationID " << HDF5KeyTranslator::getPathString(key)
-                                                                    << " from file " << getFileNameFromKey(key));
+    TLOG(TLVL_DEBUG) << get_name() << ": going to read data block from eventID/geoLocationID "
+                     << HDF5KeyTranslator::getPathString(key) << " from file " << getFileNameFromKey(key);
 
     // opening the file from Storage Key + path_ + fileName_ + operation_mode_
     std::string fullFileName = getFileNameFromKey(key);
@@ -162,8 +159,8 @@ public:
     // filePtr will be the handle to the Opened-File after a call to openFileIfNeeded()
     openFileIfNeeded(fullFileName, HighFive::File::OpenOrCreate);
 
-    ERS_INFO("Writing data with event ID " << dataBlock.data_key.getEventID() << " and geolocation ID "
-                                           << dataBlock.data_key.getGeoLocation());
+    TLOG(TLVL_DEBUG) << get_name() << ": Writing data with event ID " << dataBlock.data_key.getEventID()
+                     << " and geolocation ID " << dataBlock.data_key.getGeoLocation();
 
     const std::string datagroup_name = std::to_string(idx);
 
@@ -268,17 +265,8 @@ private:
     } else {
       workString += "_all_events.hdf5";
     }
-    std::regex regexSearchPattern(workString);
 
-    std::vector<std::string> fileList;
-    for (const auto& entry : std::filesystem::directory_iterator(path_)) {
-      TLOG(TLVL_DEBUG) << "Directory element: " << entry.path().string();
-      if (std::regex_match(entry.path().filename().string(), regexSearchPattern)) {
-        TLOG(TLVL_DEBUG) << "Matching directory element: " << entry.path().string();
-        fileList.push_back(entry.path());
-      }
-    }
-    return fileList;
+    return HDF5FileUtils::getFilesMatchingPattern(path_, workString);
   }
 
   void openFileIfNeeded(const std::string& fileName, unsigned openFlags = HighFive::File::ReadOnly)
@@ -287,16 +275,17 @@ private:
     if (fullNameOfOpenFile_.compare(fileName) || openFlagsOfOpenFile_ != openFlags) {
 
       // opening file for the first time OR something changed in the name or the way of opening the file
-      ERS_INFO("going to open file " << fileName << " with openFlags " << std::to_string(openFlags));
+      TLOG(TLVL_DEBUG) << get_name() << ": going to open file " << fileName << " with openFlags "
+                       << std::to_string(openFlags);
       fullNameOfOpenFile_ = fileName;
       openFlagsOfOpenFile_ = openFlags;
       filePtr.reset(new HighFive::File(fileName, openFlags));
-      ERS_INFO("Created HDF5 file.");
+      TLOG(TLVL_DEBUG) << get_name() << "Created HDF5 file.";
 
     } else {
 
-      ERS_INFO("Pointer file to  " << fullNameOfOpenFile_ << " was already opened with openFlags "
-                                   << std::to_string(openFlagsOfOpenFile_));
+      TLOG(TLVL_DEBUG) << get_name() << ": Pointer file to  " << fullNameOfOpenFile_
+                       << " was already opened with openFlags " << std::to_string(openFlagsOfOpenFile_);
     }
   }
 };

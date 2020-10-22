@@ -1,6 +1,6 @@
 /**
  * @file HDF5GetAllKeys_test.cxx Application that tests and demonstrates
- * the write() *and* getAllExistingKeys() functionality of the HDF5DataStore class.
+ * the getAllExistingKeys() functionality of the HDF5DataStore class.
  *
  * This is part of the DUNE DAQ Application Framework, copyright 2020.
  * Licensing/copyright details are in the COPYING file that you should have
@@ -58,7 +58,6 @@ BOOST_AUTO_TEST_SUITE(HDF5GetAllKeys_test)
 BOOST_AUTO_TEST_CASE(GetKeysFromFragmentFiles)
 {
   std::string filePath(std::filesystem::temp_directory_path());
-  ;
   std::string filePrefix = "demo" + std::to_string(getpid());
   const int EVENT_COUNT = 5;
   const int GEOLOC_COUNT = 3;
@@ -137,7 +136,6 @@ BOOST_AUTO_TEST_CASE(GetKeysFromFragmentFiles)
 BOOST_AUTO_TEST_CASE(GetKeysFromEventFiles)
 {
   std::string filePath(std::filesystem::temp_directory_path());
-  ;
   std::string filePrefix = "demo" + std::to_string(getpid());
   const int EVENT_COUNT = 5;
   const int GEOLOC_COUNT = 3;
@@ -215,7 +213,6 @@ BOOST_AUTO_TEST_CASE(GetKeysFromEventFiles)
 BOOST_AUTO_TEST_CASE(GetKeysFromAllInOneFiles)
 {
   std::string filePath(std::filesystem::temp_directory_path());
-  ;
   std::string filePrefix = "demo" + std::to_string(getpid());
   const int EVENT_COUNT = 5;
   const int GEOLOC_COUNT = 3;
@@ -298,7 +295,6 @@ BOOST_AUTO_TEST_CASE(GetKeysFromAllInOneFiles)
 BOOST_AUTO_TEST_CASE(CheckCrossTalk)
 {
   std::string filePath(std::filesystem::temp_directory_path());
-  ;
   std::string filePrefix = "demo" + std::to_string(getpid());
   const int EVENT_COUNT = 5;
   const int GEOLOC_COUNT = 3;

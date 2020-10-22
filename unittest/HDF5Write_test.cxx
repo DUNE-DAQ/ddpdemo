@@ -58,8 +58,10 @@ BOOST_AUTO_TEST_SUITE(HDF5Write_test)
 BOOST_AUTO_TEST_CASE(WriteFragmentFiles)
 {
   std::string filePath(std::filesystem::temp_directory_path());
-  ;
   std::string filePrefix = "demo" + std::to_string(getpid());
+  const int EVENT_COUNT = 7;
+  const int GEOLOC_COUNT = 4;
+  const int DUMMYDATA_SIZE = 100;
 
   // delete any pre-existing files so that we start with a clean slate
   std::string deletePattern = filePrefix + ".*.hdf5";
@@ -69,13 +71,13 @@ BOOST_AUTO_TEST_CASE(WriteFragmentFiles)
   std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, filePrefix, "one-fragment-per-file"));
 
   // write several events, each with several fragments
-  char dummyData[8];
-  for (int eventID = 1; eventID <= 3; ++eventID) {
-    for (int geoLoc = 0; geoLoc < 2; ++geoLoc) {
+  char dummyData[DUMMYDATA_SIZE];
+  for (int eventID = 1; eventID <= EVENT_COUNT; ++eventID) {
+    for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
       KeyedDataBlock dataBlock(key);
       dataBlock.unowned_data_start = static_cast<void*>(&dummyData[0]);
-      dataBlock.data_size = 8;
+      dataBlock.data_size = DUMMYDATA_SIZE;
       dsPtr->write(dataBlock);
     }
   }
@@ -84,18 +86,20 @@ BOOST_AUTO_TEST_CASE(WriteFragmentFiles)
   // check that the expected number of files was created
   std::string searchPattern = filePrefix + ".*event.*geoID.*.hdf5";
   std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
-  BOOST_REQUIRE_EQUAL(fileList.size(), 6);
+  BOOST_REQUIRE_EQUAL(fileList.size(), (EVENT_COUNT * GEOLOC_COUNT));
 
   // clean up the files that were created
   fileList = deleteFilesMatchingPattern(filePath, deletePattern);
-  BOOST_REQUIRE_EQUAL(fileList.size(), 6);
+  BOOST_REQUIRE_EQUAL(fileList.size(), (EVENT_COUNT * GEOLOC_COUNT));
 }
 
 BOOST_AUTO_TEST_CASE(WriteEventFiles)
 {
   std::string filePath(std::filesystem::temp_directory_path());
-  ;
   std::string filePrefix = "demo" + std::to_string(getpid());
+  const int EVENT_COUNT = 7;
+  const int GEOLOC_COUNT = 4;
+  const int DUMMYDATA_SIZE = 100;
 
   // delete any pre-existing files so that we start with a clean slate
   std::string deletePattern = filePrefix + ".*.hdf5";
@@ -105,13 +109,13 @@ BOOST_AUTO_TEST_CASE(WriteEventFiles)
   std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, filePrefix, "one-event-per-file"));
 
   // write several events, each with several fragments
-  char dummyData[8];
-  for (int eventID = 1; eventID <= 3; ++eventID) {
-    for (int geoLoc = 0; geoLoc < 2; ++geoLoc) {
+  char dummyData[DUMMYDATA_SIZE];
+  for (int eventID = 1; eventID <= EVENT_COUNT; ++eventID) {
+    for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
       KeyedDataBlock dataBlock(key);
       dataBlock.unowned_data_start = static_cast<void*>(&dummyData[0]);
-      dataBlock.data_size = 8;
+      dataBlock.data_size = DUMMYDATA_SIZE;
       dsPtr->write(dataBlock);
     }
   }
@@ -120,18 +124,20 @@ BOOST_AUTO_TEST_CASE(WriteEventFiles)
   // check that the expected number of files was created
   std::string searchPattern = filePrefix + ".*event.*.hdf5";
   std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
-  BOOST_REQUIRE_EQUAL(fileList.size(), 3);
+  BOOST_REQUIRE_EQUAL(fileList.size(), EVENT_COUNT);
 
   // clean up the files that were created
   fileList = deleteFilesMatchingPattern(filePath, deletePattern);
-  BOOST_REQUIRE_EQUAL(fileList.size(), 3);
+  BOOST_REQUIRE_EQUAL(fileList.size(), EVENT_COUNT);
 }
 
 BOOST_AUTO_TEST_CASE(WriteOneFile)
 {
   std::string filePath(std::filesystem::temp_directory_path());
-  ;
   std::string filePrefix = "demo" + std::to_string(getpid());
+  const int EVENT_COUNT = 7;
+  const int GEOLOC_COUNT = 4;
+  const int DUMMYDATA_SIZE = 100;
 
   // delete any pre-existing files so that we start with a clean slate
   std::string deletePattern = filePrefix + ".*.hdf5";
@@ -141,13 +147,13 @@ BOOST_AUTO_TEST_CASE(WriteOneFile)
   std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, filePrefix, "all-per-file"));
 
   // write several events, each with several fragments
-  char dummyData[8];
-  for (int eventID = 1; eventID <= 3; ++eventID) {
-    for (int geoLoc = 0; geoLoc < 2; ++geoLoc) {
+  char dummyData[DUMMYDATA_SIZE];
+  for (int eventID = 1; eventID <= EVENT_COUNT; ++eventID) {
+    for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
       KeyedDataBlock dataBlock(key);
       dataBlock.unowned_data_start = static_cast<void*>(&dummyData[0]);
-      dataBlock.data_size = 8;
+      dataBlock.data_size = DUMMYDATA_SIZE;
       dsPtr->write(dataBlock);
     }
   }
