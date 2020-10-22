@@ -39,14 +39,10 @@ public:
    */
   explicit DataGenerator(const std::string& name);
 
-  DataGenerator(const DataGenerator&) =
-    delete; ///< DataGenerator is not copy-constructible
-  DataGenerator& operator=(const DataGenerator&) =
-    delete; ///< DataGenerator is not copy-assignable
-  DataGenerator(DataGenerator&&) =
-    delete; ///< DataGenerator is not move-constructible
-  DataGenerator& operator=(DataGenerator&&) =
-    delete; ///< DataGenerator is not move-assignable
+  DataGenerator(const DataGenerator&) = delete;            ///< DataGenerator is not copy-constructible
+  DataGenerator& operator=(const DataGenerator&) = delete; ///< DataGenerator is not copy-assignable
+  DataGenerator(DataGenerator&&) = delete;                 ///< DataGenerator is not move-constructible
+  DataGenerator& operator=(DataGenerator&&) = delete;      ///< DataGenerator is not move-assignable
 
   void init() override;
 
@@ -86,7 +82,8 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
 ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        InvalidDataWriterError,
                        appfwk::GeneralDAQModuleIssue,
-                       "A valid dataWriter instance is not available so it will not be possible to write data. A likely cause for this is a skipped or missed Configure transition.",
+                       "A valid dataWriter instance is not available so it will not be possible to write data. A "
+                       "likely cause for this is a skipped or missed Configure transition.",
                        ((std::string)name),
                        ERS_EMPTY)
 

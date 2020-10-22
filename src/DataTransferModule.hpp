@@ -38,14 +38,10 @@ public:
    */
   explicit DataTransferModule(const std::string& name);
 
-  DataTransferModule(const DataTransferModule&) =
-    delete; ///< DataTransferModule is not copy-constructible
-  DataTransferModule& operator=(const DataTransferModule&) =
-    delete; ///< DataTransferModule is not copy-assignable
-  DataTransferModule(DataTransferModule&&) =
-    delete; ///< DataTransferModule is not move-constructible
-  DataTransferModule& operator=(DataTransferModule&&) =
-    delete; ///< DataTransferModule is not move-assignable
+  DataTransferModule(const DataTransferModule&) = delete;            ///< DataTransferModule is not copy-constructible
+  DataTransferModule& operator=(const DataTransferModule&) = delete; ///< DataTransferModule is not copy-assignable
+  DataTransferModule(DataTransferModule&&) = delete;                 ///< DataTransferModule is not move-constructible
+  DataTransferModule& operator=(DataTransferModule&&) = delete;      ///< DataTransferModule is not move-assignable
 
   void init() override;
 
@@ -82,7 +78,10 @@ ERS_DECLARE_ISSUE_BASE(ddpdemo,
 ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        InvalidDataStoreError,
                        appfwk::GeneralDAQModuleIssue,
-                       "A valid dataStore instance is not available for " << operation << ", so it will not be possible to combine data. A likely cause for this is a skipped or missed Configure transition.",
+                       "A valid dataStore instance is not available for "
+                         << operation
+                         << ", so it will not be possible to combine data. A likely cause for this is a skipped or "
+                            "missed Configure transition.",
                        ((std::string)name),
                        ((std::string)operation))
 
