@@ -34,7 +34,8 @@ namespace dunedaq {
 ERS_DECLARE_ISSUE_BASE(ddpdemo,
                        InvalidOperationMode,
                        appfwk::GeneralDAQModuleIssue,
-                       "Selected opearation mode \"" << selected_operation << "\" is NOT supported. Please update the configuration file.",
+                       "Selected opearation mode \"" << selected_operation
+                                                     << "\" is NOT supported. Please update the configuration file.",
                        ((std::string)name),
                        ((std::string)selected_operation))
 
