@@ -11,7 +11,7 @@
       "data_store_module": "HDF5DataStore",
       "directory_path": ".",
       "filename_pattern": "demo",
-      "mode":"one-fragment-per-file"   
+      "mode":"all-per-file"   
       }
     }
   },
