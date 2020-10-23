@@ -4,14 +4,14 @@
   "modules": {
     "data_generator": {
       "user_module_type": "DataGenerator",
-      "nGeoLoc": 10, 
+      "nGeoLoc": 10,
       "io_size":1048576,
-      "waitBetweenSendsMsec": 1000,
+      "sleepMsecWhileRunning": 1000,
 
       "data_store_parameters": {
         "data_store_module": "HDF5DataStore",
         "directory_path": ".",
-        "filename_prefix": "demo_run201012_", 
+        "filename_prefix": "demo_run20201019",
         "mode": "one-fragment-per-file"
       }
     }

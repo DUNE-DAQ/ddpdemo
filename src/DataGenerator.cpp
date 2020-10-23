@@ -51,16 +51,16 @@ DataGenerator::do_configure(const std::vector<std::string>& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
   nGeoLoc_ = get_config().value<size_t>("nGeoLoc", static_cast<size_t>(REASONABLE_DEFAULT_GEOLOC));
-  waitBetweenSendsMsec_ =
-    get_config().value<size_t>("waitBetweenSendsMsec", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
   io_size_ = get_config().value<size_t>("io_size", static_cast<size_t>(REASONABLE_IO_SIZE_BYTES));
+  sleepMsecWhileRunning_ =
+    get_config().value<size_t>("sleepMsecWhileRunning", static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
 
-  directory_path_ = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
-  filename_pattern_ = get_config()["data_store_parameters"]["filename_pattern"].get<std::string>();
-  operation_mode_ = get_config()["data_store_parameters"]["mode"].get<std::string>();
+  std::string directoryPath = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
+  std::string filenamePrefix = get_config()["data_store_parameters"]["filename_prefix"].get<std::string>();
+  std::string operationMode = get_config()["data_store_parameters"]["mode"].get<std::string>();
 
   // Create the HDF5DataStore instance
-  dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_, filename_pattern_, operation_mode_));
+  dataWriter_.reset(new HDF5DataStore("tempWriter", directoryPath, filenamePrefix, operationMode));
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
 }
@@ -87,29 +87,10 @@ void
 DataGenerator::do_unconfigure(const std::vector<std::string>& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_unconfigure() method";
-  nFakeEvent_ = REASONABLE_DEFAULT_FAKEEVENT;
-  waitBetweenSendsMsec_ = REASONABLE_DEFAULT_MSECBETWEENSENDS;
+  nGeoLoc_ = REASONABLE_DEFAULT_GEOLOC;
+  io_size_ = REASONABLE_IO_SIZE_BYTES;
+  sleepMsecWhileRunning_ = REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING;
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_unconfigure() method";
-}
-
-/**
- * @brief Format a std::vector<int> to a stream
- * @param t ostream Instance
- * @param ints Vector to format
- * @return ostream Instance
- */
-std::ostream&
-operator<<(std::ostream& t, std::vector<int> ints)
-{
-  t << "{";
-  bool first = true;
-  for (auto& i : ints) {
-    if (!first)
-      t << ", ";
-    first = false;
-    t << i;
-  }
-  return t << "}";
 }
 
 void
@@ -118,36 +99,41 @@ DataGenerator::do_work(std::atomic<bool>& running_flag)
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_work() method";
   size_t writtenCount = 0;
 
+  // ensure that we have a valid dataWriter instance
+  if (dataWriter_.get() == nullptr) {
+    throw InvalidDataWriterError(ERS_HERE, get_name());
+  }
+
   // create a memory buffer
   char* membuffer = static_cast<char*>(malloc(io_size_));
   memset(membuffer, 'X', io_size_);
 
   TLOG(TLVL_WORK_STEPS) << get_name() << ": Generating data ";
 
+  int eventID = 1;
   while (running_flag.load()) {
-    for (size_t idx = 0; idx < nFakeEvent_; ++idx) {
-      for (size_t geoID = 0; geoID < nGeoLoc_; ++geoID) {
-        // AAA: Component ID is fixed, to be changed later
-        StorageKey dataKey(idx, "FELIX", geoID);
-        KeyedDataBlock dataBlock(dataKey);
-        dataBlock.data_size = io_size_;
+    for (size_t geoID = 0; geoID < nGeoLoc_; ++geoID) {
+      // AAA: Component ID is fixed, to be changed later
+      StorageKey dataKey(eventID, "FELIX", geoID);
+      KeyedDataBlock dataBlock(dataKey);
+      dataBlock.data_size = io_size_;
 
-        // Set the dataBlock pointer to the start of the constant memory buffer
-        dataBlock.unowned_data_start = membuffer;
+      // Set the dataBlock pointer to the start of the constant memory buffer
+      dataBlock.unowned_data_start = membuffer;
 
-        dataWriter->write(dataBlock);
-        ++writtenCount;
-      }
+      dataWriter_->write(dataBlock);
+      ++writtenCount;
     }
+    ++eventID;
 
     TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of sleep between sends";
-    std::this_thread::sleep_for(std::chrono::milliseconds(waitBetweenSendsMsec_));
+    std::this_thread::sleep_for(std::chrono::milliseconds(sleepMsecWhileRunning_));
     TLOG(TLVL_WORK_STEPS) << get_name() << ": End of do_work loop";
   }
 
   std::ostringstream oss_summ;
-  oss_summ << ": Exiting the do_work() method, wrote " << writtenCount << " fake events with " << nGeoLoc_
-           << " fragments in each event. ";
+  oss_summ << ": Exiting the do_work() method, wrote " << writtenCount << " fragments associated with " << (eventID - 1)
+           << " fake events. ";
   ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_work() method";
 }
