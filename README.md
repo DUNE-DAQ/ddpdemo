@@ -1,19 +1,25 @@
 # Data Dispatcher and Packager Demo (ddpdemo)
 
-### Hints for building and running (KAB, 08-Sep-2020):
+### Hints for building and running (23-Oct-2020):
 
 * create a software work area
   * see https://github.com/DUNE-DAQ/appfwk/wiki/Compiling-and-running
 * clone this repo
   * `cd <MyTopDir>`
-  * `git clone https://github.com/DUNE-DAQ/ddpdemo.git`)
+  * `git clone https://github.com/DUNE-DAQ/ddpdemo.git`
 * build the software
   * `. ./setup_build_environment`
-  * `./build_daq_software.sh --pkgname ddpdemo`
+  * `./build_daq_software.sh --install --pkgname ddpdemo`
 * run the demo
   * `. ./setup_runtime_environment`
-  * `daq_application -c QueryResponseCommandFacility -j ddpdemo/test/disk_writer_demo.json`
-    * use commands `configure`, `start`, `stop`, and `quit`
+  * `daq_application -c QueryResponseCommandFacility -j ddpdemo/test/data_generator_demo.json`
+    * use commands `configure`, `start`, `stop` and `quit`
+    * NOTE: wait a few seconds between the start and stop commands
+  * `daq_application -c QueryResponseCommandFacility -j ddpdemo/test/data_combiner_demo.json`
+    * use commands `configure`, `start`, `stop` and `quit`
+
+To run the unit tests
+* `./build_daq_software.sh --pkgname  ddpdemo --unittest `
 
 To enable and view TRACE messages:
 * `export TRACE_FILE=<MyTopDir>/log/<username>_dunedaq.trace`
