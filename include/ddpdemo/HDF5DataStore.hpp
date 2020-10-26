@@ -130,7 +130,7 @@ public:
           HighFive::DataSet theDataSet = theGroup.getDataSet(datasetName);
           dataBlock.data_size = theDataSet.getStorageSize();
           HighFive::DataSpace thedataSpace = theDataSet.getSpace();
-          char* membuffer = static_cast<char*>(malloc(dataBlock.data_size));
+          char* membuffer = new char[dataBlock.data_size];
           theDataSet.read(membuffer);
           std::unique_ptr<char> memPtr(membuffer);
           dataBlock.owned_data_start = std::move(memPtr);
@@ -183,7 +183,7 @@ public:
 
       auto theDataSet = theGroup.createDataSet<char>(dataset_name, theDataSpace, dataCProps_, dataAProps_);
       if (theDataSet.isValid()) {
-        theDataSet.write_raw(dataBlock.getDataStart());
+        theDataSet.write_raw(static_cast<const char*>(dataBlock.getDataStart()));
       } else {
         throw InvalidHDF5Dataset(ERS_HERE, get_name(), dataset_name, filePtr->getName());
       }

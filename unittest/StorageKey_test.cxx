@@ -44,4 +44,35 @@ BOOST_AUTO_TEST_CASE(sanity_checks)
   BOOST_CHECK_EQUAL(m_geoLocation, geoLocation);
 }
 
+using namespace dunedaq::ddpdemo;
+
+BOOST_AUTO_TEST_CASE(check_placeholder_values)
+{
+  const int SAMPLE_EVENTID = 1234;
+  const std::string SAMPLE_DETECTORID = "FELIX";
+  const int SAMPLE_GEOLOCATION = 0;
+
+  // Something would have to be very wrong for this test to fail...
+  StorageKey key1(StorageKey::INVALID_EVENTID, StorageKey::INVALID_DETECTORID, StorageKey::INVALID_GEOLOCATION);
+  BOOST_CHECK_EQUAL(key1.getEventID(), StorageKey::INVALID_EVENTID);
+  BOOST_CHECK_EQUAL(key1.getDetectorID(), StorageKey::INVALID_DETECTORID);
+  BOOST_CHECK_EQUAL(key1.getGeoLocation(), StorageKey::INVALID_GEOLOCATION);
+
+  // check for some sort of weird cross-talk
+  StorageKey key2(SAMPLE_EVENTID, StorageKey::INVALID_DETECTORID, StorageKey::INVALID_GEOLOCATION);
+  BOOST_CHECK_EQUAL(key2.getEventID(), SAMPLE_EVENTID);
+  BOOST_CHECK_EQUAL(key2.getDetectorID(), StorageKey::INVALID_DETECTORID);
+  BOOST_CHECK_EQUAL(key2.getGeoLocation(), StorageKey::INVALID_GEOLOCATION);
+
+  StorageKey key3(StorageKey::INVALID_EVENTID, SAMPLE_DETECTORID, StorageKey::INVALID_GEOLOCATION);
+  BOOST_CHECK_EQUAL(key3.getEventID(), StorageKey::INVALID_EVENTID);
+  BOOST_CHECK_EQUAL(key3.getDetectorID(), SAMPLE_DETECTORID);
+  BOOST_CHECK_EQUAL(key3.getGeoLocation(), StorageKey::INVALID_GEOLOCATION);
+
+  StorageKey key4(StorageKey::INVALID_EVENTID, StorageKey::INVALID_DETECTORID, SAMPLE_GEOLOCATION);
+  BOOST_CHECK_EQUAL(key4.getEventID(), StorageKey::INVALID_EVENTID);
+  BOOST_CHECK_EQUAL(key4.getDetectorID(), StorageKey::INVALID_DETECTORID);
+  BOOST_CHECK_EQUAL(key4.getGeoLocation(), SAMPLE_GEOLOCATION);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

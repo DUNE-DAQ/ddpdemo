@@ -13,7 +13,6 @@
 
 #include <ers/ers.h>
 
-#include <limits>
 #include <string>
 
 namespace dunedaq {
@@ -40,9 +39,9 @@ class StorageKey
 {
 
 public:
-  static const int INVALID_EVENTID = std::numeric_limits<int>::max();
+  static const int INVALID_EVENTID;
   inline static const std::string INVALID_DETECTORID = "Invalid";
-  static const int INVALID_GEOLOCATION = std::numeric_limits<int>::max();
+  static const int INVALID_GEOLOCATION;
 
   StorageKey(int eventID, std::string detectorID, int geoLocation)
     : m_key(eventID, detectorID, geoLocation)

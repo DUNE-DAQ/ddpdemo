@@ -12,10 +12,15 @@
 #include "ddpdemo/StorageKey.hpp"
 
 #include <ers/ers.h>
+
+#include <limits>
 #include <string>
 
 namespace dunedaq {
 namespace ddpdemo {
+
+const int StorageKey::INVALID_EVENTID = std::numeric_limits<int>::max();
+const int StorageKey::INVALID_GEOLOCATION = std::numeric_limits<int>::max();
 
 int
 StorageKey::getEventID() const

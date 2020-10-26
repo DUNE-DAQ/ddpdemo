@@ -33,7 +33,7 @@ public:
 
   virtual void write(const KeyedDataBlock& dataBlock)
   {
-    const char* dataPtr = dataBlock.getDataStart();
+    const void* dataPtr = dataBlock.getDataStart();
     ERS_INFO("Throwing away the data from event ID "
              << dataBlock.data_key.getEventID() << ", which has size of " << dataBlock.data_size
              << " bytes, and the following data "
