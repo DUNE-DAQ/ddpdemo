@@ -59,12 +59,18 @@ BOOST_AUTO_TEST_CASE(LocalBufferOwnership)
     KeyedDataBlock dataBlock(sampleKey);
     dataBlock.unowned_data_start = buff_ptr;
     dataBlock.data_size = BUFFER_SIZE;
+
+    BOOST_REQUIRE_EQUAL(dataBlock.getDataStart(), buff_ptr);
+    BOOST_REQUIRE_EQUAL(dataBlock.getDataSizeBytes(), BUFFER_SIZE);
+    BOOST_REQUIRE_EQUAL(dataBlock.data_key.getEventID(), sampleKey.getEventID());
+    BOOST_REQUIRE_EQUAL(dataBlock.data_key.getGeoLocation(), sampleKey.getGeoLocation());
   }
 
-  // the following statement should *not* cause the test program to crash
+  // the following statements should *not* cause the test program to crash
   // (if everything is working well), because the KeyedDataBlock destruction
   // at the end of the code block above should *not* have deleted the memory
   // that we malloc-ed at the start of this test.
+  BOOST_REQUIRE_EQUAL(static_cast<char*>(buff_ptr)[0], 'X');
   free(buff_ptr);
 }
 
@@ -94,7 +100,7 @@ BOOST_AUTO_TEST_CASE(TransferredBufferOwnership)
   // This test is currently working, but I wonder if that is just good luck.
   // It is probably 'undefined behavior' to access deleted memory like this, so
   // maybe we should also add a signal hander to avoid crashes...
-  BOOST_REQUIRE(buff_ptr[0] != 'X');
+  BOOST_REQUIRE_NE(buff_ptr[0], 'X');
 }
 
 BOOST_AUTO_TEST_SUITE_END()
