@@ -4,7 +4,7 @@
   "modules": {
     "data_combiner": {
       "user_module_type": "DataTransferModule",
-      "sleepMsecWhileRunning": 1000,
+      "sleep_msec_while_running": 1000,
 
       "input_data_store_parameters": {
         "data_store_module": "HDF5DataStore",

@@ -53,7 +53,7 @@ DataGenerator::do_configure(const std::vector<std::string>& /*args*/)
   nGeoLoc_ = get_config().value<size_t>("nGeoLoc", static_cast<size_t>(REASONABLE_DEFAULT_GEOLOC));
   io_size_ = get_config().value<size_t>("io_size", static_cast<size_t>(REASONABLE_IO_SIZE_BYTES));
   sleepMsecWhileRunning_ =
-    get_config().value<size_t>("sleepMsecWhileRunning", static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
+    get_config().value<size_t>("sleep_msec_while_running", static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
 
   std::string directoryPath = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
   std::string filenamePrefix = get_config()["data_store_parameters"]["filename_prefix"].get<std::string>();

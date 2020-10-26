@@ -50,12 +50,12 @@ void
 SimpleDiskReader::do_configure(const std::vector<std::string>& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
-  key_eventID_ = get_config().value<size_t>("event_id", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
+  key_eventID_ = get_config().value<size_t>("event_id", static_cast<size_t>(REASONABLE_DEFAULT_INTFRAGMENT));
   key_detectorID_ = get_config()["detector_id"].get<std::string>();
   key_geoLocationID_ =
-    get_config().value<size_t>("geolocation_id", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
-  waitBetweenSendsMsec_ =
-    get_config().value<size_t>("waitBetweenSendsMsec", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
+    get_config().value<size_t>("geolocation_id", static_cast<size_t>(REASONABLE_DEFAULT_INTFRAGMENT));
+  sleepMsecWhileRunning_ =
+    get_config().value<size_t>("sleep_msec_while_running", static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
 
   directory_path_ = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
   filename_pattern_ = get_config()["data_store_parameters"]["filename"].get<std::string>();
@@ -90,7 +90,7 @@ SimpleDiskReader::do_unconfigure(const std::vector<std::string>& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_unconfigure() method";
   //  nIntsPerFakeEvent_ = REASONABLE_DEFAULT_INTSPERFAKEEVENT;
-  waitBetweenSendsMsec_ = REASONABLE_DEFAULT_MSECBETWEENSENDS;
+  sleepMsecWhileRunning_ = REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING;
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_unconfigure() method";
 }
 
@@ -131,18 +131,17 @@ SimpleDiskReader::do_work(std::atomic<bool>& running_flag)
   TLOG(TLVL_WORK_STEPS) << get_name() << ": trying to read fragment " << key_eventID_ << ":" << key_detectorID_ << ":"
                         << key_geoLocationID_ << ", from file " << filename_pattern_;
 
-  KeyedDataBlock dataBlock(dataKey);
+  KeyedDataBlock dataBlock = dataReader_->read(dataKey);
 
   while (running_flag.load()) {
-    // for now just read the file/datafragment and then stop
-    std::this_thread::sleep_for(std::chrono::milliseconds(waitBetweenSendsMsec_));
-    dataBlock = dataReader_->read(dataKey);
+    std::this_thread::sleep_for(std::chrono::milliseconds(sleepMsecWhileRunning_));
   }
 
   TLOG(TLVL_WORK_STEPS) << get_name() << ": End of do_work loop";
   std::ostringstream oss_summ;
   oss_summ << ": Exiting the do_work() method, read fragment of size " << dataBlock.data_size
-           << "  and successfully read it ";
+           << " with eventID of " << dataBlock.data_key.getEventID() << " and geoLoc of "
+           << dataBlock.data_key.getGeoLocation();
   ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_work() method";
 }

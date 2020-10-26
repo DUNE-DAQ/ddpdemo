@@ -58,7 +58,7 @@ private:
 
   // Configuration defaults
   const size_t REASONABLE_DEFAULT_INTFRAGMENT = 1;
-  const size_t REASONABLE_DEFAULT_MSECBETWEENSENDS = 1000;
+  const size_t REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING = 1000;
 
   const std::string DEFAULT_PATH = ".";
   const std::string DEFAULT_FILENAME = "demo.hdf5";
@@ -67,7 +67,7 @@ private:
   size_t key_eventID_ = REASONABLE_DEFAULT_INTFRAGMENT;
   std::string key_detectorID_ = "FELIX";
   size_t key_geoLocationID_ = REASONABLE_DEFAULT_INTFRAGMENT;
-  size_t waitBetweenSendsMsec_ = REASONABLE_DEFAULT_MSECBETWEENSENDS;
+  size_t sleepMsecWhileRunning_ = REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING;
 
   std::string directory_path_ = DEFAULT_PATH;
   std::string filename_pattern_ = DEFAULT_FILENAME;
