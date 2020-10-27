@@ -13,8 +13,6 @@
 
 #include "ddpdemo/StorageKey.hpp"
 
-#include <ers/ers.h>
-
 #include <boost/algorithm/string.hpp>
 
 #include <iomanip>

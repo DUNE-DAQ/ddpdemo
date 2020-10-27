@@ -19,8 +19,6 @@
 
 #include <appfwk/NamedObject.hpp>
 
-#include <ers/Issue.h>
-
 #include <chrono>
 #include <cstddef>
 #include <memory>
