@@ -134,6 +134,13 @@ BOOST_AUTO_TEST_CASE(CombineFragmentsIntoEvents)
   BOOST_REQUIRE_EQUAL(fileList.size(), 1);
 
   // check that the size of the single file is reasonable
+  //
+  // (This check uses the BOOST_REQUIRE_CLOSE_FRACTION test to see if the size
+  // of the fully-combined data file is "close enough" in size to the sum of all
+  // the fragment data sizes.  Of course, the file size will be slightly larger than
+  // the sum of the fragment sizes, because of the additional information that the
+  // HDF5 format adds.  The HDF5 addition seems to be about 12%, so we allow for a 15%
+  // difference, which is represented with the 0.15 in the third argument of the test call.)
   size_t singleFileSize = std::filesystem::file_size(fileList[0]);
   BOOST_REQUIRE_CLOSE_FRACTION(
     static_cast<float>(singleFileSize), static_cast<float>(EVENT_COUNT * GEOLOC_COUNT * DUMMYDATA_SIZE), 0.15);
