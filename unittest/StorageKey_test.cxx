@@ -30,7 +30,6 @@ BOOST_AUTO_TEST_SUITE(StorageKey_test)
 
 BOOST_AUTO_TEST_CASE(sanity_checks)
 {
-
   int m_eventID = -999;
   std::string m_detectorID = "XXXXX";
   int m_geoLocation = -999;

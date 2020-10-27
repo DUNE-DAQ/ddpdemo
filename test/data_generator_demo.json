@@ -6,7 +6,7 @@
       "user_module_type": "DataGenerator",
       "nGeoLoc": 10,
       "io_size":1048576,
-      "sleepMsecWhileRunning": 1000,
+      "sleep_msec_while_running": 1000,
 
       "data_store_parameters": {
         "data_store_module": "HDF5DataStore",

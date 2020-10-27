@@ -29,7 +29,7 @@ public:
   const void* unowned_data_start;
   std::unique_ptr<char> owned_data_start;
 
-  explicit KeyedDataBlock(StorageKey theKey)
+  explicit KeyedDataBlock(const StorageKey& theKey)
     : data_key(theKey)
   {}
 

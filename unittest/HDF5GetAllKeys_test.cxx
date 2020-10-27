@@ -1,6 +1,6 @@
 /**
  * @file HDF5GetAllKeys_test.cxx Application that tests and demonstrates
- * the write() *and* getAllExistingKeys() functionality of the HDF5DataStore class.
+ * the getAllExistingKeys() functionality of the HDF5DataStore class.
  *
  * This is part of the DUNE DAQ Application Framework, copyright 2020.
  * Licensing/copyright details are in the COPYING file that you should have
@@ -26,19 +26,6 @@
 using namespace dunedaq::ddpdemo;
 
 std::vector<std::string>
-getFilesMatchingPattern(const std::string& path, const std::string& pattern)
-{
-  std::regex regexSearchPattern(pattern);
-  std::vector<std::string> fileList;
-  for (const auto& entry : std::filesystem::directory_iterator(path)) {
-    if (std::regex_match(entry.path().filename().string(), regexSearchPattern)) {
-      fileList.push_back(entry.path());
-    }
-  }
-  return fileList;
-}
-
-std::vector<std::string>
 deleteFilesMatchingPattern(const std::string& path, const std::string& pattern)
 {
   std::regex regexSearchPattern(pattern);
@@ -58,7 +45,6 @@ BOOST_AUTO_TEST_SUITE(HDF5GetAllKeys_test)
 BOOST_AUTO_TEST_CASE(GetKeysFromFragmentFiles)
 {
   std::string filePath(std::filesystem::temp_directory_path());
-  ;
   std::string filePrefix = "demo" + std::to_string(getpid());
   const int EVENT_COUNT = 5;
   const int GEOLOC_COUNT = 3;
@@ -84,11 +70,6 @@ BOOST_AUTO_TEST_CASE(GetKeysFromFragmentFiles)
     }
   }
   dsPtr.reset(); // explicit destruction
-
-  // check that the expected number of files was created (remove this later?)
-  std::string searchPattern = filePrefix + ".*event.*geoID.*.hdf5";
-  std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
-  BOOST_REQUIRE_EQUAL(fileList.size(), (EVENT_COUNT * GEOLOC_COUNT));
 
   // create a second DataStore instance to fetch the keys
   dsPtr.reset(new HDF5DataStore("hdfStore", filePath, filePrefix, "one-fragment-per-file"));
@@ -130,14 +111,12 @@ BOOST_AUTO_TEST_CASE(GetKeysFromFragmentFiles)
   dsPtr.reset(); // explicit destruction
 
   // clean up the files that were created
-  fileList = deleteFilesMatchingPattern(filePath, deletePattern);
-  BOOST_REQUIRE_EQUAL(fileList.size(), (EVENT_COUNT * GEOLOC_COUNT)); // (remove this later?)
+  deleteFilesMatchingPattern(filePath, deletePattern);
 }
 
 BOOST_AUTO_TEST_CASE(GetKeysFromEventFiles)
 {
   std::string filePath(std::filesystem::temp_directory_path());
-  ;
   std::string filePrefix = "demo" + std::to_string(getpid());
   const int EVENT_COUNT = 5;
   const int GEOLOC_COUNT = 3;
@@ -162,11 +141,6 @@ BOOST_AUTO_TEST_CASE(GetKeysFromEventFiles)
     }
   }
   dsPtr.reset(); // explicit destruction
-
-  // check that the expected number of files was created (remove this later?)
-  std::string searchPattern = filePrefix + ".*event.*.hdf5";
-  std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
-  BOOST_REQUIRE_EQUAL(fileList.size(), EVENT_COUNT);
 
   // create a second DataStore instance to fetch the keys
   dsPtr.reset(new HDF5DataStore("hdfStore", filePath, filePrefix, "one-event-per-file"));
@@ -208,14 +182,12 @@ BOOST_AUTO_TEST_CASE(GetKeysFromEventFiles)
   dsPtr.reset(); // explicit destruction
 
   // clean up the files that were created
-  fileList = deleteFilesMatchingPattern(filePath, deletePattern);
-  BOOST_REQUIRE_EQUAL(fileList.size(), EVENT_COUNT); // (remove this later?)
+  deleteFilesMatchingPattern(filePath, deletePattern);
 }
 
 BOOST_AUTO_TEST_CASE(GetKeysFromAllInOneFiles)
 {
   std::string filePath(std::filesystem::temp_directory_path());
-  ;
   std::string filePrefix = "demo" + std::to_string(getpid());
   const int EVENT_COUNT = 5;
   const int GEOLOC_COUNT = 3;
@@ -240,11 +212,6 @@ BOOST_AUTO_TEST_CASE(GetKeysFromAllInOneFiles)
     }
   }
   dsPtr.reset(); // explicit destruction
-
-  // check that the expected number of files was created (remove this later?)
-  std::string searchPattern = filePrefix + "_all_events.hdf5";
-  std::vector<std::string> fileList = getFilesMatchingPattern(filePath, searchPattern);
-  BOOST_REQUIRE_EQUAL(fileList.size(), 1);
 
   // create a second DataStore instance to fetch the keys
   dsPtr.reset(new HDF5DataStore("hdfStore", filePath, filePrefix, "all-per-file"));
@@ -286,19 +253,12 @@ BOOST_AUTO_TEST_CASE(GetKeysFromAllInOneFiles)
   dsPtr.reset(); // explicit destruction
 
   // clean up the files that were created
-  fileList = deleteFilesMatchingPattern(filePath, deletePattern);
-  BOOST_REQUIRE_EQUAL(fileList.size(), 1); // (remove this later?)
+  deleteFilesMatchingPattern(filePath, deletePattern);
 }
-
-//
-// Do we want copies of the tests where a single DataStore instance is used
-// for both writing and getting all keys?
-//
 
 BOOST_AUTO_TEST_CASE(CheckCrossTalk)
 {
   std::string filePath(std::filesystem::temp_directory_path());
-  ;
   std::string filePrefix = "demo" + std::to_string(getpid());
   const int EVENT_COUNT = 5;
   const int GEOLOC_COUNT = 3;

@@ -11,8 +11,6 @@
  * received with this code.
  */
 
-#include <ers/ers.h>
-
 #include <string>
 
 namespace dunedaq {

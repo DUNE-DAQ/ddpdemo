@@ -51,9 +51,9 @@ SimpleDiskWriter::do_configure(const std::vector<std::string>& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
   nIntsPerFakeEvent_ =
-    get_config().value<size_t>("nIntsPerFakeEvent", static_cast<size_t>(REASONABLE_DEFAULT_INTSPERFAKEEVENT));
+    get_config().value<size_t>("number_ints_per_fake_event", static_cast<size_t>(REASONABLE_DEFAULT_INTSPERFAKEEVENT));
   waitBetweenSendsMsec_ =
-    get_config().value<size_t>("waitBetweenSendsMsec", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
+    get_config().value<size_t>("wait_between_sends_msec", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
 
   directory_path_ = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
   filename_pattern_ = get_config()["data_store_parameters"]["filename_pattern"].get<std::string>();
