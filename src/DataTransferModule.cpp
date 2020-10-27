@@ -50,8 +50,8 @@ void
 DataTransferModule::do_configure(const std::vector<std::string>& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
-  sleepMsecWhileRunning_ =
-    get_config().value<size_t>("sleep_msec_while_running", static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
+  sleepMsecWhileRunning_ = get_config().value<size_t>("sleep_msec_while_running",
+                                                      static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
 
   std::string inputPath = get_config()["input_data_store_parameters"]["directory_path"].get<std::string>();
   std::string inputFilenamePrefix = get_config()["input_data_store_parameters"]["filename_prefix"].get<std::string>();

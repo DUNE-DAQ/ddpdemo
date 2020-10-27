@@ -54,8 +54,8 @@ SimpleDiskReader::do_configure(const std::vector<std::string>& /*args*/)
   key_detectorID_ = get_config()["detector_id"].get<std::string>();
   key_geoLocationID_ =
     get_config().value<size_t>("geolocation_id", static_cast<size_t>(REASONABLE_DEFAULT_INTFRAGMENT));
-  sleepMsecWhileRunning_ =
-    get_config().value<size_t>("sleep_msec_while_running", static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
+  sleepMsecWhileRunning_ = get_config().value<size_t>("sleep_msec_while_running",
+                                                      static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
 
   directory_path_ = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
   filename_pattern_ = get_config()["data_store_parameters"]["filename"].get<std::string>();
@@ -139,9 +139,8 @@ SimpleDiskReader::do_work(std::atomic<bool>& running_flag)
 
   TLOG(TLVL_WORK_STEPS) << get_name() << ": End of do_work loop";
   std::ostringstream oss_summ;
-  oss_summ << ": Exiting the do_work() method, read fragment of size " << dataBlock.data_size
-           << " with eventID of " << dataBlock.data_key.getEventID() << " and geoLoc of "
-           << dataBlock.data_key.getGeoLocation();
+  oss_summ << ": Exiting the do_work() method, read fragment of size " << dataBlock.data_size << " with eventID of "
+           << dataBlock.data_key.getEventID() << " and geoLoc of " << dataBlock.data_key.getGeoLocation();
   ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_work() method";
 }
