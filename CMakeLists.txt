@@ -43,10 +43,4 @@ daq_add_plugin( SimpleDiskWriter   duneDAQModule LINK_LIBRARIES ers::ers appfwk 
 
 ##############################################################################
 
-#daq_install(TARGETS ddpdemo
-#                    ddpdemo_DataGenerator_duneDAQModule
-#                    ddpdemo_DataTransferModule_duneDAQModule
-#                    ddpdemo_GetAllKeysTest_duneDAQModule
-#                    ddpdemo_SimpleDiskReader_duneDAQModule
-#                    ddpdemo_SimpleDiskWriter_duneDAQModule
-# )
+daq_install()
