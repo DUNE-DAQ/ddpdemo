@@ -16,21 +16,10 @@ daq_add_plugin( HDF5DataStore      duneDataStore LINK_LIBRARIES ers::ers appfwk 
 
 daq_add_plugin( DataGenerator      duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ) 
 daq_add_plugin( DataTransferModule duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ) 
+daq_add_plugin( GetAllKeysTest     duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ) 
+daq_add_plugin( SimpleDiskReader   duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ) 
+daq_add_plugin( SimpleDiskWriter   duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ) 
 
-#		 DataGenerator.cpp
-#                 DataTransferModule.cpp 
-#		 GetAllKeysTest.cpp
-#                 SimpleDiskReader.cpp 
-#                 SimpleDiskWriter.cpp 
-#		 HDF5DataStore.cpp    ## the new CMake style don't like this to be in the include directory
-
-#		 LINK_LIBRARIES 
-#		 ers::ers 
-#		 appfwk::appfwk 
-#		 HighFive )
-
-###add_library(ddpdemo SHARED src/StorageKey.cpp src/HDF5DataStore.cpp)
-###target_link_libraries(ddpdemo ers::ers HighFive)
 
 ##############################################################################
 #daq_point_build_to( test )
