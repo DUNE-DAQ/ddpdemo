@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 project(ddpdemo VERSION 0.2.1)
 
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../daq-buildtools/cmake ${CMAKE_MODULE_PATH})
-include(DAQ)
-
 daq_setup_environment()
 
 # 08-Sep-2020, KAB: the inclusion of the appfwk package brings in several other packages,
@@ -11,31 +8,29 @@ daq_setup_environment()
 find_package(appfwk REQUIRED)
 find_package(HighFive REQUIRED)
 
+
 ##############################################################################
-daq_add_library( StorageKey.cpp 
-                 DataGenerator.cpp
-                 DataTransferModule.cpp 
-                 GetAllKeysTest.cpp
-                 SimpleDiskReader.cpp 
-                 SimpleDiskWriter.cpp LINK_LIBRARIES ers::ers appfwk::appfwk HighFive )
+daq_add_library( StorageKey.cpp LINK_LIBRARIES ers::ers ) 
+
+daq_add_plugin( HDF5DataStore      duneDataStore LINK_LIBRARIES ers::ers appfwk HighFive )
+
+daq_add_plugin( DataGenerator      duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ) 
+daq_add_plugin( DataTransferModule duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ) 
+
+#		 DataGenerator.cpp
+#                 DataTransferModule.cpp 
+#		 GetAllKeysTest.cpp
+#                 SimpleDiskReader.cpp 
+#                 SimpleDiskWriter.cpp 
+#		 HDF5DataStore.cpp    ## the new CMake style don't like this to be in the include directory
+
+#		 LINK_LIBRARIES 
+#		 ers::ers 
+#		 appfwk::appfwk 
+#		 HighFive )
 
 ###add_library(ddpdemo SHARED src/StorageKey.cpp src/HDF5DataStore.cpp)
 ###target_link_libraries(ddpdemo ers::ers HighFive)
-
-#add_library(ddpdemo_DataGenerator_duneDAQModule src/DataGenerator.cpp)
-#target_link_libraries(ddpdemo_DataGenerator_duneDAQModule appfwk::appfwk ddpdemo HighFive)
-
-#add_library(ddpdemo_DataTransferModule_duneDAQModule src/DataTransferModule.cpp)
-#target_link_libraries(ddpdemo_DataTransferModule_duneDAQModule appfwk::appfwk ddpdemo HighFive stdc++fs)
-
-#add_library(ddpdemo_GetAllKeysTest_duneDAQModule src/GetAllKeysTest.cpp)
-#target_link_libraries(ddpdemo_GetAllKeysTest_duneDAQModule appfwk::appfwk ddpdemo HighFive stdc++fs)
-
-#add_library(ddpdemo_SimpleDiskReader_duneDAQModule src/SimpleDiskReader.cpp)
-#target_link_libraries(ddpdemo_SimpleDiskReader_duneDAQModule appfwk::appfwk ddpdemo HighFive)
-
-#add_library(ddpdemo_SimpleDiskWriter_duneDAQModule src/SimpleDiskWriter.cpp)
-#target_link_libraries(ddpdemo_SimpleDiskWriter_duneDAQModule appfwk::appfwk ddpdemo HighFive)
 
 ##############################################################################
 #daq_point_build_to( test )
