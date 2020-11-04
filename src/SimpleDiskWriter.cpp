@@ -40,24 +40,24 @@ SimpleDiskWriter::SimpleDiskWriter(const std::string& name)
 }
 
 void
-SimpleDiskWriter::init()
+SimpleDiskWriter::init( const data_t& )
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
 }
 
 void
-SimpleDiskWriter::do_configure(const std::vector<std::string>& /*args*/)
+SimpleDiskWriter::do_configure( const data_t& args )
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
   nIntsPerFakeEvent_ =
-    get_config().value<size_t>("number_ints_per_fake_event", static_cast<size_t>(REASONABLE_DEFAULT_INTSPERFAKEEVENT));
+    args.value<size_t>("number_ints_per_fake_event", static_cast<size_t>(REASONABLE_DEFAULT_INTSPERFAKEEVENT));
   waitBetweenSendsMsec_ =
-    get_config().value<size_t>("wait_between_sends_msec", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
+    args.value<size_t>("wait_between_sends_msec", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
 
-  directory_path_ = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
-  filename_pattern_ = get_config()["data_store_parameters"]["filename_pattern"].get<std::string>();
-  operation_mode_ = get_config()["data_store_parameters"]["mode"].get<std::string>();
+  directory_path_ = args["data_store_parameters"]["directory_path"].get<std::string>();
+  filename_pattern_ = args["data_store_parameters"]["filename_pattern"].get<std::string>();
+  operation_mode_ = args["data_store_parameters"]["mode"].get<std::string>();
   // Initializing the HDF5 DataStore constructor
   // Creating empty HDF5 file
   dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_, filename_pattern_, operation_mode_));
@@ -66,7 +66,7 @@ SimpleDiskWriter::do_configure(const std::vector<std::string>& /*args*/)
 }
 
 void
-SimpleDiskWriter::do_start(const std::vector<std::string>& /*args*/)
+SimpleDiskWriter::do_start(const data_t& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_start() method";
   thread_.start_working_thread();
@@ -75,7 +75,7 @@ SimpleDiskWriter::do_start(const std::vector<std::string>& /*args*/)
 }
 
 void
-SimpleDiskWriter::do_stop(const std::vector<std::string>& /*args*/)
+SimpleDiskWriter::do_stop(const data_t& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_stop() method";
   thread_.stop_working_thread();
@@ -84,7 +84,7 @@ SimpleDiskWriter::do_stop(const std::vector<std::string>& /*args*/)
 }
 
 void
-SimpleDiskWriter::do_unconfigure(const std::vector<std::string>& /*args*/)
+SimpleDiskWriter::do_unconfigure(const data_t& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_unconfigure() method";
   nIntsPerFakeEvent_ = REASONABLE_DEFAULT_INTSPERFAKEEVENT;

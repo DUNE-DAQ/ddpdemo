@@ -40,24 +40,24 @@ DataGenerator::DataGenerator(const std::string& name)
 }
 
 void
-DataGenerator::init()
+DataGenerator::init( const data_t& )
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
 }
 
 void
-DataGenerator::do_configure(const std::vector<std::string>& /*args*/)
+DataGenerator::do_configure( const data_t& payload )
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
-  nGeoLoc_ = get_config().value<size_t>("nGeoLoc", static_cast<size_t>(REASONABLE_DEFAULT_GEOLOC));
-  io_size_ = get_config().value<size_t>("io_size", static_cast<size_t>(REASONABLE_IO_SIZE_BYTES));
-  sleepMsecWhileRunning_ = get_config().value<size_t>("sleep_msec_while_running",
+  nGeoLoc_ = payload.value<size_t>("nGeoLoc", static_cast<size_t>(REASONABLE_DEFAULT_GEOLOC));
+  io_size_ = payload.value<size_t>("io_size", static_cast<size_t>(REASONABLE_IO_SIZE_BYTES));
+  sleepMsecWhileRunning_ = payload.value<size_t>("sleep_msec_while_running",
                                                       static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
 
-  std::string directoryPath = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
-  std::string filenamePrefix = get_config()["data_store_parameters"]["filename_prefix"].get<std::string>();
-  std::string operationMode = get_config()["data_store_parameters"]["mode"].get<std::string>();
+  std::string directoryPath = payload["data_store_parameters"]["directory_path"].get<std::string>();
+  std::string filenamePrefix = payload["data_store_parameters"]["filename_prefix"].get<std::string>();
+  std::string operationMode = payload["data_store_parameters"]["mode"].get<std::string>();
 
   // Create the HDF5DataStore instance
   dataWriter_.reset(new HDF5DataStore("tempWriter", directoryPath, filenamePrefix, operationMode));
@@ -66,7 +66,7 @@ DataGenerator::do_configure(const std::vector<std::string>& /*args*/)
 }
 
 void
-DataGenerator::do_start(const std::vector<std::string>& /*args*/)
+DataGenerator::do_start( const data_t& )
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_start() method";
   thread_.start_working_thread();
@@ -75,7 +75,7 @@ DataGenerator::do_start(const std::vector<std::string>& /*args*/)
 }
 
 void
-DataGenerator::do_stop(const std::vector<std::string>& /*args*/)
+DataGenerator::do_stop( const data_t& )
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_stop() method";
   thread_.stop_working_thread();
@@ -84,7 +84,7 @@ DataGenerator::do_stop(const std::vector<std::string>& /*args*/)
 }
 
 void
-DataGenerator::do_unconfigure(const std::vector<std::string>& /*args*/)
+DataGenerator::do_unconfigure( const data_t& )
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_unconfigure() method";
   nGeoLoc_ = REASONABLE_DEFAULT_GEOLOC;
