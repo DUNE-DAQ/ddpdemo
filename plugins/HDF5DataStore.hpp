@@ -13,8 +13,8 @@
  */
 
 #include "ddpdemo/DataStore.hpp"
-#include "ddpdemo/HDF5FileUtils.hpp"
-#include "ddpdemo/HDF5KeyTranslator.hpp"
+#include "HDF5FileUtils.hpp"
+#include "HDF5KeyTranslator.hpp"
 
 #include <TRACE/trace.h>
 #include <appfwk/DAQModule.hpp>
