@@ -10,37 +10,29 @@ find_package(HighFive REQUIRED)
 
 
 ##############################################################################
-daq_add_library( StorageKey.cpp LINK_LIBRARIES ers::ers ) 
+daq_add_library( StorageKey.cpp HDF5DataStore.cpp TrashCanDataStore.cpp
+                 LINK_LIBRARIES 
+		 ers::ers HighFive appfwk stdc++fs ) 
 
-daq_add_plugin( HDF5DataStore      duneDataStore LINK_LIBRARIES ers::ers appfwk HighFive )
-daq_add_plugin( TrashCanDataStore  duneDataStore LINK_LIBRARIES ers::ers appfwk  )
+#daq_add_plugin( HDF5DataStore      duneDataStore LINK_LIBRARIES ers::ers appfwk HighFive )
+#daq_add_plugin( TrashCanDataStore  duneDataStore LINK_LIBRARIES ers::ers appfwk  )
 
-daq_add_plugin( DataGenerator      duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ) 
-daq_add_plugin( DataTransferModule duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ) 
-daq_add_plugin( GetAllKeysTest     duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ) 
-daq_add_plugin( SimpleDiskReader   duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ) 
-daq_add_plugin( SimpleDiskWriter   duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ) 
+daq_add_plugin( DataGenerator      duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ddpdemo )  
+daq_add_plugin( DataTransferModule duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ddpdemo ) 
+daq_add_plugin( GetAllKeysTest     duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ddpdemo ) 
+daq_add_plugin( SimpleDiskReader   duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ddpdemo ) 
+daq_add_plugin( SimpleDiskWriter   duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ddpdemo ) 
 
-
-##############################################################################
-#daq_point_build_to( test )
-
-#file(COPY test/data_combiner_demo.json DESTINATION test)
-#file(COPY test/data_generator_demo.json DESTINATION test)
-#file(COPY test/disk_reader_demo.json DESTINATION test)
-#file(COPY test/disk_writer_demo.json DESTINATION test)
-#file(COPY test/get_all_keys_test.json DESTINATION test)
 
 ##############################################################################
-#daq_point_build_to( unittest )
-#daq_add_unit_test(StorageKey_test          ddpdemo ers::ers)
-#daq_add_unit_test(KeyedDataBlock_test      appfwk::appfwk ddpdemo ers::ers)
-#daq_add_unit_test(HDF5KeyTranslator_test   appfwk::appfwk ddpdemo ers::ers)
-#daq_add_unit_test(HDF5FileUtils_test       appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
-#daq_add_unit_test(HDF5Write_test           appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
-#daq_add_unit_test(HDF5Read_test            appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
-#daq_add_unit_test(HDF5GetAllKeys_test      appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
-#daq_add_unit_test(HDF5Combiner_test        appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
+daq_add_unit_test( StorageKey_test          LINK_LIBRARIES ddpdemo ers::ers )
+daq_add_unit_test( KeyedDataBlock_test      LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers )
+daq_add_unit_test( HDF5KeyTranslator_test   LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers )
+daq_add_unit_test( HDF5FileUtils_test       LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
+daq_add_unit_test( HDF5Write_test           LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
+daq_add_unit_test( HDF5Read_test            LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
+daq_add_unit_test( HDF5GetAllKeys_test      LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
+daq_add_unit_test( HDF5Combiner_test        LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
 
 ##############################################################################
 

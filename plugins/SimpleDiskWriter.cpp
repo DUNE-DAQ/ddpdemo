@@ -7,7 +7,7 @@
  */
 
 #include "SimpleDiskWriter.hpp"
-#include "HDF5DataStore.hpp"
+#include "../src/HDF5DataStore.hpp"
 #include "ddpdemo/KeyedDataBlock.hpp"
 
 #include <TRACE/trace.h>

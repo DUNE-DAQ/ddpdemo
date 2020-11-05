@@ -7,7 +7,7 @@
  * received with this code.
  */
 
-#include "ddpdemo/HDF5KeyTranslator.hpp"
+#include "../src/HDF5KeyTranslator.hpp"
 
 #include "ers/ers.h"
 
