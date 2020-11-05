@@ -1,5 +1,5 @@
-#ifndef DDPDEMO_INCLUDE_DDPDEMO_TRASHCANDATASTORE_HPP_
-#define DDPDEMO_INCLUDE_DDPDEMO_TRASHCANDATASTORE_HPP_
+#ifndef DDPDEMO_SRC_TRASHCANDATASTORE_HPP_
+#define DDPDEMO_SRC_TRASHCANDATASTORE_HPP_
 
 /**
  * @file TrashCanDataStore.hpp
@@ -37,7 +37,7 @@ public:
   {
     const void* dataPtr = dataBlock.getDataStart();
 
-    const uint8_t * interpreted_data_ptr = reinterpret_cast<const uint8_t*>( dataPtr ) ;
+    const uint8_t * interpreted_data_ptr = reinterpret_cast<const uint8_t*>( dataPtr ) ;  // NOLINT 
 
     std::stringstream msg ;
     msg << "Throwing away the data from event ID "
@@ -67,7 +67,7 @@ private:
 } // namespace ddpdemo
 } // namespace dunedaq
 
-#endif // DDPDEMO_INCLUDE_DDPDEMO_TRASHCANDATASTORE_HPP_
+#endif // DDPDEMO_SRC_TRASHCANDATASTORE_HPP_
 
 // Local Variables:
 // c-basic-offset: 2
