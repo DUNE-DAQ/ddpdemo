@@ -1,0 +1,14 @@
+moo -M "`pwd`/../../appfwk/schema" compile data-generator-job.jsonnet
+
+
+Recall that
+
+appfwk/schema/*.hpp.j2                       \
+appfwk/scheme/appfwk-cmd-make.jsonnet        | ?-> 'moo compile' ?-> ddpdemo/schema/data-generator-job.json
+ddpdemo/schema/data-generator-job.jsonnet    /
+  (data-generator-make.jsonnet)             /
+
+                                                                  / ddpdemo/include/ddpdemo/datagen/Struct.hpp
+ddpdemo/schema/data-generator-schema.jsonnet ?-> generate.sh ?->  | ddpdemo/include/ddpdemo/datagen/Nljs.hpp
+                                                                  \
+
