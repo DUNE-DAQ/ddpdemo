@@ -35,7 +35,7 @@ DataGenerator::DataGenerator(const std::string& name)
   : dunedaq::appfwk::DAQModule(name)
   , thread_(std::bind(&DataGenerator::do_work, this, std::placeholders::_1))
 {
-  register_command("configure", &DataGenerator::do_configure);
+  register_command("conf", &DataGenerator::do_conf);
   register_command("start", &DataGenerator::do_start);
   register_command("stop", &DataGenerator::do_stop);
   register_command("unconfigure", &DataGenerator::do_unconfigure);
@@ -49,14 +49,14 @@ DataGenerator::init( const data_t& )
 }
 
 void
-DataGenerator::do_configure( const data_t& payload )
+DataGenerator::do_conf( const data_t& payload )
 {
-  TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
+  TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_conf() method";
 
   datagen::Conf tmpConfig = payload.get<datagen::Conf>();
   ERS_LOG("Testing Conf creation. io_size is " << tmpConfig.io_size << ", and directory_path is \"" << tmpConfig.data_store_parameters.directory_path << "\"");
 
-  nGeoLoc_ = payload.value<size_t>("nGeoLoc", static_cast<size_t>(REASONABLE_DEFAULT_GEOLOC));
+  nGeoLoc_ = payload.value<size_t>("geo_location_count", static_cast<size_t>(REASONABLE_DEFAULT_GEOLOC));
   io_size_ = payload.value<size_t>("io_size", static_cast<size_t>(REASONABLE_IO_SIZE_BYTES));
   sleepMsecWhileRunning_ = payload.value<size_t>("sleep_msec_while_running",
                                                       static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
@@ -68,7 +68,7 @@ DataGenerator::do_configure( const data_t& payload )
   // Create the HDF5DataStore instance
   dataWriter_.reset(new HDF5DataStore("tempWriter", directoryPath, filenamePrefix, operationMode));
 
-  TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
+  TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_conf() method";
 }
 
 void
