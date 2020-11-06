@@ -6,6 +6,8 @@
  * received with this code.
  */
 
+#include "ddpdemo/datagen/Nljs.hpp"
+
 #include "DataGenerator.hpp"
 #include "../src/HDF5DataStore.hpp"
 #include "ddpdemo/KeyedDataBlock.hpp"
@@ -50,6 +52,10 @@ void
 DataGenerator::do_configure( const data_t& payload )
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
+
+  datagen::Conf tmpConfig = payload.get<datagen::Conf>();
+  ERS_LOG("Testing Conf creation. io_size is " << tmpConfig.io_size << ", and directory_path is \"" << tmpConfig.data_store_parameters.directory_path << "\"");
+
   nGeoLoc_ = payload.value<size_t>("nGeoLoc", static_cast<size_t>(REASONABLE_DEFAULT_GEOLOC));
   io_size_ = payload.value<size_t>("io_size", static_cast<size_t>(REASONABLE_IO_SIZE_BYTES));
   sleepMsecWhileRunning_ = payload.value<size_t>("sleep_msec_while_running",
