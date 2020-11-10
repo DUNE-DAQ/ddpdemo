@@ -70,25 +70,20 @@ public:
    * @param name, path, fileName, operationMode
    *
    */
-  explicit HDF5DataStore(const std::string name,
-                         const std::string& path,
-                         const std::string& fileName,
-                         const std::string& operationMode)
-    : DataStore(name)
+  explicit HDF5DataStore( const nlohmann::json & conf ) 
+    : DataStore( conf["name"].get() ) 
     , fullNameOfOpenFile_("")
     , openFlagsOfOpenFile_(0)
   {
-    TLOG(TLVL_DEBUG) << get_name() << ": Filename prefix: " << fileName;
-    TLOG(TLVL_DEBUG) << get_name() << ": Directory path: " << path;
-    TLOG(TLVL_DEBUG) << get_name() << ": Operation mode: " << operationMode;
-
-    fileName_ = fileName;
-    path_ = path;
-    operation_mode_ = operationMode;
+    TLOG(TLVL_DEBUG) << get_name() << ": Configuration: " << conf ; 
+    
+    fileName_ = conf["filename_prefix"].get<std::string>() ; 
+    path_ = conf["directory_path"].get<std::string>() ;
+    operation_mode_ = conf["mode"].get<std::string>() ; 
 
     if (operation_mode_ != "one-event-per-file" && operation_mode_ != "one-fragment-per-file" &&
         operation_mode_ != "all-per-file") {
-
+      
       throw InvalidOperationMode(ERS_HERE, get_name(), operation_mode_);
     }
   }

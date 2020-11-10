@@ -96,11 +96,10 @@ private:
    * @return unique_ptr to created DataStore instance
    */
   inline std::unique_ptr<DataStore>
-  makeDataSore(std::string const& plugin_name, 
-	       const nlohmann::json & conf ) {
+  makeDataSore( const nlohmann::json & conf ) {
     static cet::BasicPluginFactory bpf("duneDataStore", "make");
     
-    return bpf.makePlugin<std::unique_ptr<DAQModule>>(plugin_name, conf);
+    return bpf.makePlugin<std::unique_ptr<DAQModule>>( conf["type"].get<std::string>(), conf ) ;
   }
   
 } // namespace ddpdemo

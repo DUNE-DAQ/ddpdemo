@@ -29,10 +29,10 @@ namespace ddpdemo {
 class TrashCanDataStore : public DataStore
 {
 public:
-  explicit TrashCanDataStore(const std::string& name)
-    : DataStore(name)
+  explicit TrashCanDataStore( const nlohmann::json & conf ) 
+    : DataStore( conf["name"].get<std::string>() )
   {}
-
+  
   virtual void write(const KeyedDataBlock& dataBlock)
   {
     const void* dataPtr = dataBlock.getDataStart();
