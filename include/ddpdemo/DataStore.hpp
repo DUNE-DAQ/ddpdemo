@@ -19,11 +19,27 @@
 
 #include <appfwk/NamedObject.hpp>
 
+#include <nlohmann/json.hpp>
+
 #include <chrono>
 #include <cstddef>
 #include <memory>
 #include <string>
 #include <vector>
+
+#ifndef EXTERN_C_FUNC_DECLARE_START
+#define EXTERN_C_FUNC_DECLARE_START                                                                                    \
+  extern "C"                                                                                                           \
+  {
+#endif
+/**
+ * @brief Declare the function that will be called by the plugin loader
+ * @param klass Class to be defined as a DUNE IPM Receiver
+ */
+#define DEFINE_DUNE_DATA_STORE(klass)                                   \
+  EXTERN_C_FUNC_DECLARE_START						\
+  std::unique_ptr<dunedaq::ddpdemo::DataStore> make( const nlohmann::json & conf ) { return std::unique_ptr<dunedaq::ddpdemo::DataStore>(new klass(conf)); } \
+  }
 
 namespace dunedaq {
 namespace ddpdemo {
@@ -72,7 +88,24 @@ private:
   DataStore& operator=(DataStore&&) = default;
 };
 
+  /**
+   * @brief Load a DataSrore plugin and return a unique_ptr to the contained
+   * DAQModule class
+   * @param plugin_name Name of the plugin, e.g. HDF5DataStore 
+   * @param json configuration for the DataStore 
+   * @return unique_ptr to created DataStore instance
+   */
+  inline std::unique_ptr<DataStore>
+  makeDataSore(std::string const& plugin_name, 
+	       const nlohmann::json & conf ) {
+    static cet::BasicPluginFactory bpf("duneDataStore", "make");
+    
+    return bpf.makePlugin<std::unique_ptr<DAQModule>>(plugin_name, conf);
+  }
+  
 } // namespace ddpdemo
 } // namespace dunedaq
+
+
 
 #endif // DDPDEMO_INCLUDE_DDPDEMO_DATASTORE_HPP_
