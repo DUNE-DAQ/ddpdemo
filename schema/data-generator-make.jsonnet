@@ -8,6 +8,7 @@
           directory_path: dirpath,
           filename_prefix: fnprefix,
           mode: opmode,
+	  // add name and type 
         }
     },
 }

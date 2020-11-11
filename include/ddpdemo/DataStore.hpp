@@ -21,6 +21,10 @@
 
 #include <nlohmann/json.hpp>
 
+#include <cetlib/BasicPluginFactory.h>
+#include <cetlib/compiler_macros.h>
+#include <memory>
+
 #include <chrono>
 #include <cstddef>
 #include <memory>
@@ -38,7 +42,8 @@
  */
 #define DEFINE_DUNE_DATA_STORE(klass)                                   \
   EXTERN_C_FUNC_DECLARE_START						\
-  std::unique_ptr<dunedaq::ddpdemo::DataStore> make( const nlohmann::json & conf ) { return std::unique_ptr<dunedaq::ddpdemo::DataStore>(new klass(conf)); } \
+  std::unique_ptr<dunedaq::ddpdemo::DataStore> make( const nlohmann::json & conf ) \
+    { return std::unique_ptr<dunedaq::ddpdemo::DataStore>( new klass(conf) ); } \
   }
 
 namespace dunedaq {
@@ -96,10 +101,9 @@ private:
    * @return unique_ptr to created DataStore instance
    */
   inline std::unique_ptr<DataStore>
-  makeDataSore( const nlohmann::json & conf ) {
+  makeDataStore( const nlohmann::json & conf ) {
     static cet::BasicPluginFactory bpf("duneDataStore", "make");
-    
-    return bpf.makePlugin<std::unique_ptr<DAQModule>>( conf["type"].get<std::string>(), conf ) ;
+    return bpf.makePlugin<std::unique_ptr<DataStore>>( conf["type"].get<std::string>(), conf ) ;
   }
   
 } // namespace ddpdemo

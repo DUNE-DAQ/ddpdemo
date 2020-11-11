@@ -24,6 +24,8 @@ local types = {
                 doc="The operation mode that the DataStore should use when organizing the data into files"),
     ], doc="DataStore configuration"),
 
+    ## we need to add type and name for the data store
+
     conf: s.record("Conf", [
         s.field("geo_location_count", self.count, 4,
                 doc="Number of geographic subdivisions within the detector"),

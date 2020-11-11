@@ -7,7 +7,7 @@
  */
 
 #include "SimpleDiskWriter.hpp"
-#include "../src/HDF5DataStore.hpp"
+#include "HDF5DataStore.hpp"
 #include "ddpdemo/KeyedDataBlock.hpp"
 
 #include <TRACE/trace.h>
@@ -55,12 +55,9 @@ SimpleDiskWriter::do_configure( const data_t& args )
   waitBetweenSendsMsec_ =
     args.value<size_t>("wait_between_sends_msec", static_cast<size_t>(REASONABLE_DEFAULT_MSECBETWEENSENDS));
 
-  directory_path_ = args["data_store_parameters"]["directory_path"].get<std::string>();
-  filename_pattern_ = args["data_store_parameters"]["filename_pattern"].get<std::string>();
-  operation_mode_ = args["data_store_parameters"]["mode"].get<std::string>();
   // Initializing the HDF5 DataStore constructor
   // Creating empty HDF5 file
-  dataWriter_.reset(new HDF5DataStore("tempWriter", directory_path_, filename_pattern_, operation_mode_));
+  dataWriter_ = makeDataStore( args["data_store_parameters"] ) ; 
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
 }

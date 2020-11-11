@@ -9,7 +9,7 @@
 #include "ddpdemo/datagen/Nljs.hpp"
 
 #include "DataGenerator.hpp"
-#include "../src/HDF5DataStore.hpp"
+#include "HDF5DataStore.hpp"
 #include "ddpdemo/KeyedDataBlock.hpp"
 
 #include <TRACE/trace.h>
@@ -60,14 +60,10 @@ DataGenerator::do_conf( const data_t& payload )
   io_size_ = payload.value<size_t>("io_size", static_cast<size_t>(REASONABLE_IO_SIZE_BYTES));
   sleepMsecWhileRunning_ = payload.value<size_t>("sleep_msec_while_running",
                                                       static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
-
-  std::string directoryPath = payload["data_store_parameters"]["directory_path"].get<std::string>();
-  std::string filenamePrefix = payload["data_store_parameters"]["filename_prefix"].get<std::string>();
-  std::string operationMode = payload["data_store_parameters"]["mode"].get<std::string>();
-
+  
   // Create the HDF5DataStore instance
-  dataWriter_.reset(new HDF5DataStore("tempWriter", directoryPath, filenamePrefix, operationMode));
-
+  dataWriter_ = makeDataStore( payload["data_store_parameters"] ) ; 
+  
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_conf() method";
 }
 

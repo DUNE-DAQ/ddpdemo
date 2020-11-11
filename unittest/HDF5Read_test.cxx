@@ -7,7 +7,7 @@
  * received with this code.
  */
 
-#include "../src/HDF5DataStore.hpp"
+#include "../plugins/HDF5DataStore.hpp"
 
 #include "ers/ers.h"
 

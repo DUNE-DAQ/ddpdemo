@@ -67,10 +67,6 @@ private:
   size_t nIntsPerFakeEvent_ = REASONABLE_DEFAULT_INTSPERFAKEEVENT;
   size_t waitBetweenSendsMsec_ = REASONABLE_DEFAULT_MSECBETWEENSENDS;
 
-  std::string directory_path_ = DEFAULT_PATH;
-  std::string filename_pattern_ = DEFAULT_FILENAME;
-  std::string operation_mode_ = "";
-
   // Workers
   std::unique_ptr<DataStore> dataWriter_;
 };

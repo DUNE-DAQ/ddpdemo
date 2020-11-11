@@ -71,7 +71,7 @@ public:
    *
    */
   explicit HDF5DataStore( const nlohmann::json & conf ) 
-    : DataStore( conf["name"].get() ) 
+    : DataStore( conf["name"].get<std::string>() ) 
     , fullNameOfOpenFile_("")
     , openFlagsOfOpenFile_(0)
   {

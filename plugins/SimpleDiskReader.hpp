@@ -69,9 +69,6 @@ private:
   size_t key_geoLocationID_ = REASONABLE_DEFAULT_INTFRAGMENT;
   size_t sleepMsecWhileRunning_ = REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING;
 
-  std::string directory_path_ = DEFAULT_PATH;
-  std::string filename_pattern_ = DEFAULT_FILENAME;
-  std::string operation_mode_ = "";
   // Workers
   std::unique_ptr<DataStore> dataReader_;
 };

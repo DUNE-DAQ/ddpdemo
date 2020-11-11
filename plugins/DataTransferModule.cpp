@@ -7,7 +7,7 @@
  */
 
 #include "DataTransferModule.hpp"
-#include "../src/HDF5DataStore.hpp"
+#include "ddpdemo/DataStore.hpp"
 #include "ddpdemo/KeyedDataBlock.hpp"
 
 #include <TRACE/trace.h>
@@ -51,18 +51,12 @@ DataTransferModule::do_configure(const data_t& args)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
   sleepMsecWhileRunning_ = args.value<size_t>("sleep_msec_while_running",
-                                                      static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
-
-  std::string inputPath = args["input_data_store_parameters"]["directory_path"].get<std::string>();
-  std::string inputFilenamePrefix = args["input_data_store_parameters"]["filename_prefix"].get<std::string>();
-  std::string inputMode = args["input_data_store_parameters"]["mode"].get<std::string>();
-  inputDataStore_.reset(new HDF5DataStore("input", inputPath, inputFilenamePrefix, inputMode));
-
-  std::string outputPath = args["output_data_store_parameters"]["directory_path"].get<std::string>();
-  std::string outputFilenamePrefix = args["output_data_store_parameters"]["filename_prefix"].get<std::string>();
-  std::string outputMode = args["output_data_store_parameters"]["mode"].get<std::string>();
-  outputDataStore_.reset(new HDF5DataStore("output", outputPath, outputFilenamePrefix, outputMode));
-
+					      static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
+  
+  inputDataStore_ = makeDataStore( args["input_data_store_parameters"] ) ; 
+  
+  outputDataStore_ = makeDataStore( args["output_data_store_parameters"] ) ; 
+  
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
 }
 
