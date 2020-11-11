@@ -21,6 +21,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "ers/ers.h"
+
 #include <cetlib/BasicPluginFactory.h>
 #include <cetlib/compiler_macros.h>
 #include <memory>
@@ -47,7 +49,20 @@
   }
 
 namespace dunedaq {
+
+  /**
+   * @brief A ERS Issue for DataStore creation failure
+   */
+  ERS_DECLARE_ISSUE( ddpdemo,                                                           ///< Namespace
+		     DataStoreCreationFailed,                                           ///< Type of the Issue
+		     "Failed to create DataStore " << plugin_name << " with configuration " << conf, ///< Log Message from the issue
+		     ((std::string)plugin_name)((nlohmann::json)conf)                        ///< Message parameters
+		     )
+
+
 namespace ddpdemo {
+
+
 
 /**
  * @brief comment
@@ -101,10 +116,33 @@ private:
    * @return unique_ptr to created DataStore instance
    */
   inline std::unique_ptr<DataStore>
-  makeDataStore( const nlohmann::json & conf ) {
+  makeDataStore( const std::string & type, const nlohmann::json & conf ) {
     static cet::BasicPluginFactory bpf("duneDataStore", "make");
-    return bpf.makePlugin<std::unique_ptr<DataStore>>( conf["type"].get<std::string>(), conf ) ;
+
+    std::unique_ptr<DataStore> ds ;
+    try { 
+      ds = bpf.makePlugin<std::unique_ptr<DataStore>>( type, conf ) ;
+    }
+    catch (const cet::exception& cexpt) {
+      throw DataStoreCreationFailed(ERS_HERE, type, conf, cexpt);
+    }
+ 
+    return ds ;
   }
+
+
+  /**
+   * @brief Load a DataSrore plugin and return a unique_ptr to the contained
+   * DAQModule class
+   * @param json configuration for the DataStore. The json needs to contain the type
+   * @return unique_ptr to created DataStore instance
+   */
+  inline std::unique_ptr<DataStore>
+  makeDataStore( const nlohmann::json & conf ) {
+    return makeDataStore( conf["type"].get<std::string>(), conf ) ; 
+  }
+  
+
   
 } // namespace ddpdemo
 } // namespace dunedaq
