@@ -20,12 +20,18 @@ namespace dunedaq::ddpdemo::datagen {
 
     
     inline void to_json(data_t& j, const DataStore& obj) {
+        j["type"] = obj.type;
+        j["name"] = obj.name;
         j["directory_path"] = obj.directory_path;
         j["filename_prefix"] = obj.filename_prefix;
         j["mode"] = obj.mode;
     }
     
     inline void from_json(const data_t& j, DataStore& obj) {
+        if (j.contains("type"))
+            j.at("type").get_to(obj.type);    
+        if (j.contains("name"))
+            j.at("name").get_to(obj.name);    
         if (j.contains("directory_path"))
             j.at("directory_path").get_to(obj.directory_path);    
         if (j.contains("filename_prefix"))

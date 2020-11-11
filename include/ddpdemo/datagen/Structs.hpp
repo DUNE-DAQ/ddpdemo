@@ -19,6 +19,12 @@ namespace dunedaq::ddpdemo::datagen {
     // @brief A count of very many things
     using Size = uint64_t;
 
+    // @brief Specific Data store implementation to be instantiated
+    using DataStoreType = std::string;
+
+    // @brief String to specify names for DataStores
+    using DataStoreName = std::string;
+
     // @brief String used to specify a directory path
     using DirectoryPath = std::string;
 
@@ -30,6 +36,12 @@ namespace dunedaq::ddpdemo::datagen {
 
     // @brief DataStore configuration
     struct DataStore {
+
+        // @brief DataStore specific implementation
+        DataStoreType type;
+
+        // @brief DataStore name
+        DataStoreName name;
 
         // @brief Path of directory where files are located
         DirectoryPath directory_path;

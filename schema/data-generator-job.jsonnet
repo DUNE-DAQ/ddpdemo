@@ -12,4 +12,6 @@ local datagen = import "data-generator-make.jsonnet";
     cmd.start(42) { waitms: 1000 },
 
     cmd.stop() { waitms: 1000 },
+    
+    ### there is already a version of the appfwk in which waitms is no processed anymore
 ]
