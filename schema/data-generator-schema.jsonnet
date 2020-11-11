@@ -15,7 +15,16 @@ local types = {
 
     opmode: s.string("OperationMode", doc="String used to specify a data storage operation mode"),
 
+    data_store_name: s.string( "DataStoreName", doc="String to specify names for DataStores"),
+
+    data_store_type: s.string( "DataStoreType", doc="Specific Data store implementation to be instantiated" ),
+   
+
     store: s.record("DataStore", [
+        s.field("type", self.data_store_type, "HDF5DataStore", 
+                 doc="DataStore specific implementation" ), 
+        s.field("name", self.data_store_name, "store", 
+                 doc="DataStore name" ), 
         s.field("directory_path", self.dirpath, ".",
                 doc="Path of directory where files are located"),
         s.field("filename_prefix", self.fnprefix, "demo_run20201104",
