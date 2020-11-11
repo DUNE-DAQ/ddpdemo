@@ -32,6 +32,8 @@ public:
   explicit TrashCanDataStore( const nlohmann::json & conf ) 
     : DataStore( conf["name"].get<std::string>() )
   {}
+
+  
   
   virtual void write(const KeyedDataBlock& dataBlock)
   {

@@ -57,6 +57,8 @@ SimpleDiskReader::do_configure(const data_t& args )
   sleepMsecWhileRunning_ = args.value<size_t>("sleep_msec_while_running",
                                                       static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
 
+  filename_pattern_ = args["data_store_parameters"]["filename"].get<std::string>();
+
   // Initializing the HDF5 DataStore constructor
   // Creating empty HDF5 file
   dataReader_ = makeDataStore( args["data_store_parameters"] ) ; 
