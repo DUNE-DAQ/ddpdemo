@@ -32,7 +32,7 @@ daq_add_unit_test( HDF5FileUtils_test       LINK_LIBRARIES appfwk::appfwk ddpdem
 daq_add_unit_test( HDF5Write_test           LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
 daq_add_unit_test( HDF5Read_test            LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
 daq_add_unit_test( HDF5GetAllKeys_test      LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
-#daq_add_unit_test( HDF5Combiner_test        LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
+daq_add_unit_test( HDF5Combiner_test        LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
 
 ##############################################################################
 
