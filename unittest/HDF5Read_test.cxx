@@ -55,7 +55,12 @@ BOOST_AUTO_TEST_CASE(ReadFragmentFiles)
   deleteFilesMatchingPattern(filePath, deletePattern);
 
   // create the DataStore instance for writing
-  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, filePrefix, "one-fragment-per-file"));
+  nlohmann::json conf ;
+  conf["name"] = "tempWriter" ;
+  conf["filename_prefix"] = filePrefix ; 
+  conf["directory_path"] = filePath ; 
+  conf["mode"] = "one-fragment-per-file" ;
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore( conf ));
 
   // write several events, each with several fragments
   int initializedChecksum = 0;
@@ -79,7 +84,12 @@ BOOST_AUTO_TEST_CASE(ReadFragmentFiles)
   dsPtr.reset(); // explicit destruction
 
   // create a new DataStore instance to read back the data that was written
-  std::unique_ptr<HDF5DataStore> dsPtr2(new HDF5DataStore("tempReader", filePath, filePrefix, "one-fragment-per-file"));
+  nlohmann::json read_conf ;
+  read_conf["name"] = "tempReader" ;
+  read_conf["filename_prefix"] = filePrefix ;
+  read_conf["directory_path"] = filePath ;
+  read_conf["mode"] = "one-fragment-per-file" ;
+  std::unique_ptr<HDF5DataStore> dsPtr2(new HDF5DataStore(read_conf));
 
   // loop over all of the keys to read in the data
   for (size_t kdx = 0; kdx < keyList.size(); ++kdx) {
@@ -112,7 +122,12 @@ BOOST_AUTO_TEST_CASE(ReadEventFiles)
   deleteFilesMatchingPattern(filePath, deletePattern);
 
   // create the DataStore instance for writing
-  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, filePrefix, "one-event-per-file"));
+  nlohmann::json conf ;
+  conf["name"] = "tempWriter" ;
+  conf["filename_prefix"] = filePrefix ; 
+  conf["directory_path"] = filePath ; 
+  conf["mode"] = "one-event-per-file" ;
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore( conf ));
 
   // write several events, each with several fragments
   int initializedChecksum = 0;
@@ -136,8 +151,13 @@ BOOST_AUTO_TEST_CASE(ReadEventFiles)
   dsPtr.reset(); // explicit destruction
 
   // create a new DataStore instance to read back the data that was written
-  std::unique_ptr<HDF5DataStore> dsPtr2(new HDF5DataStore("tempReader", filePath, filePrefix, "one-event-per-file"));
-
+  nlohmann::json read_conf ;
+  read_conf["name"] = "tempReader" ;
+  read_conf["filename_prefix"] = filePrefix ;
+  read_conf["directory_path"] = filePath ;
+  read_conf["mode"] = "one-event-per-file" ;
+  std::unique_ptr<HDF5DataStore> dsPtr2(new HDF5DataStore( read_conf  ));
+  
   // loop over all of the keys to read in the data
   for (size_t kdx = 0; kdx < keyList.size(); ++kdx) {
     KeyedDataBlock dataBlock = dsPtr2->read(keyList[kdx]);
@@ -169,7 +189,12 @@ BOOST_AUTO_TEST_CASE(ReadSingleFile)
   deleteFilesMatchingPattern(filePath, deletePattern);
 
   // create the DataStore instance for writing
-  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, filePrefix, "all-per-file"));
+  nlohmann::json conf ;
+  conf["name"] = "tempWriter" ;
+  conf["filename_prefix"] = filePrefix ; 
+  conf["directory_path"] = filePath ; 
+  conf["mode"] = "all-per-file" ;
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore(conf));
 
   // write several events, each with several fragments
   int initializedChecksum = 0;
@@ -193,7 +218,12 @@ BOOST_AUTO_TEST_CASE(ReadSingleFile)
   dsPtr.reset(); // explicit destruction
 
   // create a new DataStore instance to read back the data that was written
-  std::unique_ptr<HDF5DataStore> dsPtr2(new HDF5DataStore("tempReader", filePath, filePrefix, "all-per-file"));
+  nlohmann::json read_conf ;
+  read_conf["name"] = "tempReader" ;
+  read_conf["filename_prefix"] = filePrefix ;
+  read_conf["directory_path"] = filePath ;
+  read_conf["mode"] = "all-per-file" ;
+  std::unique_ptr<HDF5DataStore> dsPtr2(new HDF5DataStore(read_conf));
 
   // loop over all of the keys to read in the data
   for (size_t kdx = 0; kdx < keyList.size(); ++kdx) {

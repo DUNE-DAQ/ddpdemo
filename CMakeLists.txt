@@ -25,13 +25,13 @@ daq_add_plugin( SimpleDiskWriter   duneDAQModule LINK_LIBRARIES ers::ers appfwk 
 
 
 ##############################################################################
-#daq_add_unit_test( StorageKey_test          LINK_LIBRARIES ddpdemo ers::ers )
-#daq_add_unit_test( KeyedDataBlock_test      LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers )
-#daq_add_unit_test( HDF5KeyTranslator_test   LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers )
-#daq_add_unit_test( HDF5FileUtils_test       LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
-#daq_add_unit_test( HDF5Write_test           LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
-#daq_add_unit_test( HDF5Read_test            LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
-#daq_add_unit_test( HDF5GetAllKeys_test      LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
+daq_add_unit_test( StorageKey_test          LINK_LIBRARIES ddpdemo ers::ers )
+daq_add_unit_test( KeyedDataBlock_test      LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers )
+daq_add_unit_test( HDF5KeyTranslator_test   LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers )
+daq_add_unit_test( HDF5FileUtils_test       LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
+daq_add_unit_test( HDF5Write_test           LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
+daq_add_unit_test( HDF5Read_test            LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
+daq_add_unit_test( HDF5GetAllKeys_test      LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
 #daq_add_unit_test( HDF5Combiner_test        LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs)
 
 ##############################################################################
