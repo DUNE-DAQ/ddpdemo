@@ -7,7 +7,7 @@
  */
 
 #include "SimpleDiskReader.hpp"
-#include "ddpdemo/HDF5DataStore.hpp"
+#include "../src/HDF5DataStore.hpp"
 #include "ddpdemo/KeyedDataBlock.hpp"
 
 #include <TRACE/trace.h>
@@ -40,26 +40,26 @@ SimpleDiskReader::SimpleDiskReader(const std::string& name)
 }
 
 void
-SimpleDiskReader::init()
+SimpleDiskReader::init( const data_t& )
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
 }
 
 void
-SimpleDiskReader::do_configure(const std::vector<std::string>& /*args*/)
+SimpleDiskReader::do_configure(const data_t& args )
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
-  key_eventID_ = get_config().value<size_t>("event_id", static_cast<size_t>(REASONABLE_DEFAULT_INTFRAGMENT));
-  key_detectorID_ = get_config()["detector_id"].get<std::string>();
+  key_eventID_ = args.value<size_t>("event_id", static_cast<size_t>(REASONABLE_DEFAULT_INTFRAGMENT));
+  key_detectorID_ = args["detector_id"].get<std::string>();
   key_geoLocationID_ =
-    get_config().value<size_t>("geolocation_id", static_cast<size_t>(REASONABLE_DEFAULT_INTFRAGMENT));
-  sleepMsecWhileRunning_ = get_config().value<size_t>("sleep_msec_while_running",
+    args.value<size_t>("geolocation_id", static_cast<size_t>(REASONABLE_DEFAULT_INTFRAGMENT));
+  sleepMsecWhileRunning_ = args.value<size_t>("sleep_msec_while_running",
                                                       static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
 
-  directory_path_ = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
-  filename_pattern_ = get_config()["data_store_parameters"]["filename"].get<std::string>();
-  operation_mode_ = get_config()["data_store_parameters"]["mode"].get<std::string>();
+  directory_path_ = args["data_store_parameters"]["directory_path"].get<std::string>();
+  filename_pattern_ = args["data_store_parameters"]["filename"].get<std::string>();
+  operation_mode_ = args["data_store_parameters"]["mode"].get<std::string>();
   // Initializing the HDF5 DataStore constructor
   // Creating empty HDF5 file
   dataReader_.reset(new HDF5DataStore("tempWriter", directory_path_, filename_pattern_, operation_mode_));
@@ -68,7 +68,7 @@ SimpleDiskReader::do_configure(const std::vector<std::string>& /*args*/)
 }
 
 void
-SimpleDiskReader::do_start(const std::vector<std::string>& /*args*/)
+SimpleDiskReader::do_start(const data_t& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_start() method";
   thread_.start_working_thread();
@@ -77,7 +77,7 @@ SimpleDiskReader::do_start(const std::vector<std::string>& /*args*/)
 }
 
 void
-SimpleDiskReader::do_stop(const std::vector<std::string>& /*args*/)
+SimpleDiskReader::do_stop(const data_t& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_stop() method";
   thread_.stop_working_thread();
@@ -86,7 +86,7 @@ SimpleDiskReader::do_stop(const std::vector<std::string>& /*args*/)
 }
 
 void
-SimpleDiskReader::do_unconfigure(const std::vector<std::string>& /*args*/)
+SimpleDiskReader::do_unconfigure(const data_t& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_unconfigure() method";
   //  nIntsPerFakeEvent_ = REASONABLE_DEFAULT_INTSPERFAKEEVENT;

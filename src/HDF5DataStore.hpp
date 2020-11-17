@@ -1,5 +1,5 @@
-#ifndef DDPDEMO_INCLUDE_DDPDEMO_HDF5DATASTORE_HPP_
-#define DDPDEMO_INCLUDE_DDPDEMO_HDF5DATASTORE_HPP_
+#ifndef DDPDEMO_SRC_HDF5DATASTORE_HPP_
+#define DDPDEMO_SRC_HDF5DATASTORE_HPP_
 
 /**
  * @file HDF5DataStore.hpp
@@ -13,8 +13,8 @@
  */
 
 #include "ddpdemo/DataStore.hpp"
-#include "ddpdemo/HDF5FileUtils.hpp"
-#include "ddpdemo/HDF5KeyTranslator.hpp"
+#include "HDF5FileUtils.hpp"
+#include "HDF5KeyTranslator.hpp"
 
 #include <TRACE/trace.h>
 #include <appfwk/DAQModule.hpp>
@@ -293,7 +293,7 @@ private:
 } // namespace ddpdemo
 } // namespace dunedaq
 
-#endif // DDPDEMO_INCLUDE_DDPDEMO_HDF5DATASTORE_HPP_
+#endif // DDPDEMO_SRC_HDF5DATASTORE_HPP_
 
 // Local Variables:
 // c-basic-offset: 2

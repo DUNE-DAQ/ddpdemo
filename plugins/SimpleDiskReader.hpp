@@ -43,14 +43,14 @@ public:
   SimpleDiskReader(SimpleDiskReader&&) = delete;                 ///< SimpleDiskReader is not move-constructible
   SimpleDiskReader& operator=(SimpleDiskReader&&) = delete;      ///< SimpleDiskReader is not move-assignable
 
-  void init() override;
+  void init( const data_t& ) override;
 
 private:
   // Commands
-  void do_configure(const std::vector<std::string>& args);
-  void do_start(const std::vector<std::string>& args);
-  void do_stop(const std::vector<std::string>& args);
-  void do_unconfigure(const std::vector<std::string>& args);
+  void do_configure(const data_t&);
+  void do_start(const data_t&);
+  void do_stop(const data_t&);
+  void do_unconfigure(const data_t&);
 
   // Threading
   dunedaq::appfwk::ThreadHelper thread_;

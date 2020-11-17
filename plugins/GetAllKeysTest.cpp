@@ -7,7 +7,7 @@
  */
 
 #include "GetAllKeysTest.hpp"
-#include "ddpdemo/HDF5DataStore.hpp"
+#include "../src/HDF5DataStore.hpp"
 #include "ddpdemo/KeyedDataBlock.hpp"
 
 #include <TRACE/trace.h>
@@ -40,22 +40,22 @@ GetAllKeysTest::GetAllKeysTest(const std::string& name)
 }
 
 void
-GetAllKeysTest::init()
+GetAllKeysTest::init( const data_t& )
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
 }
 
 void
-GetAllKeysTest::do_configure(const std::vector<std::string>& /*args*/)
+GetAllKeysTest::do_configure(const data_t& args )
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
-  sleepMsecWhileRunning_ = get_config().value<size_t>("sleep_msec_while_running",
+  sleepMsecWhileRunning_ = args.value<size_t>("sleep_msec_while_running",
                                                       static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
 
-  std::string directoryPath = get_config()["data_store_parameters"]["directory_path"].get<std::string>();
-  std::string filenamePrefix = get_config()["data_store_parameters"]["filename_prefix"].get<std::string>();
-  std::string operationMode = get_config()["data_store_parameters"]["mode"].get<std::string>();
+  std::string directoryPath = args["data_store_parameters"]["directory_path"].get<std::string>();
+  std::string filenamePrefix = args["data_store_parameters"]["filename_prefix"].get<std::string>();
+  std::string operationMode = args["data_store_parameters"]["mode"].get<std::string>();
 
   dataStore_.reset(new HDF5DataStore("hdfStore", directoryPath, filenamePrefix, operationMode));
 
@@ -63,7 +63,7 @@ GetAllKeysTest::do_configure(const std::vector<std::string>& /*args*/)
 }
 
 void
-GetAllKeysTest::do_start(const std::vector<std::string>& /*args*/)
+GetAllKeysTest::do_start(const data_t& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_start() method";
   thread_.start_working_thread();
@@ -72,7 +72,7 @@ GetAllKeysTest::do_start(const std::vector<std::string>& /*args*/)
 }
 
 void
-GetAllKeysTest::do_stop(const std::vector<std::string>& /*args*/)
+GetAllKeysTest::do_stop(const data_t& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_stop() method";
   thread_.stop_working_thread();
@@ -81,7 +81,7 @@ GetAllKeysTest::do_stop(const std::vector<std::string>& /*args*/)
 }
 
 void
-GetAllKeysTest::do_unconfigure(const std::vector<std::string>& /*args*/)
+GetAllKeysTest::do_unconfigure(const data_t& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_unconfigure() method";
   sleepMsecWhileRunning_ = REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING;

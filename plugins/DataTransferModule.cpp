@@ -7,7 +7,7 @@
  */
 
 #include "DataTransferModule.hpp"
-#include "ddpdemo/HDF5DataStore.hpp"
+#include "../src/HDF5DataStore.hpp"
 #include "ddpdemo/KeyedDataBlock.hpp"
 
 #include <TRACE/trace.h>
@@ -40,34 +40,34 @@ DataTransferModule::DataTransferModule(const std::string& name)
 }
 
 void
-DataTransferModule::init()
+DataTransferModule::init(  const data_t&  )
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
 }
 
 void
-DataTransferModule::do_configure(const std::vector<std::string>& /*args*/)
+DataTransferModule::do_configure(const data_t& args)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
-  sleepMsecWhileRunning_ = get_config().value<size_t>("sleep_msec_while_running",
+  sleepMsecWhileRunning_ = args.value<size_t>("sleep_msec_while_running",
                                                       static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
 
-  std::string inputPath = get_config()["input_data_store_parameters"]["directory_path"].get<std::string>();
-  std::string inputFilenamePrefix = get_config()["input_data_store_parameters"]["filename_prefix"].get<std::string>();
-  std::string inputMode = get_config()["input_data_store_parameters"]["mode"].get<std::string>();
+  std::string inputPath = args["input_data_store_parameters"]["directory_path"].get<std::string>();
+  std::string inputFilenamePrefix = args["input_data_store_parameters"]["filename_prefix"].get<std::string>();
+  std::string inputMode = args["input_data_store_parameters"]["mode"].get<std::string>();
   inputDataStore_.reset(new HDF5DataStore("input", inputPath, inputFilenamePrefix, inputMode));
 
-  std::string outputPath = get_config()["output_data_store_parameters"]["directory_path"].get<std::string>();
-  std::string outputFilenamePrefix = get_config()["output_data_store_parameters"]["filename_prefix"].get<std::string>();
-  std::string outputMode = get_config()["output_data_store_parameters"]["mode"].get<std::string>();
+  std::string outputPath = args["output_data_store_parameters"]["directory_path"].get<std::string>();
+  std::string outputFilenamePrefix = args["output_data_store_parameters"]["filename_prefix"].get<std::string>();
+  std::string outputMode = args["output_data_store_parameters"]["mode"].get<std::string>();
   outputDataStore_.reset(new HDF5DataStore("output", outputPath, outputFilenamePrefix, outputMode));
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
 }
 
 void
-DataTransferModule::do_start(const std::vector<std::string>& /*args*/)
+DataTransferModule::do_start(const data_t& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_start() method";
   thread_.start_working_thread();
@@ -76,7 +76,7 @@ DataTransferModule::do_start(const std::vector<std::string>& /*args*/)
 }
 
 void
-DataTransferModule::do_stop(const std::vector<std::string>& /*args*/)
+DataTransferModule::do_stop(const data_t& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_stop() method";
   thread_.stop_working_thread();
@@ -85,7 +85,7 @@ DataTransferModule::do_stop(const std::vector<std::string>& /*args*/)
 }
 
 void
-DataTransferModule::do_unconfigure(const std::vector<std::string>& /*args*/)
+DataTransferModule::do_unconfigure(const data_t& /*args*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_unconfigure() method";
   sleepMsecWhileRunning_ = REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING;

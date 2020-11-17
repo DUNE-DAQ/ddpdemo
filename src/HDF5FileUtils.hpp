@@ -1,5 +1,5 @@
-#ifndef DDPDEMO_INCLUDE_DDPDEMO_HDF5FILEUTILS_HPP_
-#define DDPDEMO_INCLUDE_DDPDEMO_HDF5FILEUTILS_HPP_
+#ifndef DDPDEMO_SRC_HDF5FILEUTILS_HPP_
+#define DDPDEMO_SRC_HDF5FILEUTILS_HPP_
 /**
  * @file HDF5FileUtils.hpp
  *
@@ -99,4 +99,4 @@ getFilesMatchingPattern(const std::string& directoryPath, const std::string& fil
 } // namespace ddpdemo
 } // namespace dunedaq
 
-#endif // DDPDEMO_INCLUDE_DDPDEMO_HDF5FILEUTILS_HPP_
+#endif // DDPDEMO_SRC_HDF5FILEUTILS_HPP_

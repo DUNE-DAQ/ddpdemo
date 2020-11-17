@@ -7,7 +7,7 @@
  * received with this code.
  */
 
-#include "ddpdemo/HDF5DataStore.hpp"
+#include "../src/HDF5DataStore.hpp"
 
 #include "ers/ers.h"
 
