@@ -47,7 +47,7 @@ public:
 
 private:
   // Commands
-  void do_configure  ( const data_t& );
+  void do_conf       ( const data_t& );
   void do_start      ( const data_t& );
   void do_stop       ( const data_t& );
   void do_unconfigure( const data_t& );
