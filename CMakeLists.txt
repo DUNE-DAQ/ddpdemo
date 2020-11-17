@@ -5,6 +5,7 @@ daq_setup_environment()
 
 # 08-Sep-2020, KAB: the inclusion of the appfwk package brings in several other packages,
 # include ERS, TRACE, and Boost
+find_package(daq-cmake REQUIRED)
 find_package(appfwk REQUIRED)
 find_package(HighFive REQUIRED)
 
