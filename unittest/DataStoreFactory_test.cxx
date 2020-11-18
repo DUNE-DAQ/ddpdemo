@@ -22,21 +22,33 @@ using namespace dunedaq::ddpdemo;
 BOOST_AUTO_TEST_SUITE(DataStoreFactory_test)
 
 
-/*
-BOOST_AUTO_TEST_CASE(valid_request)
-{
-
-}
-
-*/
 
 BOOST_AUTO_TEST_CASE(invalid_request)
 {
 
+  // we want to pass an invalid DataStore type and see if we get an exception
   BOOST_CHECK_THROW( makeDataStore( "dummy", nlohmann::json{} ), std::exception ) ;
 
+  // we want to ask for a DataStore configuring absolutely nothing, not even its type
+  // and check if we get an exception
   BOOST_CHECK_THROW( makeDataStore( nlohmann::json{} ), std::exception ) ;
 
 }
+
+/*
+BOOST_AUTO_TEST_CASE(valid_request)
+{
+
+  nlohmann::json conf ;
+  conf["name"] = "test" ;
+
+  // we want to ask for a valid Data Store type
+  auto ds = makeDataStore( "TrashCanDataStore", conf ) ;
+
+  // and we want to check if we created something valid
+  BOOST_TEST( ds.get() ) ;
+
+}
+*/
 
 BOOST_AUTO_TEST_SUITE_END()
