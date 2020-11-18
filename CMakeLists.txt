@@ -16,7 +16,7 @@ daq_add_library( StorageKey.cpp
 		 ers::ers HighFive appfwk stdc++fs ) 
 
 daq_add_plugin( HDF5DataStore      duneDataStore LINK_LIBRARIES ers::ers appfwk HighFive )
-#daq_add_plugin( TrashCanDataStore  duneDataStore LINK_LIBRARIES ers::ers appfwk  )
+daq_add_plugin( TrashCanDataStore  duneDataStore LINK_LIBRARIES ers::ers appfwk )
 
 daq_add_plugin( DataGenerator      duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ddpdemo )  
 daq_add_plugin( DataTransferModule duneDAQModule LINK_LIBRARIES ers::ers appfwk HighFive ddpdemo ) 
@@ -34,7 +34,7 @@ daq_add_unit_test( HDF5Write_test           LINK_LIBRARIES appfwk::appfwk ddpdem
 daq_add_unit_test( HDF5Read_test            LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
 daq_add_unit_test( HDF5GetAllKeys_test      LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
 daq_add_unit_test( HDF5Combiner_test        LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
-daq_add_unit_test( DataStoreFactory_test    LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers HighFive stdc++fs )
+daq_add_unit_test( DataStoreFactory_test    LINK_LIBRARIES appfwk::appfwk ddpdemo ers::ers stdc++fs )
 
 ##############################################################################
 
