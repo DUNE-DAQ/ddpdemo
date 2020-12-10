@@ -2,7 +2,7 @@
 //
 local moo = import "moo.jsonnet";
 local cmd = import "appfwk-cmd-make.jsonnet";
-local datagen = import "data-generator-make.jsonnet";
+local datagen = import "ddpdemo-DataGenerator-make.jsonnet";
 
 [
     cmd.init([], [cmd.mspec("datagen", "DataGenerator")]) { waitms: 1000 },

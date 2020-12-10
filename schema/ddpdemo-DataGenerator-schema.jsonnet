@@ -1,5 +1,5 @@
 local moo = import "moo.jsonnet";
-local ns = "dunedaq.ddpdemo.datagen";
+local ns = "dunedaq.ddpdemo.datagenerator";
 local s = moo.oschema.schema(ns);
 
 local types = {

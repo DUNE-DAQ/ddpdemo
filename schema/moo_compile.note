@@ -1,14 +1,5 @@
-moo -M "`pwd`/../../appfwk/schema" compile data-generator-job.jsonnet
+# 24-Nov-2020, KAB
+# This file simply has a few notes on running the 'moo compile' command to
+# generate the list-reversal-app.json file from list-reversal-app.jsonnet.
 
-
-Recall that
-
-appfwk/schema/*.hpp.j2                       \
-appfwk/scheme/appfwk-cmd-make.jsonnet        | ?-> 'moo compile' ?-> ddpdemo/schema/data-generator-job.json
-ddpdemo/schema/data-generator-job.jsonnet    /
-  (data-generator-make.jsonnet)             /
-
-                                                                  / ddpdemo/include/ddpdemo/datagen/Struct.hpp
-ddpdemo/schema/data-generator-schema.jsonnet ?-> generate.sh ?->  | ddpdemo/include/ddpdemo/datagen/Nljs.hpp
-                                                                  \
-
+moo -M "`pwd`/../../appfwk/schema" compile data-generator-demo.jsonnet > ../test/data-generator-demo.json

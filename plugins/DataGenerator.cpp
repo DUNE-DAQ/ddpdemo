@@ -6,7 +6,7 @@
  * received with this code.
  */
 
-#include "ddpdemo/datagen/Nljs.hpp"
+#include "ddpdemo/datagenerator/Nljs.hpp"
 
 #include "DataGenerator.hpp"
 #include "HDF5DataStore.hpp"
@@ -53,7 +53,7 @@ DataGenerator::do_conf( const data_t& payload )
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_conf() method";
 
-  datagen::Conf tmpConfig = payload.get<datagen::Conf>();
+  datagenerator::Conf tmpConfig = payload.get<datagenerator::Conf>();
   ERS_LOG("Testing Conf creation. io_size is " << tmpConfig.io_size << ", and directory_path is \"" << tmpConfig.data_store_parameters.directory_path << "\"");
 
   nGeoLoc_ = payload.value<size_t>("geo_location_count", static_cast<size_t>(REASONABLE_DEFAULT_GEOLOC));
