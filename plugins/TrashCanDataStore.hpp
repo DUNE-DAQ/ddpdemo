@@ -29,11 +29,11 @@ namespace ddpdemo {
 class TrashCanDataStore : public DataStore
 {
 public:
-  explicit TrashCanDataStore(const std::string& name)
-    : DataStore(name)
-  {}
+  explicit TrashCanDataStore( const nlohmann::json & conf ) 
+    : DataStore( conf["name"].get<std::string>() )
+  { ; }
 
-  virtual void write(const KeyedDataBlock& dataBlock)
+  virtual void write(const KeyedDataBlock& dataBlock) override 
   {
     const void* dataPtr = dataBlock.getDataStart();
 
@@ -50,10 +50,16 @@ public:
     TLOG(TLVL_INFO) << msg.str() ;
   }
 
-  virtual std::vector<StorageKey> getAllExistingKeys() const
+  virtual std::vector<StorageKey> getAllExistingKeys() const override 
   {
     std::vector<StorageKey> emptyList;
     return emptyList;
+  }
+
+  virtual void setup(const size_t) override { ; } 
+
+  virtual KeyedDataBlock read(const StorageKey& key) override { 
+    return  KeyedDataBlock (key);
   }
 
 private:

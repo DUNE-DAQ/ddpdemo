@@ -7,7 +7,7 @@
  */
 
 #include "GetAllKeysTest.hpp"
-#include "../src/HDF5DataStore.hpp"
+#include "HDF5DataStore.hpp"
 #include "ddpdemo/KeyedDataBlock.hpp"
 
 #include <TRACE/trace.h>
@@ -53,11 +53,7 @@ GetAllKeysTest::do_configure(const data_t& args )
   sleepMsecWhileRunning_ = args.value<size_t>("sleep_msec_while_running",
                                                       static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
 
-  std::string directoryPath = args["data_store_parameters"]["directory_path"].get<std::string>();
-  std::string filenamePrefix = args["data_store_parameters"]["filename_prefix"].get<std::string>();
-  std::string operationMode = args["data_store_parameters"]["mode"].get<std::string>();
-
-  dataStore_.reset(new HDF5DataStore("hdfStore", directoryPath, filenamePrefix, operationMode));
+  dataStore_ = makeDataStore( args["data_store_parameters"] ) ; 
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
 }

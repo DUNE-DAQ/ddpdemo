@@ -7,7 +7,7 @@
  * received with this code.
  */
 
-#include "../src/HDF5DataStore.hpp"
+#include "../plugins/HDF5DataStore.hpp"
 
 #include "ers/ers.h"
 
@@ -68,7 +68,13 @@ BOOST_AUTO_TEST_CASE(WriteFragmentFiles)
   deleteFilesMatchingPattern(filePath, deletePattern);
 
   // create the DataStore
-  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, filePrefix, "one-fragment-per-file"));
+  nlohmann::json conf ;
+  conf["name"] = "tempWriter" ;
+  conf["filename_prefix"] = filePrefix ; 
+  conf["directory_path"] = filePath ; 
+  conf["mode"] = "one-fragment-per-file" ;
+  
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore(conf));
 
   // write several events, each with several fragments
   char dummyData[DUMMYDATA_SIZE];
@@ -106,7 +112,12 @@ BOOST_AUTO_TEST_CASE(WriteEventFiles)
   deleteFilesMatchingPattern(filePath, deletePattern);
 
   // create the DataStore
-  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, filePrefix, "one-event-per-file"));
+  nlohmann::json conf ;
+  conf["name"] = "tempWriter" ;
+  conf["filename_prefix"] = filePrefix ; 
+  conf["directory_path"] = filePath ; 
+  conf["mode"] = "one-event-per-file" ;
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore(conf));
 
   // write several events, each with several fragments
   char dummyData[DUMMYDATA_SIZE];
@@ -144,7 +155,12 @@ BOOST_AUTO_TEST_CASE(WriteOneFile)
   deleteFilesMatchingPattern(filePath, deletePattern);
 
   // create the DataStore
-  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("tempWriter", filePath, filePrefix, "all-per-file"));
+    nlohmann::json conf ;
+  conf["name"] = "tempWriter" ;
+  conf["filename_prefix"] = filePrefix ; 
+  conf["directory_path"] = filePath ; 
+  conf["mode"] = "all-per-file" ;
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore(conf));
 
   // write several events, each with several fragments
   char dummyData[DUMMYDATA_SIZE];

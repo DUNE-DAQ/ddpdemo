@@ -7,7 +7,7 @@
  * received with this code.
  */
 
-#include "../src/HDF5KeyTranslator.hpp"
+#include "../plugins/HDF5KeyTranslator.hpp"
 
 #include "ers/ers.h"
 

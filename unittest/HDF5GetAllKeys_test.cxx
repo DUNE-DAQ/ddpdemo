@@ -7,7 +7,7 @@
  * received with this code.
  */
 
-#include "../src/HDF5DataStore.hpp"
+#include "../plugins/HDF5DataStore.hpp"
 
 #include "ers/ers.h"
 
@@ -55,8 +55,12 @@ BOOST_AUTO_TEST_CASE(GetKeysFromFragmentFiles)
   deleteFilesMatchingPattern(filePath, deletePattern);
 
   // create the DataStore instance for writing
-  std::unique_ptr<HDF5DataStore> dsPtr(
-    new HDF5DataStore("hdfDataStore", filePath, filePrefix, "one-fragment-per-file"));
+  nlohmann::json conf ;
+  conf["name"] = "tempWriter" ;
+  conf["filename_prefix"] = filePrefix ; 
+  conf["directory_path"] = filePath ; 
+  conf["mode"] = "one-fragment-per-file" ;
+  std::unique_ptr<HDF5DataStore> dsPtr( new HDF5DataStore(conf));
 
   // write several events, each with several fragments
   char dummyData[DUMMYDATA_SIZE];
@@ -72,7 +76,11 @@ BOOST_AUTO_TEST_CASE(GetKeysFromFragmentFiles)
   dsPtr.reset(); // explicit destruction
 
   // create a second DataStore instance to fetch the keys
-  dsPtr.reset(new HDF5DataStore("hdfStore", filePath, filePrefix, "one-fragment-per-file"));
+  conf["name"] = "hdfStore" ;
+  conf["filename_prefix"] = filePrefix ; 
+  conf["directory_path"] = filePath ; 
+  conf["mode"] = "one-fragment-per-file" ;
+  dsPtr.reset(new HDF5DataStore( conf ));
 
   // fetch all of the keys that exist in the DataStore
   std::vector<StorageKey> keyList = dsPtr->getAllExistingKeys();
@@ -127,7 +135,12 @@ BOOST_AUTO_TEST_CASE(GetKeysFromEventFiles)
   deleteFilesMatchingPattern(filePath, deletePattern);
 
   // create the DataStore instance for writing
-  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("hdfDataStore", filePath, filePrefix, "one-event-per-file"));
+  nlohmann::json conf ;
+  conf["name"] = "tempWriter" ;
+  conf["filename_prefix"] = filePrefix ;
+  conf["directory_path"] = filePath ;
+  conf["mode"] = "one-event-per-file" ;
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore(conf));
 
   // write several events, each with several fragments
   char dummyData[DUMMYDATA_SIZE];
@@ -143,7 +156,11 @@ BOOST_AUTO_TEST_CASE(GetKeysFromEventFiles)
   dsPtr.reset(); // explicit destruction
 
   // create a second DataStore instance to fetch the keys
-  dsPtr.reset(new HDF5DataStore("hdfStore", filePath, filePrefix, "one-event-per-file"));
+  conf["name"] = "hdfStore" ;
+  conf["filename_prefix"] = filePrefix ;
+  conf["directory_path"] = filePath ;
+  conf["mode"] = "one-event-per-file" ;
+  dsPtr.reset(new HDF5DataStore(conf));
 
   // fetch all of the keys that exist in the DataStore
   std::vector<StorageKey> keyList = dsPtr->getAllExistingKeys();
@@ -198,7 +215,12 @@ BOOST_AUTO_TEST_CASE(GetKeysFromAllInOneFiles)
   deleteFilesMatchingPattern(filePath, deletePattern);
 
   // create the DataStore instance for writing
-  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore("hdfDataStore", filePath, filePrefix, "all-per-file"));
+  nlohmann::json conf ;
+  conf["name"] = "tempWriter" ;
+  conf["filename_prefix"] = filePrefix ;
+  conf["directory_path"] = filePath ;
+  conf["mode"] = "all-per-file" ;
+  std::unique_ptr<HDF5DataStore> dsPtr(new HDF5DataStore( conf ));
 
   // write several events, each with several fragments
   char dummyData[DUMMYDATA_SIZE];
@@ -214,7 +236,11 @@ BOOST_AUTO_TEST_CASE(GetKeysFromAllInOneFiles)
   dsPtr.reset(); // explicit destruction
 
   // create a second DataStore instance to fetch the keys
-  dsPtr.reset(new HDF5DataStore("hdfStore", filePath, filePrefix, "all-per-file"));
+  conf["name"] = "hdfStore" ;
+  conf["filename_prefix"] = filePrefix ;
+  conf["directory_path"] = filePath ;
+  conf["mode"] = "all-per-file" ;
+  dsPtr.reset(new HDF5DataStore( conf ));
 
   // fetch all of the keys that exist in the DataStore
   std::vector<StorageKey> keyList = dsPtr->getAllExistingKeys();
@@ -274,7 +300,12 @@ BOOST_AUTO_TEST_CASE(CheckCrossTalk)
   // ****************************************
   // * write some fragment-based-file data
   // ****************************************
-  dsPtr.reset(new HDF5DataStore("hdfDataStore", filePath, filePrefix, "one-fragment-per-file"));
+  nlohmann::json conf ;
+  conf["name"] = "hdfDataStore" ;
+  conf["filename_prefix"] = filePrefix ;
+  conf["directory_path"] = filePath ;
+  conf["mode"] = "one-fragment-per-file" ;
+  dsPtr.reset(new HDF5DataStore(conf));
   for (int eventID = 1; eventID <= EVENT_COUNT; ++eventID) {
     for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
@@ -289,7 +320,11 @@ BOOST_AUTO_TEST_CASE(CheckCrossTalk)
   // ****************************************
   // * write some event-based-file data
   // ****************************************
-  dsPtr.reset(new HDF5DataStore("hdfDataStore", filePath, filePrefix, "one-event-per-file"));
+  conf["name"] = "hdfDataStore" ;
+  conf["filename_prefix"] = filePrefix ;
+  conf["directory_path"] = filePath ;
+  conf["mode"] = "one-event-per-file" ;
+  dsPtr.reset(new HDF5DataStore(conf));
   for (int eventID = 1; eventID <= EVENT_COUNT; ++eventID) {
     for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
@@ -304,7 +339,11 @@ BOOST_AUTO_TEST_CASE(CheckCrossTalk)
   // ****************************************
   // * write some single-file data
   // ****************************************
-  dsPtr.reset(new HDF5DataStore("hdfDataStore", filePath, filePrefix, "all-per-file"));
+  conf["name"] = "hdfDataStore" ;
+  conf["filename_prefix"] = filePrefix ;
+  conf["directory_path"] = filePath ;
+  conf["mode"] = "all-per-file" ;
+  dsPtr.reset(new HDF5DataStore(conf));
   for (int eventID = 1; eventID <= EVENT_COUNT; ++eventID) {
     for (int geoLoc = 0; geoLoc < GEOLOC_COUNT; ++geoLoc) {
       StorageKey key(eventID, StorageKey::INVALID_DETECTORID, geoLoc);
@@ -319,21 +358,33 @@ BOOST_AUTO_TEST_CASE(CheckCrossTalk)
   // **************************************************
   // * check that fragment-based-file key lookup works
   // **************************************************
-  dsPtr.reset(new HDF5DataStore("hdfDataStore", filePath, filePrefix, "one-fragment-per-file"));
+  conf["name"] = "hdfDataStore" ;
+  conf["filename_prefix"] = filePrefix ;
+  conf["directory_path"] = filePath ;
+  conf["mode"] = "one-fragment-per-file" ;
+  dsPtr.reset(new HDF5DataStore(conf));
   keyList = dsPtr->getAllExistingKeys();
   BOOST_REQUIRE_EQUAL(keyList.size(), (EVENT_COUNT * GEOLOC_COUNT));
 
   // **************************************************
   // * check that event-based-file key lookup works
   // **************************************************
-  dsPtr.reset(new HDF5DataStore("hdfDataStore", filePath, filePrefix, "one-event-per-file"));
+  conf["name"] = "hdfDataStore" ;
+  conf["filename_prefix"] = filePrefix ;
+  conf["directory_path"] = filePath ;
+  conf["mode"] = "one-event-per-file" ;
+  dsPtr.reset(new HDF5DataStore( conf ));
   keyList = dsPtr->getAllExistingKeys();
   BOOST_REQUIRE_EQUAL(keyList.size(), (EVENT_COUNT * GEOLOC_COUNT));
 
   // **************************************************
   // * check that single-file key lookup works
   // **************************************************
-  dsPtr.reset(new HDF5DataStore("hdfDataStore", filePath, filePrefix, "all-per-file"));
+  conf["name"] = "hdfDataStore" ;
+  conf["filename_prefix"] = filePrefix ;
+  conf["directory_path"] = filePath ;
+  conf["mode"] = "all-per-file" ;
+  dsPtr.reset(new HDF5DataStore( conf ));
   keyList = dsPtr->getAllExistingKeys();
   BOOST_REQUIRE_EQUAL(keyList.size(), (EVENT_COUNT * GEOLOC_COUNT));
 

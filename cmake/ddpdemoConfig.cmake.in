@@ -4,7 +4,7 @@
 include(CMakeFindDependencyMacro)
 
 find_dependency(HighFive)
-
+find_dependency(AppFwk)
 
 # Figure out whether or not this dependency is an installed package or
 # in repo form
