@@ -15,11 +15,11 @@ daq_add_library( StorageKey.cpp
                  LINK_LIBRARIES 
                  ers::ers HighFive appfwk::appfwk stdc++fs )
 
-daq_add_plugin( HDF5DataStore      duneDataStore LINK_LIBRARIES HighFive appfwk::appfwk)
+daq_add_plugin( HDF5DataStore      duneDataStore LINK_LIBRARIES HighFive appfwk::appfwk stdc++fs)
 daq_add_plugin( TrashCanDataStore  duneDataStore LINK_LIBRARIES appfwk::appfwk)
 
 daq_add_plugin( DataGenerator      duneDAQModule SCHEMA LINK_LIBRARIES ddpdemo )
-daq_add_plugin( DataTransferModule duneDAQModule LINK_LIBRARIES ddpdemo )
+daq_add_plugin( DataTransferModule duneDAQModule SCHEMA LINK_LIBRARIES ddpdemo stdc++fs )
 daq_add_plugin( GetAllKeysTest     duneDAQModule LINK_LIBRARIES ddpdemo )
 daq_add_plugin( SimpleDiskReader   duneDAQModule LINK_LIBRARIES ddpdemo )
 daq_add_plugin( SimpleDiskWriter   duneDAQModule LINK_LIBRARIES ddpdemo )

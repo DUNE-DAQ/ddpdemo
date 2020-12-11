@@ -6,6 +6,8 @@
  * received with this code.
  */
 
+#include "ddpdemo/datatransfermodule/Nljs.hpp"
+
 #include "DataTransferModule.hpp"
 #include "ddpdemo/DataStore.hpp"
 #include "ddpdemo/KeyedDataBlock.hpp"
@@ -33,31 +35,33 @@ DataTransferModule::DataTransferModule(const std::string& name)
   : dunedaq::appfwk::DAQModule(name)
   , thread_(std::bind(&DataTransferModule::do_work, this, std::placeholders::_1))
 {
-  register_command("configure", &DataTransferModule::do_configure);
+  register_command("conf", &DataTransferModule::do_conf);
   register_command("start", &DataTransferModule::do_start);
   register_command("stop", &DataTransferModule::do_stop);
   register_command("unconfigure", &DataTransferModule::do_unconfigure);
 }
 
 void
-DataTransferModule::init(  const data_t&  )
+DataTransferModule::init(const data_t&)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
 }
 
 void
-DataTransferModule::do_configure(const data_t& args)
+DataTransferModule::do_conf(const data_t& payload)
 {
-  TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_configure() method";
-  sleepMsecWhileRunning_ = args.value<size_t>("sleep_msec_while_running",
-					      static_cast<size_t>(REASONABLE_DEFAULT_SLEEPMSECWHILERUNNING));
-  
-  inputDataStore_ = makeDataStore( args["input_data_store_parameters"] ) ; 
-  
-  outputDataStore_ = makeDataStore( args["output_data_store_parameters"] ) ; 
-  
-  TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_configure() method";
+  TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_conf() method";
+
+  datatransfermodule::Conf tmpConfig = payload.get<datatransfermodule::Conf>();
+
+  sleepMsecWhileRunning_ = tmpConfig.sleep_msec_while_running;
+
+  inputDataStore_ = makeDataStore(payload["input_data_store_parameters"]);
+
+  outputDataStore_ = makeDataStore(payload["output_data_store_parameters"]);
+
+  TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_conf() method";
 }
 
 void

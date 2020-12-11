@@ -42,14 +42,14 @@ public:
   DataTransferModule(DataTransferModule&&) = delete;                 ///< DataTransferModule is not move-constructible
   DataTransferModule& operator=(DataTransferModule&&) = delete;      ///< DataTransferModule is not move-assignable
 
-  void init( const data_t& ) override;
+  void init(const data_t&) override;
 
 private:
   // Commands
-  void do_configure( const data_t& );
-  void do_start( const data_t& );
-  void do_stop( const data_t& );
-  void do_unconfigure( const data_t& );
+  void do_conf(const data_t&);
+  void do_start(const data_t&);
+  void do_stop(const data_t&);
+  void do_unconfigure(const data_t&);
 
   // Threading
   dunedaq::appfwk::ThreadHelper thread_;
