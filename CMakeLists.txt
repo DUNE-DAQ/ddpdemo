@@ -24,6 +24,12 @@ daq_add_plugin( GetAllKeysTest     duneDAQModule LINK_LIBRARIES ddpdemo )
 daq_add_plugin( SimpleDiskReader   duneDAQModule LINK_LIBRARIES ddpdemo )
 daq_add_plugin( SimpleDiskWriter   duneDAQModule LINK_LIBRARIES ddpdemo )
 
+daq_add_plugin( FakeDataProd       duneDAQModule LINK_LIBRARIES ddpdemo )
+daq_add_plugin( FakeDataWriter     duneDAQModule LINK_LIBRARIES ddpdemo )
+daq_add_plugin( FakeFragRec        duneDAQModule LINK_LIBRARIES ddpdemo )
+daq_add_plugin( FakeReqGen         duneDAQModule LINK_LIBRARIES ddpdemo )
+daq_add_plugin( FakeTrigDecEmu     duneDAQModule SCHEMA LINK_LIBRARIES ddpdemo )
+
 ##############################################################################
 daq_add_unit_test( StorageKey_test          LINK_LIBRARIES ddpdemo )
 daq_add_unit_test( KeyedDataBlock_test      LINK_LIBRARIES ddpdemo )

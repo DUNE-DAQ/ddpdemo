@@ -1,0 +1,167 @@
+[
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "output",
+                                "inst": "trigger_decision_from_data_selection",
+                                "name": "trigger_decision_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "ftde",
+                    "plugin": "FakeTrigDecEmu"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "trigger_decision_from_data_selection",
+                                "name": "trigger_decision_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "trigger_decision_copy_for_bookkeeping",
+                                "name": "trigger_decision_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests",
+                                "name": "data_request_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "frg",
+                    "plugin": "FakeReqGen"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "data_requests",
+                                "name": "data_request_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments",
+                                "name": "data_fragment_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "fdp",
+                    "plugin": "FakeDataProd"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "trigger_decision_copy_for_bookkeeping",
+                                "name": "trigger_decision_input_queue"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_fragments",
+                                "name": "data_fragment_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "trigger_records",
+                                "name": "trigger_record_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "ffr",
+                    "plugin": "FakeFragRec"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "trigger_records",
+                                "name": "trigger_record_input_queue"
+                            }
+                        ]
+                    },
+                    "inst": "fdw",
+                    "plugin": "FakeDataWriter"
+                }
+            ],
+            "queues": [
+                {
+                    "capacity": 2,
+                    "inst": "trigger_decision_from_data_selection",
+                    "kind": "StdDeQueue"
+                },
+                {
+                    "capacity": 2,
+                    "inst": "data_requests",
+                    "kind": "StdDeQueue"
+                },
+                {
+                    "capacity": 2,
+                    "inst": "trigger_decision_copy_for_bookkeeping",
+                    "kind": "StdDeQueue"
+                },
+                {
+                    "capacity": 2,
+                    "inst": "data_fragments",
+                    "kind": "StdDeQueue"
+                },
+                {
+                    "capacity": 2,
+                    "inst": "trigger_records",
+                    "kind": "StdDeQueue"
+                }
+            ]
+        },
+        "id": "init",
+        "waitms": 1000
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {
+                        "sleep_msec_while_running": 1000
+                    },
+                    "match": "ftde"
+                }
+            ]
+        },
+        "id": "conf",
+        "waitms": 1000
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {
+                        "run": 42
+                    },
+                    "match": ""
+                }
+            ]
+        },
+        "id": "start",
+        "waitms": 1000
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": ""
+                }
+            ]
+        },
+        "id": "stop",
+        "waitms": 1000
+    }
+]
