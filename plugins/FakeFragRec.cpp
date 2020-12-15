@@ -6,8 +6,8 @@
  * received with this code.
  */
 
-#include "CommonIssues.hpp"
 #include "FakeFragRec.hpp"
+#include "CommonIssues.hpp"
 
 #include "appfwk/DAQModuleHelper.hpp"
 #include "appfwk/cmd/Nljs.hpp"
@@ -25,7 +25,7 @@
 /**
  * @brief Name used by TRACE TLOG calls from this source file
  */
-#define TRACE_NAME "FakeFragRec" // NOLINT
+#define TRACE_NAME "FakeFragRec"   // NOLINT
 #define TLVL_ENTER_EXIT_METHODS 10 // NOLINT
 #define TLVL_WORK_STEPS 15         // NOLINT
 
@@ -49,21 +49,15 @@ void
 FakeFragRec::init(const data_t& init_data)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
-  auto qilist = appfwk::qindex(init_data, {"trigger_decision_input_queue","trigger_record_output_queue"});
-  try
-  {
+  auto qilist = appfwk::qindex(init_data, { "trigger_decision_input_queue", "trigger_record_output_queue" });
+  try {
     triggerDecisionInputQueue_.reset(new trigdecsource_t(qilist["trigger_decision_input_queue"].inst));
-  }
-  catch (const ers::Issue& excpt)
-  {
+  } catch (const ers::Issue& excpt) {
     throw InvalidQueueFatalError(ERS_HERE, get_name(), "trigger_decision_input_queue", excpt);
   }
-  try
-  {
+  try {
     triggerRecordOutputQueue_.reset(new trigrecsink_t(qilist["trigger_record_output_queue"].inst));
-  }
-  catch (const ers::Issue& excpt)
-  {
+  } catch (const ers::Issue& excpt) {
     throw InvalidQueueFatalError(ERS_HERE, get_name(), "trigger_record_output_queue", excpt);
   }
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
@@ -73,8 +67,7 @@ FakeFragRec::init(const data_t& init_data)
     if (qitem.name.rfind("data_fragment_") == 0) {
       try {
         dataFragmentInputQueues_.emplace_back(new datafragsource_t(qitem.inst));
-      }
-      catch (const ers::Issue& excpt) {
+      } catch (const ers::Issue& excpt) {
         throw InvalidQueueFatalError(ERS_HERE, get_name(), qitem.name, excpt);
       }
     }
@@ -86,8 +79,8 @@ FakeFragRec::do_conf(const data_t& /*payload*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_conf() method";
 
-  //fakefragrec::Conf tmpConfig = payload.get<fakefragrec::Conf>();
-  //sleepMsecWhileRunning_ = tmpConfig.sleep_msec_while_running;
+  // fakefragrec::Conf tmpConfig = payload.get<fakefragrec::Conf>();
+  // sleepMsecWhileRunning_ = tmpConfig.sleep_msec_while_running;
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_conf() method";
 }
@@ -119,61 +112,54 @@ FakeFragRec::do_work(std::atomic<bool>& running_flag)
 
   while (running_flag.load()) {
     std::unique_ptr<dunedaq::ddpdemo::FakeTrigDec> trigDecPtr;
-    try
-    {
+    try {
       triggerDecisionInputQueue_->pop(trigDecPtr, queueTimeout_);
       ++receivedTriggerCount;
 
       std::unique_ptr<dunedaq::ddpdemo::FakeTrigRec> trigRecPtr(new dunedaq::ddpdemo::FakeTrigRec());
       trigRecPtr->identifier = trigDecPtr->identifier;
       bool wasSentSuccessfully = false;
-      while (!wasSentSuccessfully && running_flag.load())
-      {
+      while (!wasSentSuccessfully && running_flag.load()) {
         TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";
-        try
-        {
+        try {
           triggerRecordOutputQueue_->push(std::move(trigRecPtr), queueTimeout_);
           wasSentSuccessfully = true;
-        }
-        catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
-        {
+        } catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt) {
           std::ostringstream oss_warn;
           oss_warn << "push to output queue \"" << triggerRecordOutputQueue_->get_name() << "\"";
-          ers::warning(dunedaq::appfwk::QueueTimeoutExpired(ERS_HERE, get_name(), oss_warn.str(),
-                                                            std::chrono::duration_cast<std::chrono::milliseconds>(queueTimeout_).count()));
+          ers::warning(dunedaq::appfwk::QueueTimeoutExpired(
+            ERS_HERE,
+            get_name(),
+            oss_warn.str(),
+            std::chrono::duration_cast<std::chrono::milliseconds>(queueTimeout_).count()));
         }
       }
-    }
-    catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
-    {
-      // it is perfectly reasonable that there might be no data in the queue 
+    } catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt) {
+      // it is perfectly reasonable that there might be no data in the queue
       // some fraction of the times that we check, so we just continue on and try again
-      //continue;
+      // continue;
     }
 
-    for (auto& dataFragQueue : dataFragmentInputQueues_)
-    {
+    for (auto& dataFragQueue : dataFragmentInputQueues_) {
       std::unique_ptr<dunedaq::ddpdemo::FakeDataFrag> dataFragPtr;
-      try
-      {
+      try {
         dataFragQueue->pop(dataFragPtr, queueTimeout_);
         ++receivedFragmentCount;
-      }
-      catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
-      {
-        // it is perfectly reasonable that there might be no data in the queue 
+      } catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt) {
+        // it is perfectly reasonable that there might be no data in the queue
         // some fraction of the times that we check, so we just continue on and try again
-        //continue;
+        // continue;
       }
     }
 
-    //TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of sleep while waiting for run Stop";
-    //std::this_thread::sleep_for(std::chrono::milliseconds(sleepMsecWhileRunning_));
-    //TLOG(TLVL_WORK_STEPS) << get_name() << ": End of sleep while waiting for run Stop";
+    // TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of sleep while waiting for run Stop";
+    // std::this_thread::sleep_for(std::chrono::milliseconds(sleepMsecWhileRunning_));
+    // TLOG(TLVL_WORK_STEPS) << get_name() << ": End of sleep while waiting for run Stop";
   }
 
   std::ostringstream oss_summ;
-  oss_summ << ": Exiting the do_work() method, received " << receivedTriggerCount << " Fake trigger decision messages and " << receivedFragmentCount << " Fake data fragmentss.";
+  oss_summ << ": Exiting the do_work() method, received " << receivedTriggerCount
+           << " Fake trigger decision messages and " << receivedFragmentCount << " Fake data fragmentss.";
   ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_work() method";
 }

@@ -6,8 +6,8 @@
  * received with this code.
  */
 
-#include "CommonIssues.hpp"
 #include "FakeDataWriter.hpp"
+#include "CommonIssues.hpp"
 
 #include "appfwk/DAQModuleHelper.hpp"
 //#include "ddpdemo/fakedatawriter/Nljs.hpp"
@@ -25,8 +25,8 @@
  * @brief Name used by TRACE TLOG calls from this source file
  */
 #define TRACE_NAME "FakeDataWriter" // NOLINT
-#define TLVL_ENTER_EXIT_METHODS 10 // NOLINT
-#define TLVL_WORK_STEPS 15         // NOLINT
+#define TLVL_ENTER_EXIT_METHODS 10  // NOLINT
+#define TLVL_WORK_STEPS 15          // NOLINT
 
 namespace dunedaq {
 namespace ddpdemo {
@@ -46,13 +46,10 @@ void
 FakeDataWriter::init(const data_t& init_data)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
-  auto qi = appfwk::qindex(init_data, {"trigger_record_input_queue"});
-  try
-  {
+  auto qi = appfwk::qindex(init_data, { "trigger_record_input_queue" });
+  try {
     triggerRecordInputQueue_.reset(new trigrecsource_t(qi["trigger_record_input_queue"].inst));
-  }
-  catch (const ers::Issue& excpt)
-  {
+  } catch (const ers::Issue& excpt) {
     throw InvalidQueueFatalError(ERS_HERE, get_name(), "trigger_record_input_queue", excpt);
   }
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
@@ -63,8 +60,8 @@ FakeDataWriter::do_conf(const data_t& /*payload*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_conf() method";
 
-  //fakedatawriter::Conf tmpConfig = payload.get<fakedatawriter::Conf>();
-  //sleepMsecWhileRunning_ = tmpConfig.sleep_msec_while_running;
+  // fakedatawriter::Conf tmpConfig = payload.get<fakedatawriter::Conf>();
+  // sleepMsecWhileRunning_ = tmpConfig.sleep_msec_while_running;
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_conf() method";
 }
@@ -96,25 +93,23 @@ FakeDataWriter::do_work(std::atomic<bool>& running_flag)
   while (running_flag.load()) {
     std::unique_ptr<dunedaq::ddpdemo::FakeTrigRec> trigRecPtr;
 
-    try
-    {
+    try {
       triggerRecordInputQueue_->pop(trigRecPtr, queueTimeout_);
       ++receivedCount;
-    }
-    catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
-    {
-      // it is perfectly reasonable that there might be no data in the queue 
+    } catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt) {
+      // it is perfectly reasonable that there might be no data in the queue
       // some fraction of the times that we check, so we just continue on and try again
       continue;
     }
 
-    //TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of sleep while waiting for run Stop";
-    //std::this_thread::sleep_for(std::chrono::milliseconds(sleepMsecWhileRunning_));
-    //TLOG(TLVL_WORK_STEPS) << get_name() << ": End of sleep while waiting for run Stop";
+    // TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of sleep while waiting for run Stop";
+    // std::this_thread::sleep_for(std::chrono::milliseconds(sleepMsecWhileRunning_));
+    // TLOG(TLVL_WORK_STEPS) << get_name() << ": End of sleep while waiting for run Stop";
   }
 
   std::ostringstream oss_summ;
-  oss_summ << ": Exiting the do_work() method, received Fake trigger record messages for " << receivedCount << " triggers.";
+  oss_summ << ": Exiting the do_work() method, received Fake trigger record messages for " << receivedCount
+           << " triggers.";
   ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_work() method";
 }

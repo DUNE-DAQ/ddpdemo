@@ -6,8 +6,8 @@
  * received with this code.
  */
 
-#include "CommonIssues.hpp"
 #include "FakeTrigDecEmu.hpp"
+#include "CommonIssues.hpp"
 
 #include "appfwk/DAQModuleHelper.hpp"
 #include "ddpdemo/faketrigdecemu/Nljs.hpp"
@@ -25,8 +25,8 @@
  * @brief Name used by TRACE TLOG calls from this source file
  */
 #define TRACE_NAME "FakeTrigDecEmu" // NOLINT
-#define TLVL_ENTER_EXIT_METHODS 10 // NOLINT
-#define TLVL_WORK_STEPS 15         // NOLINT
+#define TLVL_ENTER_EXIT_METHODS 10  // NOLINT
+#define TLVL_WORK_STEPS 15          // NOLINT
 
 namespace dunedaq {
 namespace ddpdemo {
@@ -46,13 +46,10 @@ void
 FakeTrigDecEmu::init(const data_t& init_data)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
-  auto qi = appfwk::qindex(init_data, {"trigger_decision_output_queue"});
-  try
-  {
+  auto qi = appfwk::qindex(init_data, { "trigger_decision_output_queue" });
+  try {
     triggerDecisionOutputQueue_.reset(new trigdecsink_t(qi["trigger_decision_output_queue"].inst));
-  }
-  catch (const ers::Issue& excpt)
-  {
+  } catch (const ers::Issue& excpt) {
     throw InvalidQueueFatalError(ERS_HERE, get_name(), "trigger_decision_output_queue", excpt);
   }
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
@@ -99,20 +96,19 @@ FakeTrigDecEmu::do_work(std::atomic<bool>& running_flag)
     trigDecPtr->identifier = triggerCount;
 
     bool wasSentSuccessfully = false;
-    while (!wasSentSuccessfully && running_flag.load())
-    {
+    while (!wasSentSuccessfully && running_flag.load()) {
       TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";
-      try
-      {
+      try {
         triggerDecisionOutputQueue_->push(std::move(trigDecPtr), queueTimeout_);
         wasSentSuccessfully = true;
-      }
-      catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
-      {
+      } catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt) {
         std::ostringstream oss_warn;
         oss_warn << "push to output queue \"" << triggerDecisionOutputQueue_->get_name() << "\"";
-        ers::warning(dunedaq::appfwk::QueueTimeoutExpired(ERS_HERE, get_name(), oss_warn.str(),
-                     std::chrono::duration_cast<std::chrono::milliseconds>(queueTimeout_).count()));
+        ers::warning(dunedaq::appfwk::QueueTimeoutExpired(
+          ERS_HERE,
+          get_name(),
+          oss_warn.str(),
+          std::chrono::duration_cast<std::chrono::milliseconds>(queueTimeout_).count()));
       }
     }
 
@@ -122,7 +118,8 @@ FakeTrigDecEmu::do_work(std::atomic<bool>& running_flag)
   }
 
   std::ostringstream oss_summ;
-  oss_summ << ": Exiting the do_work() method, generated Fake trigger decision messages for " << triggerCount << " triggers.";
+  oss_summ << ": Exiting the do_work() method, generated Fake trigger decision messages for " << triggerCount
+           << " triggers.";
   ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_work() method";
 }

@@ -55,7 +55,7 @@ private:
   void do_work(std::atomic<bool>&);
 
   // Configuration
-  //size_t sleepMsecWhileRunning_;
+  // size_t sleepMsecWhileRunning_;
   std::chrono::milliseconds queueTimeout_;
 
   // Queue(s)

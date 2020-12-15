@@ -6,8 +6,8 @@
  * received with this code.
  */
 
-#include "CommonIssues.hpp"
 #include "FakeDataProd.hpp"
+#include "CommonIssues.hpp"
 
 #include "appfwk/DAQModuleHelper.hpp"
 //#include "ddpdemo/fakedataprod/Nljs.hpp"
@@ -24,7 +24,7 @@
 /**
  * @brief Name used by TRACE TLOG calls from this source file
  */
-#define TRACE_NAME "FakeDataProd" // NOLINT
+#define TRACE_NAME "FakeDataProd"  // NOLINT
 #define TLVL_ENTER_EXIT_METHODS 10 // NOLINT
 #define TLVL_WORK_STEPS 15         // NOLINT
 
@@ -47,21 +47,15 @@ void
 FakeDataProd::init(const data_t& init_data)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
-  auto qi = appfwk::qindex(init_data, {"data_request_input_queue","data_fragment_output_queue"});
-  try
-  {
+  auto qi = appfwk::qindex(init_data, { "data_request_input_queue", "data_fragment_output_queue" });
+  try {
     dataRequestInputQueue_.reset(new datareqsource_t(qi["data_request_input_queue"].inst));
-  }
-  catch (const ers::Issue& excpt)
-  {
+  } catch (const ers::Issue& excpt) {
     throw InvalidQueueFatalError(ERS_HERE, get_name(), "data_request_input_queue", excpt);
   }
-  try
-  {
+  try {
     dataFragmentOutputQueue_.reset(new datafragsink_t(qi["data_fragment_output_queue"].inst));
-  }
-  catch (const ers::Issue& excpt)
-  {
+  } catch (const ers::Issue& excpt) {
     throw InvalidQueueFatalError(ERS_HERE, get_name(), "data_fragment_output_queue", excpt);
   }
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
@@ -72,8 +66,8 @@ FakeDataProd::do_conf(const data_t& /*payload*/)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering do_conf() method";
 
-  //fakedataprod::Conf tmpConfig = payload.get<fakedataprod::Conf>();
-  //sleepMsecWhileRunning_ = tmpConfig.sleep_msec_while_running;
+  // fakedataprod::Conf tmpConfig = payload.get<fakedataprod::Conf>();
+  // sleepMsecWhileRunning_ = tmpConfig.sleep_msec_while_running;
 
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_conf() method";
 }
@@ -104,14 +98,11 @@ FakeDataProd::do_work(std::atomic<bool>& running_flag)
 
   while (running_flag.load()) {
     dunedaq::ddpdemo::FakeDataReq dataReq;
-    try
-    {
+    try {
       dataRequestInputQueue_->pop(dataReq, queueTimeout_);
       ++receivedCount;
-    }
-    catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
-    {
-      // it is perfectly reasonable that there might be no data in the queue 
+    } catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt) {
+      // it is perfectly reasonable that there might be no data in the queue
       // some fraction of the times that we check, so we just continue on and try again
       continue;
     }
@@ -119,30 +110,30 @@ FakeDataProd::do_work(std::atomic<bool>& running_flag)
     std::unique_ptr<dunedaq::ddpdemo::FakeDataFrag> dataFragPtr(new dunedaq::ddpdemo::FakeDataFrag());
     dataFragPtr->identifier = dataReq.identifier;
     bool wasSentSuccessfully = false;
-    while (!wasSentSuccessfully && running_flag.load())
-    {
+    while (!wasSentSuccessfully && running_flag.load()) {
       TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";
-      try
-      {
+      try {
         dataFragmentOutputQueue_->push(std::move(dataFragPtr), queueTimeout_);
         wasSentSuccessfully = true;
-      }
-      catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
-      {
+      } catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt) {
         std::ostringstream oss_warn;
         oss_warn << "push to output queue \"" << dataFragmentOutputQueue_->get_name() << "\"";
-        ers::warning(dunedaq::appfwk::QueueTimeoutExpired(ERS_HERE, get_name(), oss_warn.str(),
-                     std::chrono::duration_cast<std::chrono::milliseconds>(queueTimeout_).count()));
+        ers::warning(dunedaq::appfwk::QueueTimeoutExpired(
+          ERS_HERE,
+          get_name(),
+          oss_warn.str(),
+          std::chrono::duration_cast<std::chrono::milliseconds>(queueTimeout_).count()));
       }
     }
 
-    //TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of sleep while waiting for run Stop";
-    //std::this_thread::sleep_for(std::chrono::milliseconds(sleepMsecWhileRunning_));
-    //TLOG(TLVL_WORK_STEPS) << get_name() << ": End of sleep while waiting for run Stop";
+    // TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of sleep while waiting for run Stop";
+    // std::this_thread::sleep_for(std::chrono::milliseconds(sleepMsecWhileRunning_));
+    // TLOG(TLVL_WORK_STEPS) << get_name() << ": End of sleep while waiting for run Stop";
   }
 
   std::ostringstream oss_summ;
-  oss_summ << ": Exiting the do_work() method, received Fake trigger decision messages for " << receivedCount << " triggers.";
+  oss_summ << ": Exiting the do_work() method, received Fake trigger decision messages for " << receivedCount
+           << " triggers.";
   ers::info(ProgressUpdate(ERS_HERE, get_name(), oss_summ.str()));
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting do_work() method";
 }
