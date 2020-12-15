@@ -62,7 +62,7 @@ private:
   using trigdecsource_t = dunedaq::appfwk::DAQSource<std::unique_ptr<dunedaq::ddpdemo::FakeTrigDec>>;
   std::unique_ptr<trigdecsource_t> triggerDecisionInputQueue_;
   using datafragsource_t = dunedaq::appfwk::DAQSource<std::unique_ptr<dunedaq::ddpdemo::FakeDataFrag>>;
-  std::unique_ptr<datafragsource_t> dataFragmentInputQueue_;
+  std::vector<std::unique_ptr<datafragsource_t>> dataFragmentInputQueues_;
   using trigrecsink_t = dunedaq::appfwk::DAQSink<std::unique_ptr<dunedaq::ddpdemo::FakeTrigRec>>;
   std::unique_ptr<trigrecsink_t> triggerRecordOutputQueue_;
 };

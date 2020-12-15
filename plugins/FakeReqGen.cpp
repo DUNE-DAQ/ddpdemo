@@ -10,6 +10,7 @@
 #include "FakeReqGen.hpp"
 
 #include "appfwk/DAQModuleHelper.hpp"
+#include "appfwk/cmd/Nljs.hpp"
 //#include "ddpdemo/fakereqgen/Nljs.hpp"
 
 #include "TRACE/trace.h"
@@ -37,7 +38,7 @@ FakeReqGen::FakeReqGen(const std::string& name)
   , queueTimeout_(100)
   , triggerDecisionInputQueue_(nullptr)
   , triggerDecisionOutputQueue_(nullptr)
-  , dataRequestOutputQueue_(nullptr)
+  , dataRequestOutputQueues_()
 {
   register_command("conf", &FakeReqGen::do_conf);
   register_command("start", &FakeReqGen::do_start);
@@ -48,10 +49,10 @@ void
 FakeReqGen::init(const data_t& init_data)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
-  auto qi = appfwk::qindex(init_data, {"trigger_decision_input_queue","trigger_decision_output_queue","data_request_output_queue"});
+  auto qilist = appfwk::qindex(init_data, {"trigger_decision_input_queue","trigger_decision_output_queue"});
   try
   {
-    triggerDecisionInputQueue_.reset(new trigdecsource_t(qi["trigger_decision_input_queue"].inst));
+    triggerDecisionInputQueue_.reset(new trigdecsource_t(qilist["trigger_decision_input_queue"].inst));
   }
   catch (const ers::Issue& excpt)
   {
@@ -59,21 +60,24 @@ FakeReqGen::init(const data_t& init_data)
   }
   try
   {
-    triggerDecisionOutputQueue_.reset(new trigdecsink_t(qi["trigger_decision_output_queue"].inst));
+    triggerDecisionOutputQueue_.reset(new trigdecsink_t(qilist["trigger_decision_output_queue"].inst));
   }
   catch (const ers::Issue& excpt)
   {
     throw InvalidQueueFatalError(ERS_HERE, get_name(), "trigger_decision_output_queue", excpt);
   }
-  try
-  {
-    dataRequestOutputQueue_.reset(new datareqsink_t(qi["data_request_output_queue"].inst));
+
+  auto ini = init_data.get<appfwk::cmd::ModInit>();
+  for (const auto& qitem : ini.qinfos) {
+    if (qitem.name.rfind("data_request_") == 0) {
+      try {
+        dataRequestOutputQueues_.emplace_back(new datareqsink_t(qitem.inst));
+      }
+      catch (const ers::Issue& excpt) {
+        throw InvalidQueueFatalError(ERS_HERE, get_name(), qitem.name, excpt);
+      }
+    }
   }
-  catch (const ers::Issue& excpt)
-  {
-    throw InvalidQueueFatalError(ERS_HERE, get_name(), "data_request_output_queue", excpt);
-  }
-  TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
 }
 
 void
@@ -126,27 +130,30 @@ FakeReqGen::do_work(std::atomic<bool>& running_flag)
       continue;
     }
 
-    std::unique_ptr<dunedaq::ddpdemo::FakeDataReq> dataReqPtr(new dunedaq::ddpdemo::FakeDataReq());
-    dataReqPtr->identifier = trigDecPtr->identifier;
-    bool wasSentSuccessfully = false;
-    while (!wasSentSuccessfully && running_flag.load())
+    for (auto& dataReqQueue : dataRequestOutputQueues_)
     {
-      TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";
-      try
+      dunedaq::ddpdemo::FakeDataReq dataReq;
+      dataReq.identifier = trigDecPtr->identifier;
+      bool wasSentSuccessfully = false;
+      while (!wasSentSuccessfully && running_flag.load())
       {
-        dataRequestOutputQueue_->push(std::move(dataReqPtr), queueTimeout_);
-        wasSentSuccessfully = true;
-      }
-      catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
-      {
-        std::ostringstream oss_warn;
-        oss_warn << "push to output queue \"" << dataRequestOutputQueue_->get_name() << "\"";
-        ers::warning(dunedaq::appfwk::QueueTimeoutExpired(ERS_HERE, get_name(), oss_warn.str(),
-                     std::chrono::duration_cast<std::chrono::milliseconds>(queueTimeout_).count()));
+        TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";
+        try
+        {
+          dataReqQueue->push(dataReq, queueTimeout_);
+          wasSentSuccessfully = true;
+        }
+        catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
+        {
+          std::ostringstream oss_warn;
+          oss_warn << "push to output queue \"" << dataReqQueue->get_name() << "\"";
+          ers::warning(dunedaq::appfwk::QueueTimeoutExpired(ERS_HERE, get_name(), oss_warn.str(),
+                                                            std::chrono::duration_cast<std::chrono::milliseconds>(queueTimeout_).count()));
+        }
       }
     }
 
-    wasSentSuccessfully = false;
+    bool wasSentSuccessfully = false;
     while (!wasSentSuccessfully && running_flag.load())
     {
       TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";

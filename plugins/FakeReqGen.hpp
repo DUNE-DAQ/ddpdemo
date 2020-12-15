@@ -62,8 +62,8 @@ private:
   std::unique_ptr<trigdecsource_t> triggerDecisionInputQueue_;
   using trigdecsink_t = dunedaq::appfwk::DAQSink<std::unique_ptr<dunedaq::ddpdemo::FakeTrigDec>>;
   std::unique_ptr<trigdecsink_t> triggerDecisionOutputQueue_;
-  using datareqsink_t = dunedaq::appfwk::DAQSink<std::unique_ptr<dunedaq::ddpdemo::FakeDataReq>>;
-  std::unique_ptr<datareqsink_t> dataRequestOutputQueue_;
+  using datareqsink_t = dunedaq::appfwk::DAQSink<dunedaq::ddpdemo::FakeDataReq>;
+  std::vector<std::unique_ptr<datareqsink_t>> dataRequestOutputQueues_;
 };
 } // namespace ddpdemo
 } // namespace dunedaq

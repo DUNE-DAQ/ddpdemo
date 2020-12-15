@@ -103,10 +103,10 @@ FakeDataProd::do_work(std::atomic<bool>& running_flag)
   int32_t receivedCount = 0;
 
   while (running_flag.load()) {
-    std::unique_ptr<dunedaq::ddpdemo::FakeDataReq> dataReqPtr;
+    dunedaq::ddpdemo::FakeDataReq dataReq;
     try
     {
-      dataRequestInputQueue_->pop(dataReqPtr, queueTimeout_);
+      dataRequestInputQueue_->pop(dataReq, queueTimeout_);
       ++receivedCount;
     }
     catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
@@ -117,7 +117,7 @@ FakeDataProd::do_work(std::atomic<bool>& running_flag)
     }
 
     std::unique_ptr<dunedaq::ddpdemo::FakeDataFrag> dataFragPtr(new dunedaq::ddpdemo::FakeDataFrag());
-    dataFragPtr->identifier = dataReqPtr->identifier;
+    dataFragPtr->identifier = dataReq.identifier;
     bool wasSentSuccessfully = false;
     while (!wasSentSuccessfully && running_flag.load())
     {

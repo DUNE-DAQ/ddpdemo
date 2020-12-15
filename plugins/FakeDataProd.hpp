@@ -58,7 +58,7 @@ private:
   std::chrono::milliseconds queueTimeout_;
 
   // Queue(s)
-  using datareqsource_t = dunedaq::appfwk::DAQSource<std::unique_ptr<dunedaq::ddpdemo::FakeDataReq>>;
+  using datareqsource_t = dunedaq::appfwk::DAQSource<dunedaq::ddpdemo::FakeDataReq>;
   std::unique_ptr<datareqsource_t> dataRequestInputQueue_;
   using datafragsink_t = dunedaq::appfwk::DAQSink<std::unique_ptr<dunedaq::ddpdemo::FakeDataFrag>>;
   std::unique_ptr<datafragsink_t> dataFragmentOutputQueue_;

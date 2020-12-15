@@ -10,6 +10,7 @@
 #include "FakeFragRec.hpp"
 
 #include "appfwk/DAQModuleHelper.hpp"
+#include "appfwk/cmd/Nljs.hpp"
 //#include "ddpdemo/fakefragrec/Nljs.hpp"
 
 #include "TRACE/trace.h"
@@ -36,7 +37,7 @@ FakeFragRec::FakeFragRec(const std::string& name)
   , thread_(std::bind(&FakeFragRec::do_work, this, std::placeholders::_1))
   , queueTimeout_(100)
   , triggerDecisionInputQueue_(nullptr)
-  , dataFragmentInputQueue_(nullptr)
+  , dataFragmentInputQueues_()
   , triggerRecordOutputQueue_(nullptr)
 {
   register_command("conf", &FakeFragRec::do_conf);
@@ -48,10 +49,10 @@ void
 FakeFragRec::init(const data_t& init_data)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
-  auto qi = appfwk::qindex(init_data, {"trigger_decision_input_queue","data_fragment_input_queue","trigger_record_output_queue"});
+  auto qilist = appfwk::qindex(init_data, {"trigger_decision_input_queue","trigger_record_output_queue"});
   try
   {
-    triggerDecisionInputQueue_.reset(new trigdecsource_t(qi["trigger_decision_input_queue"].inst));
+    triggerDecisionInputQueue_.reset(new trigdecsource_t(qilist["trigger_decision_input_queue"].inst));
   }
   catch (const ers::Issue& excpt)
   {
@@ -59,21 +60,25 @@ FakeFragRec::init(const data_t& init_data)
   }
   try
   {
-    dataFragmentInputQueue_.reset(new datafragsource_t(qi["data_fragment_input_queue"].inst));
-  }
-  catch (const ers::Issue& excpt)
-  {
-    throw InvalidQueueFatalError(ERS_HERE, get_name(), "data_fragment_input_queue", excpt);
-  }
-  try
-  {
-    triggerRecordOutputQueue_.reset(new trigrecsink_t(qi["trigger_record_output_queue"].inst));
+    triggerRecordOutputQueue_.reset(new trigrecsink_t(qilist["trigger_record_output_queue"].inst));
   }
   catch (const ers::Issue& excpt)
   {
     throw InvalidQueueFatalError(ERS_HERE, get_name(), "trigger_record_output_queue", excpt);
   }
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
+
+  auto ini = init_data.get<appfwk::cmd::ModInit>();
+  for (const auto& qitem : ini.qinfos) {
+    if (qitem.name.rfind("data_fragment_") == 0) {
+      try {
+        dataFragmentInputQueues_.emplace_back(new datafragsource_t(qitem.inst));
+      }
+      catch (const ers::Issue& excpt) {
+        throw InvalidQueueFatalError(ERS_HERE, get_name(), qitem.name, excpt);
+      }
+    }
+  }
 }
 
 void
@@ -146,17 +151,20 @@ FakeFragRec::do_work(std::atomic<bool>& running_flag)
       //continue;
     }
 
-    std::unique_ptr<dunedaq::ddpdemo::FakeDataFrag> dataFragPtr;
-    try
+    for (auto& dataFragQueue : dataFragmentInputQueues_)
     {
-      dataFragmentInputQueue_->pop(dataFragPtr, queueTimeout_);
-      ++receivedFragmentCount;
-    }
-    catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
-    {
-      // it is perfectly reasonable that there might be no data in the queue 
-      // some fraction of the times that we check, so we just continue on and try again
-      //continue;
+      std::unique_ptr<dunedaq::ddpdemo::FakeDataFrag> dataFragPtr;
+      try
+      {
+        dataFragQueue->pop(dataFragPtr, queueTimeout_);
+        ++receivedFragmentCount;
+      }
+      catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt)
+      {
+        // it is perfectly reasonable that there might be no data in the queue 
+        // some fraction of the times that we check, so we just continue on and try again
+        //continue;
+      }
     }
 
     //TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of sleep while waiting for run Stop";

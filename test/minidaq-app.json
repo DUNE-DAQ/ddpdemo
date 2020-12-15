@@ -30,8 +30,18 @@
                             },
                             {
                                 "dir": "output",
-                                "inst": "data_requests",
-                                "name": "data_request_output_queue"
+                                "inst": "data_requests_1",
+                                "name": "data_request_1_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_2",
+                                "name": "data_request_2_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_3",
+                                "name": "data_request_3_output_queue"
                             }
                         ]
                     },
@@ -43,17 +53,53 @@
                         "qinfos": [
                             {
                                 "dir": "input",
-                                "inst": "data_requests",
+                                "inst": "data_requests_1",
                                 "name": "data_request_input_queue"
                             },
                             {
                                 "dir": "output",
-                                "inst": "data_fragments",
+                                "inst": "data_fragments_1",
                                 "name": "data_fragment_output_queue"
                             }
                         ]
                     },
-                    "inst": "fdp",
+                    "inst": "fdp1",
+                    "plugin": "FakeDataProd"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_2",
+                                "name": "data_request_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_2",
+                                "name": "data_fragment_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "fdp2",
+                    "plugin": "FakeDataProd"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_3",
+                                "name": "data_request_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_3",
+                                "name": "data_fragment_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "fdp3",
                     "plugin": "FakeDataProd"
                 },
                 {
@@ -66,8 +112,18 @@
                             },
                             {
                                 "dir": "input",
-                                "inst": "data_fragments",
-                                "name": "data_fragment_input_queue"
+                                "inst": "data_fragments_1",
+                                "name": "data_fragment_1_input_queue"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_fragments_2",
+                                "name": "data_fragment_2_input_queue"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_fragments_3",
+                                "name": "data_fragment_3_input_queue"
                             },
                             {
                                 "dir": "output",
@@ -101,22 +157,42 @@
                 },
                 {
                     "capacity": 2,
-                    "inst": "data_requests",
-                    "kind": "StdDeQueue"
-                },
-                {
-                    "capacity": 2,
                     "inst": "trigger_decision_copy_for_bookkeeping",
                     "kind": "StdDeQueue"
                 },
                 {
                     "capacity": 2,
-                    "inst": "data_fragments",
+                    "inst": "trigger_records",
                     "kind": "StdDeQueue"
                 },
                 {
                     "capacity": 2,
-                    "inst": "trigger_records",
+                    "inst": "data_requests_1",
+                    "kind": "StdDeQueue"
+                },
+                {
+                    "capacity": 2,
+                    "inst": "data_requests_2",
+                    "kind": "StdDeQueue"
+                },
+                {
+                    "capacity": 2,
+                    "inst": "data_requests_3",
+                    "kind": "StdDeQueue"
+                },
+                {
+                    "capacity": 2,
+                    "inst": "data_fragments_1",
+                    "kind": "StdDeQueue"
+                },
+                {
+                    "capacity": 2,
+                    "inst": "data_fragments_2",
+                    "kind": "StdDeQueue"
+                },
+                {
+                    "capacity": 2,
+                    "inst": "data_fragments_3",
                     "kind": "StdDeQueue"
                 }
             ]
