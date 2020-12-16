@@ -111,13 +111,13 @@ FakeFragRec::do_work(std::atomic<bool>& running_flag)
   int32_t receivedFragmentCount = 0;
 
   while (running_flag.load()) {
-    std::unique_ptr<dunedaq::ddpdemo::FakeTrigDec> trigDecPtr;
+    dunedaq::ddpdemo::FakeTrigDec trigDecision;
     try {
-      triggerDecisionInputQueue_->pop(trigDecPtr, queueTimeout_);
+      triggerDecisionInputQueue_->pop(trigDecision, queueTimeout_);
       ++receivedTriggerCount;
 
       std::unique_ptr<dunedaq::ddpdemo::FakeTrigRec> trigRecPtr(new dunedaq::ddpdemo::FakeTrigRec());
-      trigRecPtr->identifier = trigDecPtr->identifier;
+      trigRecPtr->identifier = trigDecision.identifier;
       bool wasSentSuccessfully = false;
       while (!wasSentSuccessfully && running_flag.load()) {
         TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";

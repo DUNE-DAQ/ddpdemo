@@ -92,14 +92,14 @@ FakeTrigDecEmu::do_work(std::atomic<bool>& running_flag)
 
   while (running_flag.load()) {
     ++triggerCount;
-    std::unique_ptr<dunedaq::ddpdemo::FakeTrigDec> trigDecPtr(new dunedaq::ddpdemo::FakeTrigDec());
-    trigDecPtr->identifier = triggerCount;
+    dunedaq::ddpdemo::FakeTrigDec trigDecision;
+    trigDecision.identifier = triggerCount;
 
     bool wasSentSuccessfully = false;
     while (!wasSentSuccessfully && running_flag.load()) {
       TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";
       try {
-        triggerDecisionOutputQueue_->push(std::move(trigDecPtr), queueTimeout_);
+        triggerDecisionOutputQueue_->push(trigDecision, queueTimeout_);
         wasSentSuccessfully = true;
       } catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt) {
         std::ostringstream oss_warn;

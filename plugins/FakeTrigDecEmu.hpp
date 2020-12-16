@@ -56,7 +56,7 @@ private:
   std::chrono::milliseconds queueTimeout_;
 
   // Queue(s)
-  using trigdecsink_t = dunedaq::appfwk::DAQSink<std::unique_ptr<dunedaq::ddpdemo::FakeTrigDec>>;
+  using trigdecsink_t = dunedaq::appfwk::DAQSink<dunedaq::ddpdemo::FakeTrigDec>;
   std::unique_ptr<trigdecsink_t> triggerDecisionOutputQueue_;
 };
 } // namespace ddpdemo

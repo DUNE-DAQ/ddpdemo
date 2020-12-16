@@ -58,9 +58,9 @@ private:
   std::chrono::milliseconds queueTimeout_;
 
   // Queue(s)
-  using trigdecsource_t = dunedaq::appfwk::DAQSource<std::unique_ptr<dunedaq::ddpdemo::FakeTrigDec>>;
+  using trigdecsource_t = dunedaq::appfwk::DAQSource<dunedaq::ddpdemo::FakeTrigDec>;
   std::unique_ptr<trigdecsource_t> triggerDecisionInputQueue_;
-  using trigdecsink_t = dunedaq::appfwk::DAQSink<std::unique_ptr<dunedaq::ddpdemo::FakeTrigDec>>;
+  using trigdecsink_t = dunedaq::appfwk::DAQSink<dunedaq::ddpdemo::FakeTrigDec>;
   std::unique_ptr<trigdecsink_t> triggerDecisionOutputQueue_;
   using datareqsink_t = dunedaq::appfwk::DAQSink<dunedaq::ddpdemo::FakeDataReq>;
   std::vector<std::unique_ptr<datareqsink_t>> dataRequestOutputQueues_;

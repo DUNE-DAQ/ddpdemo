@@ -109,10 +109,9 @@ FakeReqGen::do_work(std::atomic<bool>& running_flag)
   int32_t receivedCount = 0;
 
   while (running_flag.load()) {
-    std::unique_ptr<dunedaq::ddpdemo::FakeTrigDec> trigDecPtr;
-
+    dunedaq::ddpdemo::FakeTrigDec trigDecision;
     try {
-      triggerDecisionInputQueue_->pop(trigDecPtr, queueTimeout_);
+      triggerDecisionInputQueue_->pop(trigDecision, queueTimeout_);
       ++receivedCount;
     } catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt) {
       // it is perfectly reasonable that there might be no data in the queue
@@ -122,7 +121,7 @@ FakeReqGen::do_work(std::atomic<bool>& running_flag)
 
     for (auto& dataReqQueue : dataRequestOutputQueues_) {
       dunedaq::ddpdemo::FakeDataReq dataReq;
-      dataReq.identifier = trigDecPtr->identifier;
+      dataReq.identifier = trigDecision.identifier;
       bool wasSentSuccessfully = false;
       while (!wasSentSuccessfully && running_flag.load()) {
         TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";
@@ -145,7 +144,7 @@ FakeReqGen::do_work(std::atomic<bool>& running_flag)
     while (!wasSentSuccessfully && running_flag.load()) {
       TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";
       try {
-        triggerDecisionOutputQueue_->push(std::move(trigDecPtr), queueTimeout_);
+        triggerDecisionOutputQueue_->push(trigDecision, queueTimeout_);
         wasSentSuccessfully = true;
       } catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt) {
         std::ostringstream oss_warn;

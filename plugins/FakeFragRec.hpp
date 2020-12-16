@@ -59,7 +59,7 @@ private:
   std::chrono::milliseconds queueTimeout_;
 
   // Queue(s)
-  using trigdecsource_t = dunedaq::appfwk::DAQSource<std::unique_ptr<dunedaq::ddpdemo::FakeTrigDec>>;
+  using trigdecsource_t = dunedaq::appfwk::DAQSource<dunedaq::ddpdemo::FakeTrigDec>;
   std::unique_ptr<trigdecsource_t> triggerDecisionInputQueue_;
   using datafragsource_t = dunedaq::appfwk::DAQSource<std::unique_ptr<dunedaq::ddpdemo::FakeDataFrag>>;
   std::vector<std::unique_ptr<datafragsource_t>> dataFragmentInputQueues_;
