@@ -53,6 +53,52 @@
                         "qinfos": [
                             {
                                 "dir": "input",
+                                "inst": "trigger_decision_copy_for_bookkeeping",
+                                "name": "trigger_decision_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "trigger_records",
+                                "name": "trigger_record_output_queue"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_fragments_1",
+                                "name": "data_fragment_1_input_queue"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_fragments_2",
+                                "name": "data_fragment_2_input_queue"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_fragments_3",
+                                "name": "data_fragment_3_input_queue"
+                            }
+                        ]
+                    },
+                    "inst": "ffr",
+                    "plugin": "FakeFragRec"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "trigger_records",
+                                "name": "trigger_record_input_queue"
+                            }
+                        ]
+                    },
+                    "inst": "fdw",
+                    "plugin": "FakeDataWriter"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
                                 "inst": "data_requests_1",
                                 "name": "data_request_input_queue"
                             },
@@ -101,68 +147,22 @@
                     },
                     "inst": "fdp3",
                     "plugin": "FakeDataProd"
-                },
-                {
-                    "data": {
-                        "qinfos": [
-                            {
-                                "dir": "input",
-                                "inst": "trigger_decision_copy_for_bookkeeping",
-                                "name": "trigger_decision_input_queue"
-                            },
-                            {
-                                "dir": "input",
-                                "inst": "data_fragments_1",
-                                "name": "data_fragment_1_input_queue"
-                            },
-                            {
-                                "dir": "input",
-                                "inst": "data_fragments_2",
-                                "name": "data_fragment_2_input_queue"
-                            },
-                            {
-                                "dir": "input",
-                                "inst": "data_fragments_3",
-                                "name": "data_fragment_3_input_queue"
-                            },
-                            {
-                                "dir": "output",
-                                "inst": "trigger_records",
-                                "name": "trigger_record_output_queue"
-                            }
-                        ]
-                    },
-                    "inst": "ffr",
-                    "plugin": "FakeFragRec"
-                },
-                {
-                    "data": {
-                        "qinfos": [
-                            {
-                                "dir": "input",
-                                "inst": "trigger_records",
-                                "name": "trigger_record_input_queue"
-                            }
-                        ]
-                    },
-                    "inst": "fdw",
-                    "plugin": "FakeDataWriter"
                 }
             ],
             "queues": [
                 {
                     "capacity": 2,
-                    "inst": "trigger_decision_from_data_selection",
+                    "inst": "data_fragments_1",
                     "kind": "StdDeQueue"
                 },
                 {
                     "capacity": 2,
-                    "inst": "trigger_decision_copy_for_bookkeeping",
+                    "inst": "data_fragments_2",
                     "kind": "StdDeQueue"
                 },
                 {
                     "capacity": 2,
-                    "inst": "trigger_records",
+                    "inst": "data_fragments_3",
                     "kind": "StdDeQueue"
                 },
                 {
@@ -182,17 +182,17 @@
                 },
                 {
                     "capacity": 2,
-                    "inst": "data_fragments_1",
+                    "inst": "trigger_decision_copy_for_bookkeeping",
                     "kind": "StdDeQueue"
                 },
                 {
                     "capacity": 2,
-                    "inst": "data_fragments_2",
+                    "inst": "trigger_decision_from_data_selection",
                     "kind": "StdDeQueue"
                 },
                 {
                     "capacity": 2,
-                    "inst": "data_fragments_3",
+                    "inst": "trigger_records",
                     "kind": "StdDeQueue"
                 }
             ]

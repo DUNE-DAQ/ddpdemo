@@ -9,3 +9,6 @@
 moo -M "`pwd`/../../appfwk/schema" compile data-generator-demo.jsonnet > ../test/data-generator-demo.json
 
 moo -M "`pwd`/../../appfwk/schema" compile data-combiner-demo.jsonnet > ../test/data-combiner-demo.json
+
+
+moo -M "`pwd`/../../appfwk/schema" compile fake-minidaq-app.jsonnet > ../test/fake-minidaq-app.json
