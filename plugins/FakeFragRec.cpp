@@ -14,6 +14,7 @@
 //#include "ddpdemo/fakefragrec/Nljs.hpp"
 
 #include "TRACE/trace.h"
+#include "dfmessages/TriggerDecision.hpp"
 #include "ers/ers.h"
 
 #include <chrono>
@@ -111,13 +112,13 @@ FakeFragRec::do_work(std::atomic<bool>& running_flag)
   int32_t receivedFragmentCount = 0;
 
   while (running_flag.load()) {
-    dunedaq::ddpdemo::FakeTrigDec trigDecision;
+    dfmessages::TriggerDecision trigDecision;
     try {
       triggerDecisionInputQueue_->pop(trigDecision, queueTimeout_);
       ++receivedTriggerCount;
 
       std::unique_ptr<dunedaq::ddpdemo::FakeTrigRec> trigRecPtr(new dunedaq::ddpdemo::FakeTrigRec());
-      trigRecPtr->identifier = trigDecision.identifier;
+      trigRecPtr->identifier = trigDecision.trigger_number;
       bool wasSentSuccessfully = false;
       while (!wasSentSuccessfully && running_flag.load()) {
         TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";

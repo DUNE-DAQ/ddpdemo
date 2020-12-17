@@ -10,7 +10,7 @@
 #define DDPDEMO_SRC_FAKEREQGEN_HPP_
 
 #include "dfmessages/DataRequest.hpp"
-#include "ddpdemo/FakeTrigDec.hpp"
+#include "dfmessages/TriggerDecision.hpp"
 #include "dfmessages/TriggerInhibit.hpp"
 
 #include "appfwk/DAQModule.hpp"
@@ -59,9 +59,9 @@ private:
   std::chrono::milliseconds queueTimeout_;
 
   // Queue(s)
-  using trigdecsource_t = dunedaq::appfwk::DAQSource<dunedaq::ddpdemo::FakeTrigDec>;
+  using trigdecsource_t = dunedaq::appfwk::DAQSource<dfmessages::TriggerDecision>;
   std::unique_ptr<trigdecsource_t> triggerDecisionInputQueue_;
-  using trigdecsink_t = dunedaq::appfwk::DAQSink<dunedaq::ddpdemo::FakeTrigDec>;
+  using trigdecsink_t = dunedaq::appfwk::DAQSink<dfmessages::TriggerDecision>;
   std::unique_ptr<trigdecsink_t> triggerDecisionOutputQueue_;
   using datareqsink_t = dunedaq::appfwk::DAQSink<dfmessages::DataRequest>;
   std::vector<std::unique_ptr<datareqsink_t>> dataRequestOutputQueues_;

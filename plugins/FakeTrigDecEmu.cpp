@@ -13,6 +13,7 @@
 #include "ddpdemo/faketrigdecemu/Nljs.hpp"
 
 #include "TRACE/trace.h"
+#include "dfmessages/TriggerDecision.hpp"
 #include "ers/ers.h"
 
 #include <chrono>
@@ -98,8 +99,8 @@ FakeTrigDecEmu::do_work(std::atomic<bool>& running_flag)
 
   while (running_flag.load()) {
     ++triggerCount;
-    dunedaq::ddpdemo::FakeTrigDec trigDecision;
-    trigDecision.identifier = triggerCount;
+    dfmessages::TriggerDecision trigDecision;
+    trigDecision.trigger_number = triggerCount;
 
     bool wasSentSuccessfully = false;
     while (!wasSentSuccessfully && running_flag.load()) {

@@ -15,6 +15,7 @@
 
 #include "TRACE/trace.h"
 #include "dfmessages/DataRequest.hpp"
+#include "dfmessages/TriggerDecision.hpp"
 #include "ers/ers.h"
 
 #include <chrono>
@@ -117,7 +118,7 @@ FakeReqGen::do_work(std::atomic<bool>& running_flag)
   int32_t receivedCount = 0;
 
   while (running_flag.load()) {
-    dunedaq::ddpdemo::FakeTrigDec trigDecision;
+    dfmessages::TriggerDecision trigDecision;
     try {
       triggerDecisionInputQueue_->pop(trigDecision, queueTimeout_);
       ++receivedCount;
@@ -129,7 +130,7 @@ FakeReqGen::do_work(std::atomic<bool>& running_flag)
 
     for (auto& dataReqQueue : dataRequestOutputQueues_) {
       dfmessages::DataRequest dataReq;
-      dataReq.trigger_number = trigDecision.identifier;
+      dataReq.trigger_number = trigDecision.trigger_number;
       bool wasSentSuccessfully = false;
       while (!wasSentSuccessfully && running_flag.load()) {
         TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";
