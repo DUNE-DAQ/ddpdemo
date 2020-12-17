@@ -8,12 +8,12 @@ daq_setup_environment()
 # include ERS, TRACE, and Boost
 find_package(appfwk REQUIRED)
 find_package(HighFive REQUIRED)
-
+find_package(dfmessages REQUIRED)
 
 ##############################################################################
 daq_add_library( StorageKey.cpp 
                  LINK_LIBRARIES 
-                 ers::ers HighFive appfwk::appfwk stdc++fs )
+                 ers::ers HighFive appfwk::appfwk stdc++fs dfmessages::dfmessages )
 
 daq_add_plugin( HDF5DataStore      duneDataStore LINK_LIBRARIES HighFive appfwk::appfwk stdc++fs)
 daq_add_plugin( TrashCanDataStore  duneDataStore LINK_LIBRARIES appfwk::appfwk)
