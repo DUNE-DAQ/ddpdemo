@@ -10,7 +10,7 @@
 #define DDPDEMO_SRC_FAKETRIGDECEMU_HPP_
 
 #include "ddpdemo/FakeTrigDec.hpp"
-#include "ddpdemo/FakeTrigInh.hpp"
+#include "dfmessages/TriggerInhibit.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"
@@ -60,7 +60,7 @@ private:
   // Queue(s)
   using trigdecsink_t = dunedaq::appfwk::DAQSink<dunedaq::ddpdemo::FakeTrigDec>;
   std::unique_ptr<trigdecsink_t> triggerDecisionOutputQueue_;
-  using triginhsource_t = dunedaq::appfwk::DAQSource<dunedaq::ddpdemo::FakeTrigInh>;
+  using triginhsource_t = dunedaq::appfwk::DAQSource<dfmessages::TriggerInhibit>;
   std::unique_ptr<triginhsource_t> triggerInhibitInputQueue_;
 };
 } // namespace ddpdemo
