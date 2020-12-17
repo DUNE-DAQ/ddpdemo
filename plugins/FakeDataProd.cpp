@@ -13,6 +13,7 @@
 //#include "ddpdemo/fakedataprod/Nljs.hpp"
 
 #include "TRACE/trace.h"
+#include "dfmessages/DataRequest.hpp"
 #include "ers/ers.h"
 
 #include <chrono>
@@ -97,7 +98,7 @@ FakeDataProd::do_work(std::atomic<bool>& running_flag)
   int32_t receivedCount = 0;
 
   while (running_flag.load()) {
-    dunedaq::ddpdemo::FakeDataReq dataReq;
+    dfmessages::DataRequest dataReq;
     try {
       dataRequestInputQueue_->pop(dataReq, queueTimeout_);
       ++receivedCount;
@@ -108,7 +109,7 @@ FakeDataProd::do_work(std::atomic<bool>& running_flag)
     }
 
     std::unique_ptr<dunedaq::ddpdemo::FakeDataFrag> dataFragPtr(new dunedaq::ddpdemo::FakeDataFrag());
-    dataFragPtr->identifier = dataReq.identifier;
+    dataFragPtr->identifier = dataReq.trigger_number;
     bool wasSentSuccessfully = false;
     while (!wasSentSuccessfully && running_flag.load()) {
       TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";

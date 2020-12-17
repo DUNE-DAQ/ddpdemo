@@ -9,7 +9,7 @@
 #ifndef DDPDEMO_SRC_FAKEREQGEN_HPP_
 #define DDPDEMO_SRC_FAKEREQGEN_HPP_
 
-#include "ddpdemo/FakeDataReq.hpp"
+#include "dfmessages/DataRequest.hpp"
 #include "ddpdemo/FakeTrigDec.hpp"
 #include "dfmessages/TriggerInhibit.hpp"
 
@@ -63,7 +63,7 @@ private:
   std::unique_ptr<trigdecsource_t> triggerDecisionInputQueue_;
   using trigdecsink_t = dunedaq::appfwk::DAQSink<dunedaq::ddpdemo::FakeTrigDec>;
   std::unique_ptr<trigdecsink_t> triggerDecisionOutputQueue_;
-  using datareqsink_t = dunedaq::appfwk::DAQSink<dunedaq::ddpdemo::FakeDataReq>;
+  using datareqsink_t = dunedaq::appfwk::DAQSink<dfmessages::DataRequest>;
   std::vector<std::unique_ptr<datareqsink_t>> dataRequestOutputQueues_;
   using triginhsink_t = dunedaq::appfwk::DAQSink<dfmessages::TriggerInhibit>;
   std::unique_ptr<triginhsink_t> triggerInhibitOutputQueue_;

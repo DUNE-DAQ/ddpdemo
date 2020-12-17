@@ -10,7 +10,7 @@
 #define DDPDEMO_SRC_FAKEDATAPROD_HPP_
 
 #include "ddpdemo/FakeDataFrag.hpp"
-#include "ddpdemo/FakeDataReq.hpp"
+#include "dfmessages/DataRequest.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"
@@ -58,7 +58,7 @@ private:
   std::chrono::milliseconds queueTimeout_;
 
   // Queue(s)
-  using datareqsource_t = dunedaq::appfwk::DAQSource<dunedaq::ddpdemo::FakeDataReq>;
+  using datareqsource_t = dunedaq::appfwk::DAQSource<dfmessages::DataRequest>;
   std::unique_ptr<datareqsource_t> dataRequestInputQueue_;
   using datafragsink_t = dunedaq::appfwk::DAQSink<std::unique_ptr<dunedaq::ddpdemo::FakeDataFrag>>;
   std::unique_ptr<datafragsink_t> dataFragmentOutputQueue_;
