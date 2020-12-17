@@ -9,7 +9,7 @@
 #ifndef DDPDEMO_SRC_FAKEDATAWRITER_HPP_
 #define DDPDEMO_SRC_FAKEDATAWRITER_HPP_
 
-#include "ddpdemo/FakeTrigRec.hpp"
+#include "dataformats/TriggerRecord.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSource.hpp"
@@ -56,7 +56,7 @@ private:
   std::chrono::milliseconds queueTimeout_;
 
   // Queue(s)
-  using trigrecsource_t = dunedaq::appfwk::DAQSource<std::unique_ptr<dunedaq::ddpdemo::FakeTrigRec>>;
+  using trigrecsource_t = dunedaq::appfwk::DAQSource<std::unique_ptr<dataformats::TriggerRecord>>;
   std::unique_ptr<trigrecsource_t> triggerRecordInputQueue_;
 };
 } // namespace ddpdemo

@@ -13,6 +13,7 @@
 //#include "ddpdemo/fakedatawriter/Nljs.hpp"
 
 #include "TRACE/trace.h"
+#include "dataformats/TriggerRecord.hpp"
 #include "ers/ers.h"
 
 #include <chrono>
@@ -91,7 +92,7 @@ FakeDataWriter::do_work(std::atomic<bool>& running_flag)
   int32_t receivedCount = 0;
 
   while (running_flag.load()) {
-    std::unique_ptr<dunedaq::ddpdemo::FakeTrigRec> trigRecPtr;
+    std::unique_ptr<dataformats::TriggerRecord> trigRecPtr;
 
     try {
       triggerRecordInputQueue_->pop(trigRecPtr, queueTimeout_);
