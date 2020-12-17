@@ -13,7 +13,6 @@
 #include "ddpdemo/faketrigdecemu/Nljs.hpp"
 
 #include "TRACE/trace.h"
-#include "dfmessages/TriggerDecision.hpp"
 #include "ers/ers.h"
 
 #include <chrono>
@@ -104,7 +103,8 @@ FakeTrigDecEmu::do_work(std::atomic<bool>& running_flag)
 
     bool wasSentSuccessfully = false;
     while (!wasSentSuccessfully && running_flag.load()) {
-      TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";
+      TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the TriggerDecision for trigger number "
+                            << trigDecision.trigger_number << " onto the output queue";
       try {
         triggerDecisionOutputQueue_->push(trigDecision, queueTimeout_);
         wasSentSuccessfully = true;

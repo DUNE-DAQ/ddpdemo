@@ -14,9 +14,6 @@
 //#include "ddpdemo/fakefragrec/Nljs.hpp"
 
 #include "TRACE/trace.h"
-#include "dataformats/Fragment.hpp"
-#include "dataformats/TriggerRecord.hpp"
-#include "dfmessages/TriggerDecision.hpp"
 #include "ers/ers.h"
 
 #include <chrono>
@@ -123,7 +120,8 @@ FakeFragRec::do_work(std::atomic<bool>& running_flag)
       trigRecPtr->set_trigger_number(trigDecision.trigger_number);
       bool wasSentSuccessfully = false;
       while (!wasSentSuccessfully && running_flag.load()) {
-        TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";
+        TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the Trigger Record for trigger number "
+                              << trigRecPtr->get_trigger_number() << " onto the output queue";
         try {
           triggerRecordOutputQueue_->push(std::move(trigRecPtr), queueTimeout_);
           wasSentSuccessfully = true;

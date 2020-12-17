@@ -13,8 +13,6 @@
 //#include "ddpdemo/fakedataprod/Nljs.hpp"
 
 #include "TRACE/trace.h"
-#include "dataformats/Fragment.hpp"
-#include "dfmessages/DataRequest.hpp"
 #include "ers/ers.h"
 
 #include <chrono>
@@ -117,7 +115,8 @@ FakeDataProd::do_work(std::atomic<bool>& running_flag)
     dataFragPtr->set_trigger_number(dataReq.trigger_number);
     bool wasSentSuccessfully = false;
     while (!wasSentSuccessfully && running_flag.load()) {
-      TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";
+      TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the Data Fragment for trigger number "
+                            << dataFragPtr->get_trigger_number() << " onto the output queue";
       try {
         dataFragmentOutputQueue_->push(std::move(dataFragPtr), queueTimeout_);
         wasSentSuccessfully = true;

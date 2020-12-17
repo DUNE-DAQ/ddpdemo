@@ -13,7 +13,6 @@
 //#include "ddpdemo/fakedatawriter/Nljs.hpp"
 
 #include "TRACE/trace.h"
-#include "dataformats/TriggerRecord.hpp"
 #include "ers/ers.h"
 
 #include <chrono>
@@ -97,6 +96,8 @@ FakeDataWriter::do_work(std::atomic<bool>& running_flag)
     try {
       triggerRecordInputQueue_->pop(trigRecPtr, queueTimeout_);
       ++receivedCount;
+      TLOG(TLVL_WORK_STEPS) << get_name() << ": Popped the TriggerRecord for trigger number "
+                            << trigRecPtr->get_trigger_number() << " off the input queue";
     } catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt) {
       // it is perfectly reasonable that there might be no data in the queue
       // some fraction of the times that we check, so we just continue on and try again

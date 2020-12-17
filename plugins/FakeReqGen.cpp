@@ -14,8 +14,6 @@
 //#include "ddpdemo/fakereqgen/Nljs.hpp"
 
 #include "TRACE/trace.h"
-#include "dfmessages/DataRequest.hpp"
-#include "dfmessages/TriggerDecision.hpp"
 #include "ers/ers.h"
 
 #include <chrono>
@@ -122,18 +120,39 @@ FakeReqGen::do_work(std::atomic<bool>& running_flag)
     try {
       triggerDecisionInputQueue_->pop(trigDecision, queueTimeout_);
       ++receivedCount;
+      TLOG(TLVL_WORK_STEPS) << get_name() << ": Popped the TriggerDecision for trigger number "
+                            << trigDecision.trigger_number << " off the input queue";
     } catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt) {
       // it is perfectly reasonable that there might be no data in the queue
       // some fraction of the times that we check, so we just continue on and try again
       continue;
     }
 
+    bool wasSentSuccessfully = false;
+    while (!wasSentSuccessfully && running_flag.load()) {
+      TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the TriggerDecision for trigger number "
+                            << trigDecision.trigger_number << " onto the output queue";
+      try {
+        triggerDecisionOutputQueue_->push(trigDecision, queueTimeout_);
+        wasSentSuccessfully = true;
+      } catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt) {
+        std::ostringstream oss_warn;
+        oss_warn << "push to output queue \"" << triggerDecisionOutputQueue_->get_name() << "\"";
+        ers::warning(dunedaq::appfwk::QueueTimeoutExpired(
+          ERS_HERE,
+          get_name(),
+          oss_warn.str(),
+          std::chrono::duration_cast<std::chrono::milliseconds>(queueTimeout_).count()));
+      }
+    }
+
     for (auto& dataReqQueue : dataRequestOutputQueues_) {
       dfmessages::DataRequest dataReq;
       dataReq.trigger_number = trigDecision.trigger_number;
-      bool wasSentSuccessfully = false;
+      wasSentSuccessfully = false;
       while (!wasSentSuccessfully && running_flag.load()) {
-        TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";
+        TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the DataRequest for trigger number "
+                              << dataReq.trigger_number << " onto an output queue";
         try {
           dataReqQueue->push(dataReq, queueTimeout_);
           wasSentSuccessfully = true;
@@ -146,23 +165,6 @@ FakeReqGen::do_work(std::atomic<bool>& running_flag)
             oss_warn.str(),
             std::chrono::duration_cast<std::chrono::milliseconds>(queueTimeout_).count()));
         }
-      }
-    }
-
-    bool wasSentSuccessfully = false;
-    while (!wasSentSuccessfully && running_flag.load()) {
-      TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";
-      try {
-        triggerDecisionOutputQueue_->push(trigDecision, queueTimeout_);
-        wasSentSuccessfully = true;
-      } catch (const dunedaq::appfwk::QueueTimeoutExpired& excpt) {
-        std::ostringstream oss_warn;
-        oss_warn << "push to output queue \"" << triggerDecisionOutputQueue_->get_name() << "\"";
-        ers::warning(dunedaq::appfwk::QueueTimeoutExpired(
-          ERS_HERE,
-          get_name(),
-          oss_warn.str(),
-          std::chrono::duration_cast<std::chrono::milliseconds>(queueTimeout_).count()));
       }
     }
 
