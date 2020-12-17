@@ -9,7 +9,7 @@
 #ifndef DDPDEMO_SRC_FAKEFRAGREC_HPP_
 #define DDPDEMO_SRC_FAKEFRAGREC_HPP_
 
-#include "ddpdemo/FakeDataFrag.hpp"
+#include "dataformats/Fragment.hpp"
 #include "dfmessages/TriggerDecision.hpp"
 #include "dataformats/TriggerRecord.hpp"
 
@@ -61,7 +61,7 @@ private:
   // Queue(s)
   using trigdecsource_t = dunedaq::appfwk::DAQSource<dfmessages::TriggerDecision>;
   std::unique_ptr<trigdecsource_t> triggerDecisionInputQueue_;
-  using datafragsource_t = dunedaq::appfwk::DAQSource<std::unique_ptr<dunedaq::ddpdemo::FakeDataFrag>>;
+  using datafragsource_t = dunedaq::appfwk::DAQSource<std::unique_ptr<dataformats::Fragment>>;
   std::vector<std::unique_ptr<datafragsource_t>> dataFragmentInputQueues_;
   using trigrecsink_t = dunedaq::appfwk::DAQSink<std::unique_ptr<dataformats::TriggerRecord>>;
   std::unique_ptr<trigrecsink_t> triggerRecordOutputQueue_;

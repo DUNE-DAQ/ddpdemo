@@ -13,6 +13,7 @@
 //#include "ddpdemo/fakedataprod/Nljs.hpp"
 
 #include "TRACE/trace.h"
+#include "dataformats/Fragment.hpp"
 #include "dfmessages/DataRequest.hpp"
 #include "ers/ers.h"
 
@@ -108,8 +109,12 @@ FakeDataProd::do_work(std::atomic<bool>& running_flag)
       continue;
     }
 
-    std::unique_ptr<dunedaq::ddpdemo::FakeDataFrag> dataFragPtr(new dunedaq::ddpdemo::FakeDataFrag());
-    dataFragPtr->identifier = dataReq.trigger_number;
+    // TODO PAR 2020-12-17: dataformats::Fragment has to be
+    // constructed with some payload data, so I'm putting a single int
+    // in it for now
+    int dummy_int=3;
+    std::unique_ptr<dataformats::Fragment> dataFragPtr(new dataformats::Fragment(&dummy_int, sizeof(dummy_int)));
+    dataFragPtr->set_trigger_number(dataReq.trigger_number);
     bool wasSentSuccessfully = false;
     while (!wasSentSuccessfully && running_flag.load()) {
       TLOG(TLVL_WORK_STEPS) << get_name() << ": Pushing the reversed list onto the output queue";

@@ -14,6 +14,7 @@
 //#include "ddpdemo/fakefragrec/Nljs.hpp"
 
 #include "TRACE/trace.h"
+#include "dataformats/Fragment.hpp"
 #include "dataformats/TriggerRecord.hpp"
 #include "dfmessages/TriggerDecision.hpp"
 #include "ers/ers.h"
@@ -143,7 +144,7 @@ FakeFragRec::do_work(std::atomic<bool>& running_flag)
     }
 
     for (auto& dataFragQueue : dataFragmentInputQueues_) {
-      std::unique_ptr<dunedaq::ddpdemo::FakeDataFrag> dataFragPtr;
+      std::unique_ptr<dataformats::Fragment> dataFragPtr;
       try {
         dataFragQueue->pop(dataFragPtr, queueTimeout_);
         ++receivedFragmentCount;

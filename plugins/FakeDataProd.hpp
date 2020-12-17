@@ -9,7 +9,7 @@
 #ifndef DDPDEMO_SRC_FAKEDATAPROD_HPP_
 #define DDPDEMO_SRC_FAKEDATAPROD_HPP_
 
-#include "ddpdemo/FakeDataFrag.hpp"
+#include "dataformats/Fragment.hpp"
 #include "dfmessages/DataRequest.hpp"
 
 #include "appfwk/DAQModule.hpp"
@@ -60,7 +60,7 @@ private:
   // Queue(s)
   using datareqsource_t = dunedaq::appfwk::DAQSource<dfmessages::DataRequest>;
   std::unique_ptr<datareqsource_t> dataRequestInputQueue_;
-  using datafragsink_t = dunedaq::appfwk::DAQSink<std::unique_ptr<dunedaq::ddpdemo::FakeDataFrag>>;
+  using datafragsink_t = dunedaq::appfwk::DAQSink<std::unique_ptr<dataformats::Fragment>>;
   std::unique_ptr<datafragsink_t> dataFragmentOutputQueue_;
 };
 } // namespace ddpdemo
