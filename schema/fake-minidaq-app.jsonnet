@@ -11,6 +11,7 @@ local ftde = {
 
 local qdict = {
     trigdec_from_ds: cmd.qspec("trigger_decision_from_data_selection", "StdDeQueue", 2),
+    triginh_to_ds: cmd.qspec("trigger_inhibit_to_data_selection", "StdDeQueue", 2),
     internal_trigdec_copy: cmd.qspec("trigger_decision_copy_for_bookkeeping", "StdDeQueue", 2),
     trigger_records: cmd.qspec("trigger_records", "StdDeQueue", 2),
 } + {
@@ -29,9 +30,11 @@ local qspec_list = [
 [
     cmd.init(qspec_list,
              [cmd.mspec("ftde", "FakeTrigDecEmu", [
-                  cmd.qinfo("trigger_decision_output_queue", qdict.trigdec_from_ds.inst, "output")]),
+                  cmd.qinfo("trigger_decision_output_queue", qdict.trigdec_from_ds.inst, "output"),
+                  cmd.qinfo("trigger_inhibit_input_queue", qdict.triginh_to_ds.inst, "input")]),
               cmd.mspec("frg", "FakeReqGen", [
                   cmd.qinfo("trigger_decision_input_queue", qdict.trigdec_from_ds.inst, "input"),
+                  cmd.qinfo("trigger_inhibit_output_queue", qdict.triginh_to_ds.inst, "output"),
                   cmd.qinfo("trigger_decision_output_queue", qdict.internal_trigdec_copy.inst, "output")] +
                   [cmd.qinfo("data_request_"+idx+"_output_queue", qdict["data_requests_"+idx].inst, "output")
                    for idx in std.range(1, NUMBER_OF_FAKE_DATA_PRODUCERS)

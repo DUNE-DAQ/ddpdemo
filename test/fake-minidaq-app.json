@@ -9,6 +9,11 @@
                                 "dir": "output",
                                 "inst": "trigger_decision_from_data_selection",
                                 "name": "trigger_decision_output_queue"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "trigger_inhibit_to_data_selection",
+                                "name": "trigger_inhibit_input_queue"
                             }
                         ]
                     },
@@ -22,6 +27,11 @@
                                 "dir": "input",
                                 "inst": "trigger_decision_from_data_selection",
                                 "name": "trigger_decision_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "trigger_inhibit_to_data_selection",
+                                "name": "trigger_inhibit_output_queue"
                             },
                             {
                                 "dir": "output",
@@ -193,6 +203,11 @@
                 {
                     "capacity": 2,
                     "inst": "trigger_records",
+                    "kind": "StdDeQueue"
+                },
+                {
+                    "capacity": 2,
+                    "inst": "trigger_inhibit_to_data_selection",
                     "kind": "StdDeQueue"
                 }
             ]

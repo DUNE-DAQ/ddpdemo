@@ -36,6 +36,7 @@ FakeTrigDecEmu::FakeTrigDecEmu(const std::string& name)
   , thread_(std::bind(&FakeTrigDecEmu::do_work, this, std::placeholders::_1))
   , queueTimeout_(100)
   , triggerDecisionOutputQueue_(nullptr)
+  , triggerInhibitInputQueue_(nullptr)
 {
   register_command("conf", &FakeTrigDecEmu::do_conf);
   register_command("start", &FakeTrigDecEmu::do_start);
@@ -46,11 +47,16 @@ void
 FakeTrigDecEmu::init(const data_t& init_data)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
-  auto qi = appfwk::qindex(init_data, { "trigger_decision_output_queue" });
+  auto qi = appfwk::qindex(init_data, { "trigger_decision_output_queue", "trigger_inhibit_input_queue" });
   try {
     triggerDecisionOutputQueue_.reset(new trigdecsink_t(qi["trigger_decision_output_queue"].inst));
   } catch (const ers::Issue& excpt) {
     throw InvalidQueueFatalError(ERS_HERE, get_name(), "trigger_decision_output_queue", excpt);
+  }
+  try {
+    triggerInhibitInputQueue_.reset(new triginhsource_t(qi["trigger_inhibit_input_queue"].inst));
+  } catch (const ers::Issue& excpt) {
+    throw InvalidQueueFatalError(ERS_HERE, get_name(), "trigger_inhibit_input_queue", excpt);
   }
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Exiting init() method";
 }
@@ -111,6 +117,8 @@ FakeTrigDecEmu::do_work(std::atomic<bool>& running_flag)
           std::chrono::duration_cast<std::chrono::milliseconds>(queueTimeout_).count()));
       }
     }
+
+    // TO-DO: add something here for receiving Inhbit messages
 
     TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of sleep while waiting for run Stop";
     std::this_thread::sleep_for(std::chrono::milliseconds(sleepMsecWhileRunning_));

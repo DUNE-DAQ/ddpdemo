@@ -10,9 +10,11 @@
 #define DDPDEMO_SRC_FAKETRIGDECEMU_HPP_
 
 #include "ddpdemo/FakeTrigDec.hpp"
+#include "ddpdemo/FakeTrigInh.hpp"
 
 #include "appfwk/DAQModule.hpp"
 #include "appfwk/DAQSink.hpp"
+#include "appfwk/DAQSource.hpp"
 #include "appfwk/ThreadHelper.hpp"
 
 #include <memory>
@@ -58,6 +60,8 @@ private:
   // Queue(s)
   using trigdecsink_t = dunedaq::appfwk::DAQSink<dunedaq::ddpdemo::FakeTrigDec>;
   std::unique_ptr<trigdecsink_t> triggerDecisionOutputQueue_;
+  using triginhsource_t = dunedaq::appfwk::DAQSource<dunedaq::ddpdemo::FakeTrigInh>;
+  std::unique_ptr<triginhsource_t> triggerInhibitInputQueue_;
 };
 } // namespace ddpdemo
 } // namespace dunedaq

@@ -39,6 +39,7 @@ FakeReqGen::FakeReqGen(const std::string& name)
   , triggerDecisionInputQueue_(nullptr)
   , triggerDecisionOutputQueue_(nullptr)
   , dataRequestOutputQueues_()
+  , triggerInhibitOutputQueue_(nullptr)
 {
   register_command("conf", &FakeReqGen::do_conf);
   register_command("start", &FakeReqGen::do_start);
@@ -49,7 +50,8 @@ void
 FakeReqGen::init(const data_t& init_data)
 {
   TLOG(TLVL_ENTER_EXIT_METHODS) << get_name() << ": Entering init() method";
-  auto qilist = appfwk::qindex(init_data, { "trigger_decision_input_queue", "trigger_decision_output_queue" });
+  auto qilist = appfwk::qindex(
+    init_data, { "trigger_decision_input_queue", "trigger_decision_output_queue", "trigger_inhibit_output_queue" });
   try {
     triggerDecisionInputQueue_.reset(new trigdecsource_t(qilist["trigger_decision_input_queue"].inst));
   } catch (const ers::Issue& excpt) {
@@ -59,6 +61,11 @@ FakeReqGen::init(const data_t& init_data)
     triggerDecisionOutputQueue_.reset(new trigdecsink_t(qilist["trigger_decision_output_queue"].inst));
   } catch (const ers::Issue& excpt) {
     throw InvalidQueueFatalError(ERS_HERE, get_name(), "trigger_decision_output_queue", excpt);
+  }
+  try {
+    triggerInhibitOutputQueue_.reset(new triginhsink_t(qilist["trigger_inhibit_output_queue"].inst));
+  } catch (const ers::Issue& excpt) {
+    throw InvalidQueueFatalError(ERS_HERE, get_name(), "trigger_inhibit_output_queue", excpt);
   }
 
   auto ini = init_data.get<appfwk::cmd::ModInit>();
@@ -156,6 +163,8 @@ FakeReqGen::do_work(std::atomic<bool>& running_flag)
           std::chrono::duration_cast<std::chrono::milliseconds>(queueTimeout_).count()));
       }
     }
+
+    // TO-DO: add something here related to generating fake trigger inhibit messages
 
     // TLOG(TLVL_WORK_STEPS) << get_name() << ": Start of sleep while waiting for run Stop";
     // std::this_thread::sleep_for(std::chrono::milliseconds(sleepMsecWhileRunning_));
